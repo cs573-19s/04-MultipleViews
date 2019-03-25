@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/ >
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	    <script src="https://d3js.org/d3.v4.min.js"></script>
+  		<script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/lib/alea.min.js"></script>
+	    <script src="cloud.js"></script>
+	    <script src="bar.js"></script>
+		<style>
+		</style>
+	
+	</head>
+	<body>
+		<div class="jumbotron">
+	 		<h1 style="text-align: center"> Amazon Reviews </h1>
+	 	</div>
+
+	 	<div class="col-sm-4">
+ 			<div class="svg1" id="SVG1" style="text-align: center"></div>
+ 		</div>
+	 	
+	 	<div class="col-sm-4">
+ 			<div class="svg2" id="SVG2" style="text-align: center"></div>
+ 		</div>
+ 		<div class="col-sm-4">
+ 			<div class="svg3" id="SVG3" style="text-align: center"></div>
+ 		</div>
+
+	 	
+	 	<script type="text/javascript">
+	 		
+	 		var data = d3.json('test.json', function(reviews){
+
+	 			console.log(reviews)
+
+	 			var ratings = [];
+		 		var times = [];
+		 		var summaries = [];
+		 		var dict = new Object();
+		 		var dict = {};
+
+	 			for (var i = 0; i < reviews.length; i++) {
+				    ratings.push(reviews[i]['overall']);
+				    times.push(reviews[i]['unixReviewTime']);
+				    summaries.push(reviews[i]['summary']);
+				}
+
+				// console.log(ratings)
+				// console.log(times)
+				// console.log(summaries)
+
+				var common = "i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,he,him,his,himself,she,her,hers,herself,it,its,itself,they,them,their,theirs,themselves,what,which,who,whom,whose,this,that,these,those,am,is,are,was,were,be,been,being,ought,i'm,you're,he's,she's,it's,we're,they're,i've,you've,we've,they've,i'd,you'd,he'd,she'd,we'd,they'd,i'll,you'll,he'll,she'll,we'll,they'll,let's,that's,who's,what's,here's,there's,when's,where's,why's,how's,a,an,the,and,but,if,or,because,as,until,while,of,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,upon,down,in,out,on,off,over,under,again,further,then,once,here,there,when,where,why,how,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,say,says,said,shall";
+
+
+				for(var n = 0; n < summaries.length; n++){
+					//console.log(summaries[n].length)
+					var split = summaries[n].split(" ");
+					split.forEach(function(word){
+						var lower = word.toLowerCase();
+						var strip = lower.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+						//console.log(strip)
+						if (strip != "" && common.indexOf(strip)==-1 && strip.length>1){
+			                if(dict[strip]){
+								dict[strip]++;
+							} else{
+								dict[strip] = 1;
+							}
+			            }
+						
+					})
+				}
+
+			
+				createWordCloud(dict);
+				createRatingsChart(ratings);
+		        
+	 		});	
+
+	 		function createRatingsChart(ratings){
+
+	 			var barChartOptions = {
+				  w: 500,
+				  h: 500,
+				  margin: 10,
+				};
+
+	 			var ratingsDict = {};
+
+	 			for(var n = 0; n < ratings.length; n++){
+					if(ratingsDict[ratings[n]]){
+						ratingsDict[ratings[n]]++;
+					} else{
+						ratingsDict[ratings[n]] = 1;
+					}
+				}
+
+				console.log(ratingsDict);
+
+				var keys = Object.keys(ratingsDict);
+				console.log(keys)
+
+				var barRatings = [];
+
+				for(var x = 0; x < keys.length; x++){
+					barRatings.push({"Name": keys[x], "Value": ratingsDict[keys[x]]});
+				}
+
+				console.log(barRatings)
+
+	 			barChart(barRatings, "#SVG2", barChartOptions);
+	 		}
+
+
+	 		function createWordCloud(dict){
+	 			var svg_location = "#SVG1";
+		        var width = 500;
+		        var height = 500;
+
+		        var fill = d3.scaleOrdinal(d3.schemeCategory10);
+
+		        var word_entries = d3.entries(dict);
+
+		        var xScale = d3.scaleLinear()
+		           .domain([0, d3.max(word_entries, function(d) { return d.value; }) ])
+		           .range([10,100]);
+
+		        d3.layout.cloud().size([width, height])
+		        	.timeInterval(20)
+		        	.words(word_entries)
+		        	.fontSize(function(d) { return xScale(+d.value); })
+		        	.text(function(d) { return d.key; })
+		        	.rotate(function() { return ~~(Math.random() * 2) * 90; })
+		         	.font("Impact")
+		        	.on("end", draw)
+		         	.start();
+
+		        function draw(words) {
+		          	d3.select(svg_location).append("svg")
+		              	.attr("width", width)
+		            	.attr("height", height)
+		            	.append("g")
+		              	.attr("transform", "translate(" + [width >> 1, height >> 1] + ")")
+		            	.selectAll("text")
+		              	.data(words)
+		            	.enter().append("text")
+		              	.style("font-size", function(d) { return xScale(d.value) + "px"; })
+		              	.style("font-family", "Impact")
+		              	.style("fill", function(d, i) { return fill(i); })
+		              	.attr("text-anchor", "middle")
+		              	.attr("transform", function(d) {
+		                	return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+		              	})
+		              	.text(function(d) { return d.key; })
+		              	.on('mouseover', function(d){
+
+		              		//TODO manipulate other views
+
+						    d3.select(this).style({opacity:'0.2'});
+						});
+		        }
+
+		        d3.layout.cloud().stop();
+
+	 		}	 		
+
+
+	 	</script>
+	 	
+	</body>
+</html>
