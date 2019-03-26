@@ -33,11 +33,13 @@
 	 	<script type="text/javascript">
 
 	 		var barRatings = [];
+	 		var barFiltered = [];
 	 		var ratings = [];
 	 		var times = [];
 	 		var summaries = [];
 	 		var dict = new Object();
 	 		var dict = {};
+	 		var dictFiltered = {}
 
 	 		var currentRating = [];
 	 		var currentSummary = [];
@@ -48,11 +50,9 @@
 			  margin: 10,
 			};
 	 		
-	 		var data = d3.json('test.json', function(reviews){
+	 		d3.json('test.json', function(reviews){
 
 	 			console.log(reviews)
-
-	 			
 
 	 			for (var i = 0; i < reviews.length; i++) {
 				    ratings.push(reviews[i]['overall']);
@@ -64,7 +64,17 @@
 				// console.log(times)
 				// console.log(summaries)
 
-				var common = "i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,he,him,his,himself,she,her,hers,herself,it,its,itself,they,them,their,theirs,themselves,what,which,who,whom,whose,this,that,these,those,am,is,are,was,were,be,been,being,ought,i'm,you're,he's,she's,it's,we're,they're,i've,you've,we've,they've,i'd,you'd,he'd,she'd,we'd,they'd,i'll,you'll,he'll,she'll,we'll,they'll,let's,that's,who's,what's,here's,there's,when's,where's,why's,how's,a,an,the,and,but,if,or,because,as,until,while,of,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,upon,down,in,out,on,off,over,under,again,further,then,once,here,there,when,where,why,how,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,say,says,said,shall";
+			
+				createWordCloud(summaries);
+				createRatingsChart();
+
+				dispatch.call("load", this, barRatings, dict);
+  				//dispatch.call("statechange", this, stateById.get("CA"));
+		        
+	 		});	
+
+	 		function createWordCloud(summaries){
+	 			var common = "i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,he,him,his,himself,she,her,hers,herself,it,its,itself,they,them,their,theirs,themselves,what,which,who,whom,whose,this,that,these,those,am,is,are,was,were,be,been,being,ought,i'm,you're,he's,she's,it's,we're,they're,i've,you've,we've,they've,i'd,you'd,he'd,she'd,we'd,they'd,i'll,you'll,he'll,she'll,we'll,they'll,let's,that's,who's,what's,here's,there's,when's,where's,why's,how's,a,an,the,and,but,if,or,because,as,until,while,of,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,upon,down,in,out,on,off,over,under,again,further,then,once,here,there,when,where,why,how,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,say,says,said,shall";
 
 
 				for(var n = 0; n < summaries.length; n++){
@@ -85,16 +95,49 @@
 					})
 				}
 
-			
-				createWordCloud();
-				createRatingsChart();
+	 		}
 
-				dispatch.call("load", this, barRatings);
-  				//dispatch.call("statechange", this, stateById.get("CA"));
-		        
-	 		});	
 
-	 		function createWordCloud(){
+	 		function createRatingsChart(){
+
+	 			var ratingsDict = {};
+
+	 			for(var n = 0; n < ratings.length; n++){
+					if(ratingsDict[ratings[n]]){
+						ratingsDict[ratings[n]]++;
+					} else{
+						ratingsDict[ratings[n]] = 1;
+					}
+				}
+
+				console.log(ratingsDict);
+
+				var keys = Object.keys(ratingsDict);
+				console.log(keys)
+
+				
+
+				for(var x = 0; x < keys.length; x++){
+					barRatings.push({"Name": keys[x], "Value": ratingsDict[keys[x]]});
+				}
+
+				console.log(barRatings)
+
+	 		}
+
+	 		function updateCloud(){
+
+	 		}	
+
+	 		function updateBar(){
+	 			
+	 		} 
+
+
+	 		var dispatch = d3.dispatch("load", "statechange");
+
+	 		dispatch.on("load.cloud", function(data, dict){
+
 	 			var svg_location = "#SVG1";
 		        var width = 500;
 		        var height = 500;
@@ -134,52 +177,37 @@
 		                	return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
 		              	})
 		              	.text(function(d) { return d.key; })
-		              	.on('mouseover', function(d){
+		              	.on('click', function(d){
 
 		              		//TODO manipulate other views
-
-						    d3.select(this).style('opacity', 0.2);
+		              		console.log(d3.select(this).style('opacity'))
+							if(currentSummary.length == 0){
+								d3.selectAll("text").style('opacity', 0.2)
+								d3.select(this).style('opacity', 1);
+								currentSummary.push(d.key);
+							}
+							else{
+								if(d3.select(this).style('opacity') == 1){
+									d3.select(this).style('opacity', 0.2);
+									var index = currentSummary.indexOf(d.key);
+									currentSummary.splice(index, 1);
+									if(currentSummary.length == 0){
+										d3.selectAll("text").style('opacity', 1)
+									}
+								}
+								else{
+									d3.select(this).style('opacity', 1);
+									currentSummary.push(d.key);
+								}
+							}
+						
+						console.log(currentSummary);
+						dispatch.call("statechange", this, d);
+						    //d3.select(this).style('opacity', 0.2);
 						});
 		        }
 
 		        d3.layout.cloud().stop();
-
-	 		}
-
-
-	 		function createRatingsChart(){
-
-	 			var ratingsDict = {};
-
-	 			for(var n = 0; n < ratings.length; n++){
-					if(ratingsDict[ratings[n]]){
-						ratingsDict[ratings[n]]++;
-					} else{
-						ratingsDict[ratings[n]] = 1;
-					}
-				}
-
-				console.log(ratingsDict);
-
-				var keys = Object.keys(ratingsDict);
-				console.log(keys)
-
-				
-
-				for(var x = 0; x < keys.length; x++){
-					barRatings.push({"Name": keys[x], "Value": ratingsDict[keys[x]]});
-				}
-
-				console.log(barRatings)
-
-	 		}	 
-
-
-	 		var dispatch = d3.dispatch("load", "statechange");
-
-	 		dispatch.on("load.cloud", function(data){
-
-
 
 
 	 			dispatch.on("statechange.cloud", function(d) {
@@ -191,7 +219,7 @@
 	 		});
 
 
-	 		dispatch.on("load.bar", function(data) {
+	 		dispatch.on("load.bar", function(data, dict) {
 
 	 			console.log(data);
 
@@ -250,16 +278,29 @@
 					// 	d3.select(this).style('opacity', 1);
 					// })
 					.on('click', function(d){
-						console.log(d3.select(this).style("opacity"))
-						if(d3.select(this).style('opacity') == 1){
-							d3.select(this).style('opacity', 0.2);
+						console.log(d3.selectAll("rect").style('opacity'))
+						if(currentRating.length == 0){
+							d3.selectAll("rect").style('opacity', 0.2)
+							d3.select(this).style('opacity', 1);
 							currentRating.push(d.Name);
 						}
 						else{
-							d3.select(this).style('opacity', 1);
+							if(d3.select(this).style('opacity') == 1){
+								d3.select(this).style('opacity', 0.2);
+								var index = currentRating.indexOf(d.Name);
+								currentRating.splice(index, 1);
+								if(currentRating.length == 0){
+									d3.selectAll("rect").style('opacity', 1)
+								}
+							}
+							else{
+								d3.select(this).style('opacity', 1);
+								currentRating.push(d.Name);
+							}
 						}
+						
 						console.log(currentRating);
-						dispatch.call("statechange", this, data);
+						dispatch.call("statechange", this, d);
 					});
 				
 				dispatch.on("statechange.bar", function(d) {
