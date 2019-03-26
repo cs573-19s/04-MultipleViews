@@ -8,7 +8,7 @@
 	    <script src="https://d3js.org/d3.v4.min.js"></script>
   		<script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/lib/alea.min.js"></script>
 	    <script src="cloud.js"></script>
-	    <script src="bar.js"></script>
+	    <!-- <script src="bar.js"></script> -->
 		<style>
 		</style>
 	
@@ -31,16 +31,28 @@
 
 	 	
 	 	<script type="text/javascript">
+
+	 		var barRatings = [];
+	 		var ratings = [];
+	 		var times = [];
+	 		var summaries = [];
+	 		var dict = new Object();
+	 		var dict = {};
+
+	 		var currentRating = [];
+	 		var currentSummary = [];
+
+	 		var barChartOptions = {
+			  w: 500,
+			  h: 500,
+			  margin: 10,
+			};
 	 		
 	 		var data = d3.json('test.json', function(reviews){
 
 	 			console.log(reviews)
 
-	 			var ratings = [];
-		 		var times = [];
-		 		var summaries = [];
-		 		var dict = new Object();
-		 		var dict = {};
+	 			
 
 	 			for (var i = 0; i < reviews.length; i++) {
 				    ratings.push(reviews[i]['overall']);
@@ -74,47 +86,15 @@
 				}
 
 			
-				createWordCloud(dict);
-				createRatingsChart(ratings);
+				createWordCloud();
+				createRatingsChart();
+
+				dispatch.call("load", this, barRatings);
+  				//dispatch.call("statechange", this, stateById.get("CA"));
 		        
 	 		});	
 
-	 		function createRatingsChart(ratings){
-
-	 			var barChartOptions = {
-				  w: 500,
-				  h: 500,
-				  margin: 10,
-				};
-
-	 			var ratingsDict = {};
-
-	 			for(var n = 0; n < ratings.length; n++){
-					if(ratingsDict[ratings[n]]){
-						ratingsDict[ratings[n]]++;
-					} else{
-						ratingsDict[ratings[n]] = 1;
-					}
-				}
-
-				console.log(ratingsDict);
-
-				var keys = Object.keys(ratingsDict);
-				console.log(keys)
-
-				var barRatings = [];
-
-				for(var x = 0; x < keys.length; x++){
-					barRatings.push({"Name": keys[x], "Value": ratingsDict[keys[x]]});
-				}
-
-				console.log(barRatings)
-
-	 			barChart(barRatings, "#SVG2", barChartOptions);
-	 		}
-
-
-	 		function createWordCloud(dict){
+	 		function createWordCloud(){
 	 			var svg_location = "#SVG1";
 		        var width = 500;
 		        var height = 500;
@@ -158,13 +138,138 @@
 
 		              		//TODO manipulate other views
 
-						    d3.select(this).style({opacity:'0.2'});
+						    d3.select(this).style('opacity', 0.2);
 						});
 		        }
 
 		        d3.layout.cloud().stop();
 
-	 		}	 		
+	 		}
+
+
+	 		function createRatingsChart(){
+
+	 			var ratingsDict = {};
+
+	 			for(var n = 0; n < ratings.length; n++){
+					if(ratingsDict[ratings[n]]){
+						ratingsDict[ratings[n]]++;
+					} else{
+						ratingsDict[ratings[n]] = 1;
+					}
+				}
+
+				console.log(ratingsDict);
+
+				var keys = Object.keys(ratingsDict);
+				console.log(keys)
+
+				
+
+				for(var x = 0; x < keys.length; x++){
+					barRatings.push({"Name": keys[x], "Value": ratingsDict[keys[x]]});
+				}
+
+				console.log(barRatings)
+
+	 		}	 
+
+
+	 		var dispatch = d3.dispatch("load", "statechange");
+
+	 		dispatch.on("load.cloud", function(data){
+
+
+
+
+	 			dispatch.on("statechange.cloud", function(d) {
+				    // rect.transition()
+				    //     .attr("y", y(d.total))
+				    //     .attr("height", y(0) - y(d.total));
+				    console.log('changed')
+				});
+	 		});
+
+
+	 		dispatch.on("load.bar", function(data) {
+
+	 			console.log(data);
+
+				var svg = d3.select('#SVG2').append("svg")
+					.attr("width",  barChartOptions.w )
+					.attr("height", barChartOptions.h )
+					.attr("class", "bar");
+				
+				var height = barChartOptions.h;
+				var width = barChartOptions.w;
+
+				var fill = d3.scaleOrdinal(d3.schemeCategory10);
+				
+				var x = d3.scaleBand()
+					.domain(data.map(d => d.Name))
+					.range([30, width - 30]);
+
+				
+				var y = d3.scaleLinear()
+					.domain([0, d3.max(data, d => d.Value)]).nice()
+					.range([height - 30, 30]);
+				
+				var xAxis = g => g
+					.attr("transform", `translate(0,${height - 30})`)
+					.call(d3.axisBottom(x).tickSizeOuter(0));
+				
+				var yAxis = g => g
+					.attr("transform", `translate(${30},0)`)
+					.call(d3.axisLeft(y));
+
+
+
+				svg.append("g")
+					.call(xAxis);
+
+				var temp = svg.append("g")
+							.call(yAxis);
+
+
+				//console.log(data);
+
+				svg.selectAll("rect")
+					.data(data)
+					.enter()
+					.append("rect")
+					.attr("x", d => x(d.Name))
+					.attr("y", d => y(d.Value))
+					.attr("height", d => y(0) - y(d.Value))
+					.attr("width", x.bandwidth())
+					.attr("fill", "None")
+					.attr("fill", function(d, i) { return fill(i); })
+					// .on('mouseover', function(){
+					// 	d3.select(this).style('opacity', 0.6);
+					// })
+					// .on('mouseout', function(){
+					// 	d3.select(this).style('opacity', 1);
+					// })
+					.on('click', function(d){
+						console.log(d3.select(this).style("opacity"))
+						if(d3.select(this).style('opacity') == 1){
+							d3.select(this).style('opacity', 0.2);
+							currentRating.push(d.Name);
+						}
+						else{
+							d3.select(this).style('opacity', 1);
+						}
+						console.log(currentRating);
+						dispatch.call("statechange", this, data);
+					});
+				
+				dispatch.on("statechange.bar", function(d) {
+				    // rect.transition()
+				    //     .attr("y", y(d.total))
+				    //     .attr("height", y(0) - y(d.total));
+				    console.log('changed')
+				});
+
+			});		
 
 
 	 	</script>
