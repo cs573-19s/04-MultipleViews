@@ -224,13 +224,24 @@
 		              	.style("font-size", function(d) { return xScale(d.value) + "px"; })
 		              	.style("font-family", "Impact")
 		              	.style("fill", function(d, i) { return fill(i); })
+		              	.style("opacity", function(d, i){
+		              		if(currentSummary.length == 0){
+		              			return 1
+		              		}
+		              		else if(currentSummary.includes(d.key)){
+		              			return 1
+		              		}
+		              		else{
+		              			return 0.2
+		              		}
+		              	})
 		              	.attr("text-anchor", "middle")
 		              	.attr("transform", function(d) {
 		                	return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
 		              	})
 		              	.text(function(d) { return d.key; })
 		              	.on('click', function(d){
-
+		              		console.log(currentSummary)
 		              		//TODO manipulate other views
 							if(currentSummary.length == 0){
 								d3.selectAll("text").style('opacity', 0.2)
@@ -241,7 +252,10 @@
 								if(d3.select(this).style('opacity') == 1){
 									d3.select(this).style('opacity', 0.2);
 									var index = currentSummary.indexOf(d.key);
-									currentSummary.splice(index, 1);
+									console.log(index)
+									if(index != -1){
+										currentSummary.splice(index, 1);
+									}
 									if(currentSummary.length == 0){
 										d3.selectAll("text").style('opacity', 1)
 									}
@@ -321,7 +335,7 @@
 
 				//console.log(data);
 
-				svg.selectAll(".bar")
+				var bars = svg.selectAll(".bar")
 					.data(data)
 					.enter()
 					.append("rect")
@@ -332,12 +346,6 @@
 					.attr("width", x.bandwidth())
 					.attr("fill", "None")
 					.attr("fill", function(d, i) { return fill(i); })
-					// .on('mouseover', function(){
-					// 	d3.select(this).style('opacity', 0.6);
-					// })
-					// .on('mouseout', function(){
-					// 	d3.select(this).style('opacity', 1);
-					// })
 					.on('click', function(d){
 						if(currentRating.length == 0){
 							d3.selectAll("rect").style('opacity', 0.2)
@@ -366,13 +374,16 @@
 					});
 				
 				dispatch.on("statechangeBar.bar", function(data, dict) {
-					// console.log(data)
-					// d3.selectAll(".bar")
-				 //      .data(data)
-				 //      .transition().duration(1000)
-				 //      //.attr("x", function(d) { return x(d.Name); })
-				 //      .attr("y", d => y(d.Value))
-				 //      .attr("height", d => y(0) - y(d.Value));
+					// console.log(bars._groups)
+					// for(var x = 0; x < bars._groups.length; x++)
+					// 	console.log(bar._groups[x])
+					d3.selectAll(".bar")
+				      .data(data)
+				      .transition().duration(1000)
+				      //.attr("x", function(d) { return x(d.Name); })
+				      .attr("y", d => y(d.Value))
+				      .attr("height", d => y(0) - y(d.Value));
+				 	console.log(currentSummary)
 
 				    console.log('changed')
 				});
