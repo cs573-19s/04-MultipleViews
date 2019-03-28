@@ -301,8 +301,8 @@
 
 
 	 			dispatch.on("statechangeCloud.cloud", function(data, dict) {
-	 				console.log(data)
-	 				console.log(dict)
+	 				// console.log(data)
+	 				// console.log(dict)
 				    createWordCloud();
 				    // console.log('changed')
 				});
@@ -336,14 +336,14 @@
 				
 				var yAxis = g => g
 					.attr("transform", `translate(${30},0)`)
-					.call(d3.axisLeft(y));
+					.call(d3.axisLeft(y).ticks(7));
 
 
 
-				svg.append("g")
+				var xLine = svg.append("g")
 					.call(xAxis);
 
-				svg.append("g")
+				var yLine = svg.append("g")
 					.call(yAxis);
 
 
@@ -381,7 +381,7 @@
 							}
 						}
 						
-						console.log(currentRating);
+						// console.log(currentRating);
 
 						updateCloud();
 						dispatch.call("statechangeCloud", this, barFiltered, dictFiltered);
@@ -390,30 +390,19 @@
 				dispatch.on("statechangeBar.bar", function(data, dict) {
 					// console.log(data)
 					// console.log(bars._groups)
+					y.domain([0, d3.max(data, d => d.Value)]).nice()
+					.range([height - 30, 30]);
+
+					yLine.call(yAxis);
 
 					bars.data(data, d => d.Name)
 						.transition().duration(1000)
 						.attr("y", d => y(d.Value))
 						.attr("height", d => y(0) - y(d.Value));
-					// for(var x = 0; x < bars._groups[0].length; x++){
-					// 	// console.log(bars._groups[0][x])
-					// 	// console.log(data[x].Value)
-					// 	// d3.select(bars._groups[0][x])
-					// 	// 	.datum([{'Name': x+1, 'Value': data[x].Value}])
-					//  //      	.transition().duration(1000)
-					//  //      	// .attr("y", function(d){
-					//  //      	// 	console.log(d)
-					//  //      	// 	console.log(d[0].Value)
-					//  //      	// })
-					//  //      	.attr("y", d => y(d[0].Value))
-					//  //      	.attr("height", d => y(0) - y(d[0].Value));
 
+					// console.log(yLine)
 
-
-
-					//     // console.log(bars._groups[0][x])
-					// }
-
+					
 				    // console.log('changed')
 				});
 
