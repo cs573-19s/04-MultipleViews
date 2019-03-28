@@ -37,6 +37,7 @@
 	 		var barFiltered = [];
 	 		var ratings = [];
 	 		var allRatings = [];
+	 		var allTimes = [];
 	 		var times = [];
 	 		var summaries = [];
 	 		var allSummaries = [];
@@ -60,7 +61,7 @@
 	 			for (var i = 0; i < reviews.length; i++) {
 	 				allReviews.push(reviews[i]);
 				    allRatings.push(reviews[i]['overall']);
-				    times.push(reviews[i]['unixReviewTime']);
+				    allTimes.push(reviews[i]['unixReviewTime']);
 				    allSummaries.push(reviews[i]['summary']);
 				}
 
@@ -70,16 +71,31 @@
 
 				ratings = allRatings;
 				summaries = allSummaries;
+				times = allTimes;
 
 			
 				translateWordCloud(summaries);
 				translateBarRatings();
+				transelateDates();
 
 				dispatch.call("loadCloud", this, barFiltered, dictFiltered);
 				dispatch.call("loadBar", this, barFiltered, dictFiltered);
   				//dispatch.call("statechange", this, stateById.get("CA"));
 		        
 	 		});	
+
+	 		function transelateDates(){
+
+	 			for(var x = 0; x < times.length; x++){
+	 				// console.log(times[x])
+	 				var date = new Date(times[x]*1000);
+	 				// console.log(date)
+					var month = date.getMonth();
+					// console.log(month)
+	 			}
+
+
+	 		}
 
 	 		function translateWordCloud(summary){
 
@@ -241,8 +257,7 @@
 		              	})
 		              	.text(function(d) { return d.key; })
 		              	.on('click', function(d){
-		              		console.log(currentSummary)
-		              		//TODO manipulate other views
+		              		// console.log(currentSummary)
 							if(currentSummary.length == 0){
 								d3.selectAll("text").style('opacity', 0.2)
 								d3.select(this).style('opacity', 1);
@@ -252,7 +267,6 @@
 								if(d3.select(this).style('opacity') == 1){
 									d3.select(this).style('opacity', 0.2);
 									var index = currentSummary.indexOf(d.key);
-									console.log(index)
 									if(index != -1){
 										currentSummary.splice(index, 1);
 									}
@@ -267,7 +281,7 @@
 							}
 							
 
-							console.log(currentSummary);
+							// console.log(currentSummary);
 							updateBar();
 							//console.log(barFiltered);
 							dispatch.call("statechangeBar", this, barFiltered, dictFiltered);
@@ -290,7 +304,7 @@
 	 				console.log(data)
 	 				console.log(dict)
 				    createWordCloud();
-				    console.log('changed')
+				    // console.log('changed')
 				});
 	 		});
 
@@ -367,25 +381,40 @@
 							}
 						}
 						
-						//console.log(currentRating);
+						console.log(currentRating);
 
 						updateCloud();
 						dispatch.call("statechangeCloud", this, barFiltered, dictFiltered);
 					});
 				
 				dispatch.on("statechangeBar.bar", function(data, dict) {
+					// console.log(data)
 					// console.log(bars._groups)
-					// for(var x = 0; x < bars._groups.length; x++)
-					// 	console.log(bar._groups[x])
-					d3.selectAll(".bar")
-				      .data(data)
-				      .transition().duration(1000)
-				      //.attr("x", function(d) { return x(d.Name); })
-				      .attr("y", d => y(d.Value))
-				      .attr("height", d => y(0) - y(d.Value));
-				 	console.log(currentSummary)
 
-				    console.log('changed')
+					bars.data(data, d => d.Name)
+						.transition().duration(1000)
+						.attr("y", d => y(d.Value))
+						.attr("height", d => y(0) - y(d.Value));
+					// for(var x = 0; x < bars._groups[0].length; x++){
+					// 	// console.log(bars._groups[0][x])
+					// 	// console.log(data[x].Value)
+					// 	// d3.select(bars._groups[0][x])
+					// 	// 	.datum([{'Name': x+1, 'Value': data[x].Value}])
+					//  //      	.transition().duration(1000)
+					//  //      	// .attr("y", function(d){
+					//  //      	// 	console.log(d)
+					//  //      	// 	console.log(d[0].Value)
+					//  //      	// })
+					//  //      	.attr("y", d => y(d[0].Value))
+					//  //      	.attr("height", d => y(0) - y(d[0].Value));
+
+
+
+
+					//     // console.log(bars._groups[0][x])
+					// }
+
+				    // console.log('changed')
 				});
 
 			});		
