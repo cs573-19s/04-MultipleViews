@@ -79,10 +79,11 @@
 				translateWordCloud(summaries);
 				translateBarRatings();
 				transelateDates();
-				createTimeline();
+				
 
 				dispatch.call("loadCloud", this, barFiltered, dictFiltered);
 				dispatch.call("loadBar", this, barFiltered, dictFiltered);
+				dispatch.call("loadTimeline", this, barFiltered, dictFiltered);
   				//dispatch.call("statechange", this, stateById.get("CA"));
 		        
 	 		});	
@@ -214,25 +215,50 @@
 
 	 		function createTimeline(){
 
-	 			var testData = [
-			        {times: [{"starting_time": 1355752800000, "ending_time": 1355752800000}, {"starting_time": 1355767900000, "ending_time": 1355767900000}]},
-			        {times: [{"starting_time": 1355759910000, "ending_time": 1355759910000}, ]},
-			        {times: [{"starting_time": 1355761910000, "ending_time": 1355761910000}]}
-			    ];
-
 
 		        var chart = d3.timelines()
-		          	.tickFormat( //
+		          	.tickFormat(
 			            {format: d3.timeFormat("%B %d, %Y"),
-			            tickTime: d3.timeYear,
-			            tickInterval: 100,
+			            tickTime: d3.timeHour,
+			            tickInterval: 1,
+			            //numTicks: 10,
 			            tickSize: 30})
 		          	.display("circle")
-		          	.margin({left: 50, right:50, top: 30, bottom:30}); // toggle between rectangles and circles
+		          	.margin({left: 50, right:50, top: 30, bottom:30});
 
 		        var svg = d3.select("#SVG3").append("svg").attr("width", 1300)
 		          	.datum(timeData).call(chart);
+
+		        var brush = d3.brushX()
+				    .extent([[50, 0], [1250, 100]])
+				    .on("end", filterTimes);
+
+				svg.append("g")
+					.attr("class", "brush")
+					.call(brush);
 	 		}
+
+	 		function filterTimes(){
+	 			console.log("here")
+	 			var s = d3.event.selection;
+	 			console.log(s)
+	 			
+	 			var min = d3.min(allTimes, function(d) { return d; });
+	 			var max = d3.max(allTimes, function(d) { return d; });
+	 			console.log(min)
+	 			console.log(max)
+
+	 			var lowerTime = (s[0] - 50) * (max - min) / (1250 - 50) + min;
+	 			var upperTime = (s[1] - 50) * (max - min) / (1250 - 50) + min;
+
+	 			console.log(lowerTime)
+	 			console.log(upperTime)
+	 			
+	 		}
+
+// 	 		const scale = (num, in_min, in_max, out_min, out_max) => {
+//   return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+// }
 
 	 		function createWordCloud(){
 
@@ -324,7 +350,21 @@
 	 		}
 
 
-	 		var dispatch = d3.dispatch("loadBar", "loadCloud", "statechangeCloud", "statechangeBar");
+	 		var dispatch = d3.dispatch("loadBar", "loadCloud", "loadTimeline", "statechangeCloud", "statechangeBar", "statechangeTimeline");
+
+
+	 		dispatch.on("loadTimeline.timeline", function(data, dict){
+
+	 			createTimeline();
+
+	 			dispatch.on("statechangeTimeline.timeline", function(data, dict) {
+	 				// console.log(data)
+	 				// console.log(dict)
+				    //createWordCloud();
+				    // console.log('changed')
+				});
+	 		});
+
 
 	 		dispatch.on("loadCloud.cloud", function(data, dict){
 
