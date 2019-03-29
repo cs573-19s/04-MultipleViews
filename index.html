@@ -8,6 +8,7 @@
 	    <script src="https://d3js.org/d3.v4.min.js"></script>
   		<script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/lib/alea.min.js"></script>
 	    <script src="cloud.js"></script>
+	    <script src="timeline.js"></script>
 	    <!-- <script src="bar.js"></script> -->
 		<style>
 		</style>
@@ -18,14 +19,14 @@
 	 		<h1 style="text-align: center"> Amazon Reviews </h1>
 	 	</div>
 
-	 	<div class="col-sm-4">
+	 	<div class="col-sm-6">
  			<div class="svg1" id="SVG1" style="text-align: center"></div>
  		</div>
 	 	
-	 	<div class="col-sm-4">
+	 	<div class="col-sm-6">
  			<div class="svg2" id="SVG2" style="text-align: center"></div>
  		</div>
- 		<div class="col-sm-4">
+ 		<div class="col-sm-12">
  			<div class="svg3" id="SVG3" style="text-align: center"></div>
  		</div>
 
@@ -39,6 +40,7 @@
 	 		var allRatings = [];
 	 		var allTimes = [];
 	 		var times = [];
+	 		var timeData = [];
 	 		var summaries = [];
 	 		var allSummaries = [];
 	 		var dict = new Object();
@@ -77,6 +79,7 @@
 				translateWordCloud(summaries);
 				translateBarRatings();
 				transelateDates();
+				createTimeline();
 
 				dispatch.call("loadCloud", this, barFiltered, dictFiltered);
 				dispatch.call("loadBar", this, barFiltered, dictFiltered);
@@ -86,13 +89,19 @@
 
 	 		function transelateDates(){
 
+	 			console.log(times)
+
+	 			timeData = [];
+	 			timeData.push({times: []});
+
 	 			for(var x = 0; x < times.length; x++){
-	 				// console.log(times[x])
-	 				var date = new Date(times[x]*1000);
-	 				// console.log(date)
-					var month = date.getMonth();
-					// console.log(month)
+	 				
+	 				var unixTime = times[x] * 1000;
+	 				timeData[0]['times'].push({"starting_time": unixTime, "ending_time": unixTime});
+
 	 			}
+
+	 			console.log(timeData)
 
 
 	 		}
@@ -202,6 +211,28 @@
 	 			
 	 			translateBarRatings();
 	 		} 
+
+	 		function createTimeline(){
+
+	 			var testData = [
+			        {times: [{"starting_time": 1355752800000, "ending_time": 1355752800000}, {"starting_time": 1355767900000, "ending_time": 1355767900000}]},
+			        {times: [{"starting_time": 1355759910000, "ending_time": 1355759910000}, ]},
+			        {times: [{"starting_time": 1355761910000, "ending_time": 1355761910000}]}
+			    ];
+
+
+		        var chart = d3.timelines()
+		          	.tickFormat( //
+			            {format: d3.timeFormat("%B %d, %Y"),
+			            tickTime: d3.timeYear,
+			            tickInterval: 100,
+			            tickSize: 30})
+		          	.display("circle")
+		          	.margin({left: 50, right:50, top: 30, bottom:30}); // toggle between rectangles and circles
+
+		        var svg = d3.select("#SVG3").append("svg").attr("width", 1300)
+		          	.datum(timeData).call(chart);
+	 		}
 
 	 		function createWordCloud(){
 
