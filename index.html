@@ -496,6 +496,15 @@
 		          	.margin({left: 50, right:50, top: 30, bottom:30});
 	 				svg.attr("width", 1300).datum(time).call(chart)
 
+	 				// var brushLower = (currentTime[0] - oldMin) * (max - min) / (oldMax - oldMin) + min;
+	 				// var brushUpper = (currentTime[1] - oldMin) * (max - min) / (oldMax - oldMin) + min;
+	 				// console.log("brush lower " + brushLower)
+	 				// console.log(brushUpper)
+
+	 				// var screenLower = (brushLower - min) * (1250 - 50) / (max - min) + 50;
+	 				// var screenUpper = (brushUpper - min) * (1250 - 50) / (max - min) + 50;
+
+
 	 				svg.append("g")
 					.attr("class", "brush")
 					.call(brush);
