@@ -46,7 +46,8 @@ module.exports = function() {
           d.size = ~~fontSize.call(this, d, i);
           d.padding = padding.call(this, d, i);
           return d;
-        }).sort(function(a, b) { return b.size - a.size; });
+        }).sort(function(a, b) { 
+          return b.size - a.size; });
 
     if (timer) clearInterval(timer);
     timer = setInterval(step, 0);
@@ -71,6 +72,7 @@ module.exports = function() {
           d.y -= size[1] >> 1;
         }
       }
+
       if (i >= n) {
         cloud.stop();
         event.call("end", cloud, tags, bounds);

@@ -18,7 +18,9 @@
 		<div class="jumbotron">
 	 		<h1 style="text-align: center"> Amazon Reviews </h1>
 	 	</div>
-
+	 	<div class="col-sm-12">
+ 			<div class="svg3" id="SVG3" style="text-align: center"></div>
+ 		</div>
 	 	<div class="col-sm-6">
  			<div class="svg1" id="SVG1" style="text-align: center"></div>
  		</div>
@@ -26,32 +28,37 @@
 	 	<div class="col-sm-6">
  			<div class="svg2" id="SVG2" style="text-align: center"></div>
  		</div>
- 		<div class="col-sm-12">
- 			<div class="svg3" id="SVG3" style="text-align: center"></div>
- 		</div>
+ 		
 
 	 	
 	 	<script type="text/javascript">
 
 	 		var allReviews = [];
+
 	 		var barRatings = [];
 	 		var barFiltered = [];
+
 	 		var ratings = [];
 	 		var allRatings = [];
+
 	 		var allTimes = [];
 	 		var times = [];
+	 		var timesFiltered = [];
 	 		var timeData = [];
+	 		var timeDataFiltered = [];
+
 	 		var summaries = [];
 	 		var allSummaries = [];
-	 		var dict = new Object();
+
 	 		var dict = {};
 	 		var dictFiltered = {}
 
 	 		var currentRating = [];
 	 		var currentSummary = [];
+	 		var currentTime = [];
 
 	 		var barChartOptions = {
-			  w: 500,
+			  w: 600,
 			  h: 500,
 			  margin: 10,
 			};
@@ -90,7 +97,7 @@
 
 	 		function transelateDates(){
 
-	 			console.log(times)
+	 			// console.log(times)
 
 	 			timeData = [];
 	 			timeData.push({times: []});
@@ -98,11 +105,13 @@
 	 			for(var x = 0; x < times.length; x++){
 	 				
 	 				var unixTime = times[x] * 1000;
+	 				timesFiltered.push(unixTime);
 	 				timeData[0]['times'].push({"starting_time": unixTime, "ending_time": unixTime});
 
 	 			}
-
-	 			console.log(timeData)
+	 			console.log(timesFiltered)
+	 			timeDataFiltered = timeData;
+	 			// console.log(timeData)
 
 
 	 		}
@@ -132,6 +141,7 @@
 				}
 
 				dictFiltered = dict;
+
 
 	 		}
 
@@ -172,20 +182,47 @@
 
 	 		function updateCloud(){
 	 			summaries = []
+
+		 		var tempReviews = [];
+
+	 			//get reviews in given time if there is a filter
+	 			if(currentTime.length > 0){
+	 				for (var i = 0; i < allReviews.length; i++) {
+		 				if(allReviews[i]['unixReviewTime'] >= currentTime[0] && allReviews[i]['unixReviewTime'] <= currentTime[1]){
+		 					tempReviews.push(allReviews[i]);   
+		 				}
+					    
+					}
+	 			}
+	 			//else all reviews can be used
+	 			else{
+	 				tempReviews = allReviews;
+	 			}
+
+	 			//get reviews from temp that match summary 
 	 			if(currentRating.length > 0){
-	 				for(var n = 0; n < currentRating.length; n++){
-		 				for (var i = 0; i < allReviews.length; i++) {
-			 				if(allReviews[i]['overall'] == currentRating[n]){
-			 					summaries.push(allReviews[i]['summary']);
+	 				for (var i = 0; i < tempReviews.length; i++) {
+	 					for(var n = 0; n < currentRating.length; n++){
+		 				
+			 				if(tempReviews[i]['overall'] == currentRating[n]){
+			 					summaries.push(tempReviews[i]['summary']);
 							    //timesFiltered.push(reviews[i]['unixReviewTime']);
 			 				}
 						    
 						}
 		 			}
 		 		}
-		 		else{
-		 			summaries = allSummaries;
-		 		}
+	 			//check if there was a filter or not
+	 			else{
+	 				if(tempReviews.length > 0){
+	 					for(var i = 0; i < tempReviews.length; i++){
+	 						summaries.push(tempReviews[i]['summary']);
+	 					}
+	 				}
+	 				else{
+	 					summaries = allSummaries;
+	 				}
+	 			}
 
 		 		//console.log(summaries)
 
@@ -195,87 +232,155 @@
 
 	 		function updateBar(){
 	 			ratings = []
-	 			if(currentSummary.length > 0){
-	 				for(var n = 0; n < currentSummary.length; n++){
-		 				for (var i = 0; i < allReviews.length; i++) {
-			 				if(allReviews[i]['summary'].includes(currentSummary[n])){
-			 					ratings.push(allReviews[i]['overall']);
-							    //timesFiltered.push(reviews[i]['unixReviewTime']);
-			 				}
-						    
-						}
-		 			}
+	 			// console.log(currentSummary)
+	 			// console.log(currentTime)
+
+	 			var tempReviews = [];
+
+	 			//get reviews in given time if there is a filter
+	 			if(currentTime.length > 0){
+	 				for (var i = 0; i < allReviews.length; i++) {
+		 				if(allReviews[i]['unixReviewTime'] >= currentTime[0] && allReviews[i]['unixReviewTime'] <= currentTime[1]){
+		 					tempReviews.push(allReviews[i]);   
+		 				}
+					    
+					}
 	 			}
+	 			//else all reviews can be used
 	 			else{
-	 				ratings = allRatings;
+	 				tempReviews = allReviews;
 	 			}
+
+	 			//get reviews from temp that match summary 
+	 			if(currentSummary.length > 0){
+	 				for(var i = 0; i < tempReviews.length; i++){
+	 					for(var n = 0; n < currentSummary.length; n++){
+	 						if(tempReviews[i]['summary'].toLowerCase().includes(currentSummary[n])){
+	 							ratings.push(tempReviews[i]['overall']);
+	 							break;
+	 						}
+	 					}
+	 				}
+	 			}
+	 			//check if there was a filter or not
+	 			else{
+	 				if(tempReviews.length > 0){
+	 					for(var i = 0; i < tempReviews.length; i++){
+	 						ratings.push(tempReviews[i]['overall'])
+	 					}
+	 				}
+	 				else{
+	 					ratings = allRatings;
+	 				}
+	 			}
+
 	 			
 	 			translateBarRatings();
 	 		} 
 
-	 		function createTimeline(){
 
 
-		        var chart = d3.timelines()
-		          	.tickFormat(
-			            {format: d3.timeFormat("%B %d, %Y"),
-			            tickTime: d3.timeHour,
-			            tickInterval: 1,
-			            //numTicks: 10,
-			            tickSize: 30})
-		          	.display("circle")
-		          	.margin({left: 50, right:50, top: 30, bottom:30});
+	 		function updateTimeline(){
+	 			times = []
+	 			// console.log(currentSummary)
+	 			// console.log(currentTime)
 
-		        var svg = d3.select("#SVG3").append("svg").attr("width", 1300)
-		          	.datum(timeData).call(chart);
+	 			var tempReviews = [];
 
-		        var brush = d3.brushX()
-				    .extent([[50, 0], [1250, 100]])
-				    .on("end", filterTimes);
+	 			//get reviews in given time if there is a filter
+	 			if(currentRating.length > 0){
+	 				for (var i = 0; i < allReviews.length; i++) {
+	 					for(var n = 0; n < currentRating.length; n++){
+			 				if(allReviews[i]['overall'] == currentRating[n]){
+			 					tempReviews.push(allReviews[i]);   
+			 				}
+			 			}
+					    
+					}
+	 			}
+	 			//else all reviews can be used
+	 			else{
+	 				tempReviews = allReviews;
+	 			}
 
-				svg.append("g")
-					.attr("class", "brush")
-					.call(brush);
-	 		}
+	 			//get reviews from temp that match summary 
+	 			if(currentSummary.length > 0){
+	 				for(var i = 0; i < tempReviews.length; i++){
+	 					for(var n = 0; n < currentSummary.length; n++){
+	 						if(tempReviews[i]['summary'].toLowerCase().includes(currentSummary[n])){
+	 							times.push(tempReviews[i]['unixReviewTime']);
+	 							break;
+	 						}
+	 					}
+	 				}
+	 			}
+	 			//check if there was a filter or not
+	 			else{
+	 				if(tempReviews.length > 0){
+	 					for(var i = 0; i < tempReviews.length; i++){
+	 						times.push(tempReviews[i]['unixReviewTime'])
+	 					}
+	 				}
+	 				else{
+	 					times = allTimes;
+	 				}
+	 			}
+
+	 			
+	 			transelateDates();
+	 		} 
+
 
 	 		function filterTimes(){
-	 			console.log("here")
+	 			// console.log("here")
 	 			var s = d3.event.selection;
-	 			console.log(s)
+	 			// console.log(s)
 	 			
-	 			var min = d3.min(allTimes, function(d) { return d; });
-	 			var max = d3.max(allTimes, function(d) { return d; });
-	 			console.log(min)
-	 			console.log(max)
+	 			var min = d3.min(times, function(d) { return d; });
+	 			var max = d3.max(times, function(d) { return d; });
+	 			// console.log(min)
+	 			// console.log(max)
+	 			// var minDate = new Date(min * 1000);
+	 			// var maxDate = new Date(max * 1000);
+	 			// console.log(minDate)
+	 			// console.log(maxDate)
 
 	 			var lowerTime = (s[0] - 50) * (max - min) / (1250 - 50) + min;
 	 			var upperTime = (s[1] - 50) * (max - min) / (1250 - 50) + min;
 
-	 			console.log(lowerTime)
-	 			console.log(upperTime)
+	 			// console.log(lowerTime)
+	 			// console.log(upperTime)
+
+	 			currentTime = [];
+	 			currentTime = [lowerTime, upperTime];
+
+	 			console.log(currentTime)
+
+	 			updateCloud();
+	 			updateBar();
+
+	 			dispatch.call("statechangeCloud", this, dictFiltered);
+	 			dispatch.call("statechangeBar", this, barFiltered);
 	 			
 	 		}
 
-// 	 		const scale = (num, in_min, in_max, out_min, out_max) => {
-//   return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-// }
 
 	 		function createWordCloud(){
 
 	 			document.getElementById('SVG1').innerHTML = '';
 	 			var svg_location = "#SVG1";
-		        var width = 500;
+		        var width = 700;
 		        var height = 500;
 
 		        var fill = d3.scaleOrdinal(d3.schemeCategory10);
 
-		        var word_entries = d3.entries(dict);
+		        var word_entries = d3.entries(dictFiltered);
 
 		        var xScale = d3.scaleLinear()
 		           .domain([0, d3.max(word_entries, function(d) { return d.value; }) ])
 		           .range([10,100]);
 
-		        d3.layout.cloud().size([width, height])
+		        var cloud = d3.layout.cloud().size([width, height])
 		        	.timeInterval(20)
 		        	.words(word_entries)
 		        	.fontSize(function(d) { return xScale(+d.value); })
@@ -284,6 +389,7 @@
 		         	.font("Impact")
 		        	.on("end", draw)
 		         	.start();
+
 
 		        function draw(words) {
 		          	d3.select(svg_location).append("svg")
@@ -340,8 +446,10 @@
 
 							// console.log(currentSummary);
 							updateBar();
+							updateTimeline();
 							//console.log(barFiltered);
-							dispatch.call("statechangeBar", this, barFiltered, dictFiltered);
+							dispatch.call("statechangeBar", this, barFiltered);
+							dispatch.call("statechangeTimeline", this, timeData);
 						    //d3.select(this).style('opacity', 0.2);
 						});
 		        }
@@ -355,13 +463,42 @@
 
 	 		dispatch.on("loadTimeline.timeline", function(data, dict){
 
-	 			createTimeline();
+	 			var chart = d3.timelines()
+		          	.tickFormat(
+			            {format: d3.timeFormat("%B %d, %Y"),
+			            tickTime: d3.timeHour,
+			            tickInterval: 1,
+			            tickSize: 30})
+		          	.display("circle")
+		          	.margin({left: 50, right:50, top: 30, bottom:30});
 
-	 			dispatch.on("statechangeTimeline.timeline", function(data, dict) {
-	 				// console.log(data)
-	 				// console.log(dict)
-				    //createWordCloud();
-				    // console.log('changed')
+		        var svg = d3.select("#SVG3").append("svg").attr("width", 1300)
+		          	.datum(timeData).call(chart);
+
+		        var brush = d3.brushX()
+				    .extent([[50, 0], [1250, 100]])
+				    .on("end", filterTimes);
+
+				svg.append("g")
+					.attr("class", "brush")
+					.call(brush);
+
+	 			dispatch.on("statechangeTimeline.timeline", function(time) {
+	 				//update Timeline
+	 				svg.selectAll("*").remove();
+	 				chart = d3.timelines()
+		          	.tickFormat(
+			            {format: d3.timeFormat("%B %d, %Y"),
+			            tickTime: d3.timeHour,
+			            tickInterval: 1,
+			            tickSize: 30})
+		          	.display("circle")
+		          	.margin({left: 50, right:50, top: 30, bottom:30});
+	 				svg.attr("width", 1300).datum(time).call(chart)
+
+	 				svg.append("g")
+					.attr("class", "brush")
+					.call(brush);
 				});
 	 		});
 
@@ -371,7 +508,7 @@
 	 			createWordCloud();
 
 
-	 			dispatch.on("statechangeCloud.cloud", function(data, dict) {
+	 			dispatch.on("statechangeCloud.cloud", function(dict) {
 	 				// console.log(data)
 	 				// console.log(dict)
 				    createWordCloud();
@@ -455,10 +592,12 @@
 						// console.log(currentRating);
 
 						updateCloud();
-						dispatch.call("statechangeCloud", this, barFiltered, dictFiltered);
+						updateTimeline();
+						dispatch.call("statechangeCloud", this, dictFiltered);
+						dispatch.call("statechangeTimeline", this, timeData);
 					});
 				
-				dispatch.on("statechangeBar.bar", function(data, dict) {
+				dispatch.on("statechangeBar.bar", function(data) {
 					// console.log(data)
 					// console.log(bars._groups)
 					y.domain([0, d3.max(data, d => d.Value)]).nice()

@@ -251,7 +251,7 @@
             beginning = minTime;
           }
         }
-
+        
         var scaleFactor = (1/(ending - beginning)) * (width - margin.left - margin.right);
 
         function formatDays(d) {
