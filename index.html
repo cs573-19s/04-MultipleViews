@@ -20,13 +20,27 @@
 	 	</div>
 	 	<div class="col-sm-12">
  			<div class="svg3" id="SVG3" style="text-align: center"></div>
+ 			<div style="text-align: center">
+ 				<p id="timeFilterLeft">Timeline Filter: </p>
+ 				<p id="timeFilterRight">Timeline Filter: </p>
+ 				<button type="button" class="btn btn-danger" onclick="clearTimeline()">Clear Timeline Filter</button>\
+ 			</div>
+ 			<br>
  		</div>
 	 	<div class="col-sm-6">
  			<div class="svg1" id="SVG1" style="text-align: center"></div>
+ 			<div style="text-align: center">
+ 				<p id="wordFilter">Word Filter: </p>
+ 				<button type="button" class="btn btn-danger" onclick="clearWords()">Clear Word Filter</button>\
+ 			</div>
  		</div>
 	 	
 	 	<div class="col-sm-6">
  			<div class="svg2" id="SVG2" style="text-align: center"></div>
+ 			<div style="text-align: center">
+ 				<p id="barNumbers">Bar Filter: </p>
+ 				<button type="button" class="btn btn-danger" onclick="clearBar()">Clear Bar Filter</button>\
+ 			</div>
  		</div>
  		
 
@@ -46,6 +60,9 @@
 	 		var timesFiltered = [];
 	 		var timeData = [];
 	 		var timeDataFiltered = [];
+	 		var min;
+	 		var max;
+	 		var clear = 0;
 
 	 		var summaries = [];
 	 		var allSummaries = [];
@@ -82,18 +99,63 @@
 				summaries = allSummaries;
 				times = allTimes;
 
+				min = d3.min(times, function(d) { return d; });
+	 			max = d3.max(times, function(d) { return d; });
 			
 				translateWordCloud(summaries);
 				translateBarRatings();
 				transelateDates();
 				
-
+				dispatch.call("loadTimeline", this, barFiltered, dictFiltered);
 				dispatch.call("loadCloud", this, barFiltered, dictFiltered);
 				dispatch.call("loadBar", this, barFiltered, dictFiltered);
-				dispatch.call("loadTimeline", this, barFiltered, dictFiltered);
+				
   				//dispatch.call("statechange", this, stateById.get("CA"));
 		        
 	 		});	
+
+	 		function clearBar(){
+
+	 			currentRating = [];
+
+	 			document.getElementById('barNumbers').innerHTML = "Bar Filter: " + currentRating;
+
+	 			d3.selectAll(".bar").style("opacity", 1);
+
+	 			updateCloud()
+	 			updateTimeline()
+
+	 			//dispatch.call("statechangeCloud", this, dictFiltered);
+				dispatch.call("statechangeTimeline", this, timeData);
+	 		}
+
+	 		function clearWords(){
+
+	 			currentSummary = [];
+
+	 			document.getElementById('wordFilter').innerHTML = "Word Filter: " + currentSummary;
+
+	 			updateBar()
+	 			updateTimeline()
+
+	 			dispatch.call("statechangeBar", this, barFiltered);
+				dispatch.call("statechangeTimeline", this, timeData);
+	 		}
+
+	 		function clearTimeline(){
+
+	 			clear = 1;
+
+	 			
+	 			filterTimes()
+	 			updateBar()
+	 			updateCloud()
+
+	 			dispatch.call("statechangeBar", this, barFiltered);
+				//dispatch.call("statechangeCloud", this, dictFiltered);
+				dispatch.call("statechangeTimeline", this, timeData);
+	 		}
+
 
 	 		function transelateDates(){
 
@@ -102,16 +164,21 @@
 	 			timeData = [];
 	 			timeData.push({times: []});
 
+	 			var unixTime;
 	 			for(var x = 0; x < times.length; x++){
 	 				
-	 				var unixTime = times[x] * 1000;
+	 				unixTime = times[x] * 1000;
 	 				timesFiltered.push(unixTime);
 	 				timeData[0]['times'].push({"starting_time": unixTime, "ending_time": unixTime});
 
 	 			}
-	 			console.log(timesFiltered)
+
+	 			if(timeData.length == 1){
+	 				timeData[0]['times'].push({"starting_time": unixTime+1, "ending_time": unixTime+1})
+	 			}
+	 			// console.log(timesFiltered)
 	 			timeDataFiltered = timeData;
-	 			// console.log(timeData)
+	 			console.log(timeData)
 
 
 	 		}
@@ -326,6 +393,11 @@
 	 				}
 	 			}
 
+	 			min = d3.min(times, function(d) { return d; });
+	 			max = d3.max(times, function(d) { return d; });
+	 			console.log(min)
+	 			console.log(max)
+
 	 			
 	 			transelateDates();
 	 		} 
@@ -333,34 +405,56 @@
 
 	 		function filterTimes(){
 	 			// console.log("here")
-	 			var s = d3.event.selection;
-	 			// console.log(s)
+
+	 			if(clear == 1){
+	 				clear = 0
+	 				var timeMin = d3.min(allTimes, function(d) { return d; });
+		 			var timeMax = d3.max(allTimes, function(d) { return d; });
+
+		 			currentTime = [];
+		 			currentTime = [timeMin, timeMax];
+		 			console.log('herre2')
+	 			}
+	 			else{
+
+	 				var s = d3.event.selection;
+		 			console.log(s)
+		 			
+		 			min = d3.min(times, function(d) { return d; });
+		 			max = d3.max(times, function(d) { return d; });
+		 			// console.log(min)
+		 			// console.log(max)
+		 			// var minDate = new Date(min * 1000);
+		 			// var maxDate = new Date(max * 1000);
+		 			// console.log(minDate)
+		 			// console.log(maxDate)
+
+		 			var lowerTime = (s[0] - 50) * (max - min) / (1250 - 50) + min;
+		 			var upperTime = (s[1] - 50) * (max - min) / (1250 - 50) + min;
+
+		 			// console.log(lowerTime)
+		 			// console.log(upperTime)
+
+		 			currentTime = [];
+		 			currentTime = [lowerTime, upperTime];
+
+		 			console.log(currentTime)
+
+		 			var lower = new Date(currentTime[0] * 1000)
+		 			var upper = new Date(currentTime[1] * 1000)
+
+		 			document.getElementById('timeFilterLeft').innerHTML = "Timeline Filter (Left Date): " + lower;
+		 			document.getElementById('timeFilterRight').innerHTML = "Timeline Filter (Right Date): " + upper;
+
+		 			updateCloud();
+		 			updateBar();
+
+		 			dispatch.call("statechangeCloud", this, dictFiltered);
+		 			dispatch.call("statechangeBar", this, barFiltered);
+	 			}
 	 			
-	 			var min = d3.min(times, function(d) { return d; });
-	 			var max = d3.max(times, function(d) { return d; });
-	 			// console.log(min)
-	 			// console.log(max)
-	 			// var minDate = new Date(min * 1000);
-	 			// var maxDate = new Date(max * 1000);
-	 			// console.log(minDate)
-	 			// console.log(maxDate)
 
-	 			var lowerTime = (s[0] - 50) * (max - min) / (1250 - 50) + min;
-	 			var upperTime = (s[1] - 50) * (max - min) / (1250 - 50) + min;
-
-	 			// console.log(lowerTime)
-	 			// console.log(upperTime)
-
-	 			currentTime = [];
-	 			currentTime = [lowerTime, upperTime];
-
-	 			console.log(currentTime)
-
-	 			updateCloud();
-	 			updateBar();
-
-	 			dispatch.call("statechangeCloud", this, dictFiltered);
-	 			dispatch.call("statechangeBar", this, barFiltered);
+	 			
 	 			
 	 		}
 
@@ -443,6 +537,7 @@
 								}
 							}
 							
+							document.getElementById('wordFilter').innerHTML = "Word Filter: " + currentSummary.sort();
 
 							// console.log(currentSummary);
 							updateBar();
@@ -481,7 +576,8 @@
 
 				svg.append("g")
 					.attr("class", "brush")
-					.call(brush);
+					.call(brush)
+					.call(brush.move, [50, 1250]);
 
 	 			dispatch.on("statechangeTimeline.timeline", function(time) {
 	 				//update Timeline
@@ -501,13 +597,33 @@
 	 				// console.log("brush lower " + brushLower)
 	 				// console.log(brushUpper)
 
-	 				// var screenLower = (brushLower - min) * (1250 - 50) / (max - min) + 50;
-	 				// var screenUpper = (brushUpper - min) * (1250 - 50) / (max - min) + 50;
+	 				// console.log(min)
+	 				// console.log(max)
+
+	 				var screenLower;
+	 				var screenUpper;
+
+	 				if(min != max){
+	 					screenLower = (currentTime[0] - min) * (1250 - 50) / (max - min) + 50;
+	 					screenUpper = (currentTime[1] - min) * (1250 - 50) / (max - min) + 50;
+	 					// console.log('here')
+	 				}
+	 				else{
+	 					screenLower = 50
+	 					screenUpper = 1250
+	 				}
+	 				
+
+	 				// console.log(screenLower)
+	 				// console.log(screenUpper)
 
 
 	 				svg.append("g")
 					.attr("class", "brush")
-					.call(brush);
+					.call(brush)
+					.call(brush.move, [screenLower, screenUpper]);
+
+					// console.log(currentTime)
 				});
 	 		});
 
@@ -600,9 +716,11 @@
 						
 						// console.log(currentRating);
 
+						document.getElementById('barNumbers').innerHTML = "Bar Filter: " + currentRating.sort();
+
 						updateCloud();
 						updateTimeline();
-						dispatch.call("statechangeCloud", this, dictFiltered);
+						//dispatch.call("statechangeCloud", this, dictFiltered);
 						dispatch.call("statechangeTimeline", this, timeData);
 					});
 				
