@@ -16,7 +16,7 @@
 	</head>
 	<body>
 		<div class="jumbotron">
-	 		<h1 style="text-align: center"> Amazon Reviews </h1>
+	 		<h1 style="text-align: center"> Amazon Electronics Reviews </h1>
 	 	</div>
 	 	<div class="col-sm-12">
  			<div class="svg3" id="SVG3" style="text-align: center"></div>
@@ -42,6 +42,12 @@
  				<button type="button" class="btn btn-danger" onclick="clearBar()">Clear Bar Filter</button>\
  			</div>
  		</div>
+ 		<br>
+ 		<br>
+ 		<div class="col-sm-12">
+ 			<p> </p>
+ 		</div>
+
  		
 
 	 	
@@ -73,6 +79,7 @@
 	 		var currentRating = [];
 	 		var currentSummary = [];
 	 		var currentTime = [];
+	 		var oldTime = []
 
 	 		var barChartOptions = {
 			  w: 600,
@@ -411,6 +418,8 @@
 	 				var timeMin = d3.min(allTimes, function(d) { return d; });
 		 			var timeMax = d3.max(allTimes, function(d) { return d; });
 
+		 			oldTime = currentTime;
+
 		 			currentTime = [];
 		 			currentTime = [timeMin, timeMax];
 		 			console.log('herre2')
@@ -419,6 +428,19 @@
 
 	 				var s = d3.event.selection;
 		 			console.log(s)
+
+		 			if(s == null){
+
+		 				console.log(currentTime)
+		 				console.log(oldTime)
+
+
+		 				var low = (oldTime[0] - min) * (1250 - 50) / (max - min) + 50;
+	 					var high = (oldTime[1] - min) * (1250 - 50) / (max - min) + 50;
+		 				s = [low,high]
+
+		 				console.log(s)
+		 			}
 		 			
 		 			min = d3.min(times, function(d) { return d; });
 		 			max = d3.max(times, function(d) { return d; });
@@ -434,6 +456,8 @@
 
 		 			// console.log(lowerTime)
 		 			// console.log(upperTime)
+
+		 			oldTime = currentTime;
 
 		 			currentTime = [];
 		 			currentTime = [lowerTime, upperTime];
