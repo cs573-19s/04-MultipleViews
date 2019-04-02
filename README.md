@@ -6,17 +6,23 @@ Assignment 4 - Visualizations and Multiple Views
 - gh-pages site: https://jabel3141.github.io/04-MultipleViews/
 
 
+# Description
+
+
+
 
 ## Technical Achievements
-- Used firebase to store the answers of each participant
-- Converted Json data to a csv format
-- Created error chart to show the difference in accuracy of each vis using python
-- Allowed downloading of the data from firebase to see in csv (Download button on the webpage)
+- Used D3.dispatch for coordinate updating the visualizations
+- Used a brush to help filter the time data
+- Used transitions to make the bar chart update nicely
+- kept track of all the data and filtering manually instead of using an outside library
+- Brush position will update based on the other selected values to fit the change in the timeline
+- Allowed for clearing filters in each of the visualizations
 
 
 ## Design Achievements
 - Used bootstrap to help format the webpage
-- Spaced out the blocks in the block area vis so that no matter the size of the blocks, the whole thing is always centered
-- Numbers always in correct corresponding spot for blocks
-- Multiple javascript files to help organize the code
-- No color except for the line in the block area since it needed to be seen.
+- Used D3 color scheme to color the bar chart and the word cloud text
+- Show the current filters applied to the visualizations
+- Timeline and barchart dates and numbers update to distribute the area its using well
+- Highlighted selected words and bars to make it easier to see which ones are selected in the filter
