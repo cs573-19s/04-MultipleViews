@@ -23,7 +23,7 @@
  			<div style="text-align: center">
  				<p id="timeFilterLeft">Timeline Filter: </p>
  				<p id="timeFilterRight">Timeline Filter: </p>
- 				<button type="button" class="btn btn-danger" onclick="clearTimeline()">Clear Timeline Filter</button>\
+ 				<button type="button" class="btn btn-danger" onclick="clearTimeline()">Clear Timeline Filter</button>
  			</div>
  			<br>
  		</div>
@@ -31,7 +31,7 @@
  			<div class="svg1" id="SVG1" style="text-align: center"></div>
  			<div style="text-align: center">
  				<p id="wordFilter">Word Filter: </p>
- 				<button type="button" class="btn btn-danger" onclick="clearWords()">Clear Word Filter</button>\
+ 				<button type="button" class="btn btn-danger" onclick="clearWords()">Clear Word Filter</button>
  			</div>
  		</div>
 	 	
@@ -39,7 +39,7 @@
  			<div class="svg2" id="SVG2" style="text-align: center"></div>
  			<div style="text-align: center">
  				<p id="barNumbers">Bar Filter: </p>
- 				<button type="button" class="btn btn-danger" onclick="clearBar()">Clear Bar Filter</button>\
+ 				<button type="button" class="btn btn-danger" onclick="clearBar()">Clear Bar Filter</button>
  			</div>
  		</div>
  		<br>
@@ -435,8 +435,8 @@
 		 				console.log(oldTime)
 
 
-		 				var low = (oldTime[0] - min) * (1250 - 50) / (max - min) + 50;
-	 					var high = (oldTime[1] - min) * (1250 - 50) / (max - min) + 50;
+		 				var low = (oldTime[0] - min) * (1550 - 50) / (max - min) + 50;
+	 					var high = (oldTime[1] - min) * (1550 - 50) / (max - min) + 50;
 		 				s = [low,high]
 
 		 				console.log(s)
@@ -451,8 +451,8 @@
 		 			// console.log(minDate)
 		 			// console.log(maxDate)
 
-		 			var lowerTime = (s[0] - 50) * (max - min) / (1250 - 50) + min;
-		 			var upperTime = (s[1] - 50) * (max - min) / (1250 - 50) + min;
+		 			var lowerTime = (s[0] - 50) * (max - min) / (1550 - 50) + min;
+		 			var upperTime = (s[1] - 50) * (max - min) / (1550 - 50) + min;
 
 		 			// console.log(lowerTime)
 		 			// console.log(upperTime)
@@ -591,17 +591,17 @@
 		          	.display("circle")
 		          	.margin({left: 50, right:50, top: 30, bottom:30});
 
-		        var svg = d3.select("#SVG3").append("svg").attr("width", 1300)
+		        var svg = d3.select("#SVG3").append("svg").attr("width", 1600)
 		          	.datum(timeData).call(chart);
 
 		        var brush = d3.brushX()
-				    .extent([[50, 0], [1250, 100]])
+				    .extent([[50, 0], [1550, 100]])
 				    .on("end", filterTimes);
 
 				svg.append("g")
 					.attr("class", "brush")
 					.call(brush)
-					.call(brush.move, [50, 1250]);
+					.call(brush.move, [50, 1550]);
 
 	 			dispatch.on("statechangeTimeline.timeline", function(time) {
 	 				//update Timeline
@@ -614,7 +614,7 @@
 			            tickSize: 30})
 		          	.display("circle")
 		          	.margin({left: 50, right:50, top: 30, bottom:30});
-	 				svg.attr("width", 1300).datum(time).call(chart)
+	 				svg.attr("width", 1600).datum(time).call(chart)
 
 	 				// var brushLower = (currentTime[0] - oldMin) * (max - min) / (oldMax - oldMin) + min;
 	 				// var brushUpper = (currentTime[1] - oldMin) * (max - min) / (oldMax - oldMin) + min;
@@ -628,13 +628,13 @@
 	 				var screenUpper;
 
 	 				if(min != max){
-	 					screenLower = (currentTime[0] - min) * (1250 - 50) / (max - min) + 50;
-	 					screenUpper = (currentTime[1] - min) * (1250 - 50) / (max - min) + 50;
+	 					screenLower = (currentTime[0] - min) * (1550 - 50) / (max - min) + 50;
+	 					screenUpper = (currentTime[1] - min) * (1550 - 50) / (max - min) + 50;
 	 					// console.log('here')
 	 				}
 	 				else{
 	 					screenLower = 50
-	 					screenUpper = 1250
+	 					screenUpper = 1550
 	 				}
 	 				
 
