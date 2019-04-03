@@ -6,6 +6,10 @@ Assignment 4 - Visualizations and Multiple Views
 - gh-pages site: https://jabel3141.github.io/04-MultipleViews/
 
 
+## Data
+
+The data I used for this project was obtained from http://jmcauley.ucsd.edu/data/amazon/ however the data was massively large with over 1.5 million reviews and so I could not upload the full file to gituhub. Instead I took the first 1000 data entries and used that for the project instead (test.json). 
+
 # Description
 
 This project is trying to analyze Amazon Electronics Reviews through ratings, summary words, and dates (shown in the first picture below). The timeline shows the dates, the ratings is shown in the bar chart and the summary words is shown through the word cloud. A user can interact with each visualization to filter values and update the visualizations (as shown in the second pic below). 
@@ -17,9 +21,9 @@ The general outline of interactions is as follows:
 
 You can use a combination of all 3 when filtering and it will perform all of them together. ie) if you select great in the word cloud and the 3 rating in the bar chart, the timeline will only show points where the rating was a 3 and the summary contained the word great. The other combinations will work in the same way where a visualization will only show values based on the other 2 visualization's filters.
 
-![Overview Pic](/img/Overview.PNG)
+![Overview Pic](/img/Overall.PNG)
 
-![Overview Filtered Pic](/img/overviewFiltered.PNG)
+![Overview Filtered Pic](/img/overallFiltered.PNG)
 
 
 ## Known Tiny Issues
@@ -30,10 +34,13 @@ When looking the timeline, if you only have one datapoint with one date, the tim
 
 I encountered one tiny bug with the code which is unknown why it is acting wierd. When using the brush in the timeline, if you selection only contains a few reviews and you end up selecting word in the word cloud that only has 1 review in it, the timeline and brush are fine, updating so that the timeline only contains that value. However, if you were to then unselect the single word, the brush filter disappears but is still filtering the correct area as it was before the selection in the word cloud. The pictures below tries to demonstrate this.
 
+Before selecting word filter
 ![Bug 1 Pic](/img/bug3.PNG)
 
+After selecting word filter
 ![Bug 2 Pic](/img/bug1.PNG)
 
+After unselecing the word filter
 ![Bug 3 Pic](/img/bug2.PNG)
 
 
