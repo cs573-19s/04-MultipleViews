@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/ >
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	    <script src="https://d3js.org/d3.v4.min.js"></script>
+  		<script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/lib/alea.min.js"></script>
+	    <script src="cloud.js"></script>
+	    <script src="timeline.js"></script>
+	    <!-- <script src="bar.js"></script> -->
+		<style>
+		</style>
+	
+	</head>
+	<body>
+		<div class="jumbotron">
+	 		<h1 style="text-align: center"> Amazon Electronics Reviews </h1>
+	 	</div>
+	 	<div class="col-sm-12">
+ 			<div class="svg3" id="SVG3" style="text-align: center"></div>
+ 			<div style="text-align: center">
+ 				<p id="timeFilterLeft">Timeline Filter: </p>
+ 				<p id="timeFilterRight">Timeline Filter: </p>
+ 				<button type="button" class="btn btn-danger" onclick="clearTimeline()">Clear Timeline Filter</button>
+ 			</div>
+ 			<br>
+ 		</div>
+	 	<div class="col-sm-6">
+ 			<div class="svg1" id="SVG1" style="text-align: center"></div>
+ 			<div style="text-align: center">
+ 				<p id="wordFilter">Word Filter: </p>
+ 				<button type="button" class="btn btn-danger" onclick="clearWords()">Clear Word Filter</button>
+ 			</div>
+ 		</div>
+	 	
+	 	<div class="col-sm-6">
+ 			<div class="svg2" id="SVG2" style="text-align: center"></div>
+ 			<div style="text-align: center">
+ 				<p id="barNumbers">Bar Filter: </p>
+ 				<button type="button" class="btn btn-danger" onclick="clearBar()">Clear Bar Filter</button>
+ 			</div>
+ 		</div>
+ 		<br>
+ 		<br>
+ 		<div class="col-sm-12">
+ 			<p> </p>
+ 		</div>
+
+ 		
+
+	 	
+	 	<script type="text/javascript">
+
+	 		var allReviews = [];
+
+	 		var barRatings = [];
+	 		var barFiltered = [];
+
+	 		var ratings = [];
+	 		var allRatings = [];
+
+	 		var allTimes = [];
+	 		var times = [];
+	 		var timesFiltered = [];
+	 		var timeData = [];
+	 		var timeDataFiltered = [];
+	 		var min;
+	 		var max;
+	 		var clear = 0;
+
+	 		var summaries = [];
+	 		var allSummaries = [];
+
+	 		var dict = {};
+	 		var dictFiltered = {}
+
+	 		var currentRating = [];
+	 		var currentSummary = [];
+	 		var currentTime = [];
+	 		var oldTime = []
+
+	 		var barChartOptions = {
+			  w: 600,
+			  h: 500,
+			  margin: 10,
+			};
+	 		
+	 		d3.json('test.json', function(reviews){
+
+	 			console.log(reviews)
+
+	 			for (var i = 0; i < reviews.length; i++) {
+	 				allReviews.push(reviews[i]);
+				    allRatings.push(reviews[i]['overall']);
+				    allTimes.push(reviews[i]['unixReviewTime']);
+				    allSummaries.push(reviews[i]['summary']);
+				}
+
+				// console.log(ratings)
+				// console.log(times)
+				// console.log(summaries)
+
+				ratings = allRatings;
+				summaries = allSummaries;
+				times = allTimes;
+
+				min = d3.min(times, function(d) { return d; });
+	 			max = d3.max(times, function(d) { return d; });
+			
+				translateWordCloud(summaries);
+				translateBarRatings();
+				transelateDates();
+				
+				dispatch.call("loadTimeline", this, barFiltered, dictFiltered);
+				dispatch.call("loadCloud", this, barFiltered, dictFiltered);
+				dispatch.call("loadBar", this, barFiltered, dictFiltered);
+				
+  				//dispatch.call("statechange", this, stateById.get("CA"));
+		        
+	 		});	
+
+	 		function clearBar(){
+
+	 			currentRating = [];
+
+	 			document.getElementById('barNumbers').innerHTML = "Bar Filter: " + currentRating;
+
+	 			d3.selectAll(".bar").style("opacity", 1);
+
+	 			updateCloud()
+	 			updateTimeline()
+
+	 			//dispatch.call("statechangeCloud", this, dictFiltered);
+				dispatch.call("statechangeTimeline", this, timeData);
+	 		}
+
+	 		function clearWords(){
+
+	 			currentSummary = [];
+
+	 			document.getElementById('wordFilter').innerHTML = "Word Filter: " + currentSummary;
+
+	 			updateBar()
+	 			updateTimeline()
+
+	 			dispatch.call("statechangeBar", this, barFiltered);
+				dispatch.call("statechangeTimeline", this, timeData);
+	 		}
+
+	 		function clearTimeline(){
+
+	 			clear = 1;
+
+	 			
+	 			filterTimes()
+	 			updateBar()
+	 			updateCloud()
+
+	 			dispatch.call("statechangeBar", this, barFiltered);
+				//dispatch.call("statechangeCloud", this, dictFiltered);
+				dispatch.call("statechangeTimeline", this, timeData);
+	 		}
+
+
+	 		function transelateDates(){
+
+	 			// console.log(times)
+
+	 			timeData = [];
+	 			timeData.push({times: []});
+
+	 			var unixTime;
+	 			for(var x = 0; x < times.length; x++){
+	 				
+	 				unixTime = times[x] * 1000;
+	 				timesFiltered.push(unixTime);
+	 				timeData[0]['times'].push({"starting_time": unixTime, "ending_time": unixTime});
+
+	 			}
+
+	 			if(timeData.length == 1){
+	 				timeData[0]['times'].push({"starting_time": unixTime+1, "ending_time": unixTime+1})
+	 			}
+	 			// console.log(timesFiltered)
+	 			timeDataFiltered = timeData;
+	 			console.log(timeData)
+
+
+	 		}
+
+	 		function translateWordCloud(summary){
+
+	 			//console.log(summary)
+	 			var common = "i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,he,him,his,himself,she,her,hers,herself,it,its,itself,they,them,their,theirs,themselves,what,which,who,whom,whose,this,that,these,those,am,is,are,was,were,be,been,being,ought,i'm,you're,he's,she's,it's,we're,they're,i've,you've,we've,they've,i'd,you'd,he'd,she'd,we'd,they'd,i'll,you'll,he'll,she'll,we'll,they'll,let's,that's,who's,what's,here's,there's,when's,where's,why's,how's,a,an,the,and,but,if,or,because,as,until,while,of,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,upon,down,in,out,on,off,over,under,again,further,then,once,here,there,when,where,why,how,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,say,says,said,shall";
+
+	 			dict = {}
+				for(var n = 0; n < summary.length; n++){
+					//console.log(summaries[n].length)
+					var split = summary[n].split(" ");
+					split.forEach(function(word){
+						var lower = word.toLowerCase();
+						var strip = lower.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+						//console.log(strip)
+						if (strip != "" && common.indexOf(strip)==-1 && strip.length>1){
+			                if(dict[strip]){
+								dict[strip]++;
+							} else{
+								dict[strip] = 1;
+							}
+			            }
+						
+					})
+				}
+
+				dictFiltered = dict;
+
+
+	 		}
+
+
+	 		function translateBarRatings(){
+
+	 			var ratingsDict = {};
+	 			// console.log(ratings)
+	 			// console.log(ratingsDict)
+
+	 			for(var n = 0; n < ratings.length; n++){
+					if(ratingsDict[ratings[n]]){
+						ratingsDict[ratings[n]]++;
+					} else{
+						ratingsDict[ratings[n]] = 1;
+					}
+				}
+
+				//console.log(ratingsDict);
+
+				var keys = ['1', '2', '3', '4', '5']
+				//console.log(keys)
+
+				barRatings = [];
+
+				for(var x = 0; x < keys.length; x++){
+					if(ratingsDict[keys[x]] != null)
+						barRatings.push({"Name": keys[x], "Value": ratingsDict[keys[x]]});
+					else
+						barRatings.push({"Name": keys[x], "Value": 0});
+				}
+
+				//console.log(barRatings)
+
+				barFiltered = barRatings;
+
+	 		}
+
+	 		function updateCloud(){
+	 			summaries = []
+
+		 		var tempReviews = [];
+
+	 			//get reviews in given time if there is a filter
+	 			if(currentTime.length > 0){
+	 				for (var i = 0; i < allReviews.length; i++) {
+		 				if(allReviews[i]['unixReviewTime'] >= currentTime[0] && allReviews[i]['unixReviewTime'] <= currentTime[1]){
+		 					tempReviews.push(allReviews[i]);   
+		 				}
+					    
+					}
+	 			}
+	 			//else all reviews can be used
+	 			else{
+	 				tempReviews = allReviews;
+	 			}
+
+	 			//get reviews from temp that match summary 
+	 			if(currentRating.length > 0){
+	 				for (var i = 0; i < tempReviews.length; i++) {
+	 					for(var n = 0; n < currentRating.length; n++){
+		 				
+			 				if(tempReviews[i]['overall'] == currentRating[n]){
+			 					summaries.push(tempReviews[i]['summary']);
+							    //timesFiltered.push(reviews[i]['unixReviewTime']);
+			 				}
+						    
+						}
+		 			}
+		 		}
+	 			//check if there was a filter or not
+	 			else{
+	 				if(tempReviews.length > 0){
+	 					for(var i = 0; i < tempReviews.length; i++){
+	 						summaries.push(tempReviews[i]['summary']);
+	 					}
+	 				}
+	 				else{
+	 					summaries = allSummaries;
+	 				}
+	 			}
+
+		 		//console.log(summaries)
+
+	 			translateWordCloud(summaries)
+	 			
+	 		}	
+
+	 		function updateBar(){
+	 			ratings = []
+	 			// console.log(currentSummary)
+	 			// console.log(currentTime)
+
+	 			var tempReviews = [];
+
+	 			//get reviews in given time if there is a filter
+	 			if(currentTime.length > 0){
+	 				for (var i = 0; i < allReviews.length; i++) {
+		 				if(allReviews[i]['unixReviewTime'] >= currentTime[0] && allReviews[i]['unixReviewTime'] <= currentTime[1]){
+		 					tempReviews.push(allReviews[i]);   
+		 				}
+					    
+					}
+	 			}
+	 			//else all reviews can be used
+	 			else{
+	 				tempReviews = allReviews;
+	 			}
+
+	 			//get reviews from temp that match summary 
+	 			if(currentSummary.length > 0){
+	 				for(var i = 0; i < tempReviews.length; i++){
+	 					for(var n = 0; n < currentSummary.length; n++){
+	 						if(tempReviews[i]['summary'].toLowerCase().includes(currentSummary[n])){
+	 							ratings.push(tempReviews[i]['overall']);
+	 							break;
+	 						}
+	 					}
+	 				}
+	 			}
+	 			//check if there was a filter or not
+	 			else{
+	 				if(tempReviews.length > 0){
+	 					for(var i = 0; i < tempReviews.length; i++){
+	 						ratings.push(tempReviews[i]['overall'])
+	 					}
+	 				}
+	 				else{
+	 					ratings = allRatings;
+	 				}
+	 			}
+
+	 			
+	 			translateBarRatings();
+	 		} 
+
+
+
+	 		function updateTimeline(){
+	 			times = []
+	 			// console.log(currentSummary)
+	 			// console.log(currentTime)
+
+	 			var tempReviews = [];
+
+	 			//get reviews in given time if there is a filter
+	 			if(currentRating.length > 0){
+	 				for (var i = 0; i < allReviews.length; i++) {
+	 					for(var n = 0; n < currentRating.length; n++){
+			 				if(allReviews[i]['overall'] == currentRating[n]){
+			 					tempReviews.push(allReviews[i]);   
+			 				}
+			 			}
+					    
+					}
+	 			}
+	 			//else all reviews can be used
+	 			else{
+	 				tempReviews = allReviews;
+	 			}
+
+	 			//get reviews from temp that match summary 
+	 			if(currentSummary.length > 0){
+	 				for(var i = 0; i < tempReviews.length; i++){
+	 					for(var n = 0; n < currentSummary.length; n++){
+	 						if(tempReviews[i]['summary'].toLowerCase().includes(currentSummary[n])){
+	 							times.push(tempReviews[i]['unixReviewTime']);
+	 							break;
+	 						}
+	 					}
+	 				}
+	 			}
+	 			//check if there was a filter or not
+	 			else{
+	 				if(tempReviews.length > 0){
+	 					for(var i = 0; i < tempReviews.length; i++){
+	 						times.push(tempReviews[i]['unixReviewTime'])
+	 					}
+	 				}
+	 				else{
+	 					times = allTimes;
+	 				}
+	 			}
+
+	 			min = d3.min(times, function(d) { return d; });
+	 			max = d3.max(times, function(d) { return d; });
+	 			console.log(min)
+	 			console.log(max)
+
+	 			
+	 			transelateDates();
+	 		} 
+
+
+	 		function filterTimes(){
+	 			// console.log("here")
+
+	 			if(clear == 1){
+	 				clear = 0
+	 				var timeMin = d3.min(allTimes, function(d) { return d; });
+		 			var timeMax = d3.max(allTimes, function(d) { return d; });
+
+		 			oldTime = currentTime;
+
+		 			currentTime = [];
+		 			currentTime = [timeMin, timeMax];
+		 			console.log('herre2')
+	 			}
+	 			else{
+
+	 				var s = d3.event.selection;
+		 			console.log(s)
+
+		 			if(s == null){
+
+		 				console.log(currentTime)
+		 				console.log(oldTime)
+
+
+		 				var low = (oldTime[0] - min) * (1550 - 50) / (max - min) + 50;
+	 					var high = (oldTime[1] - min) * (1550 - 50) / (max - min) + 50;
+		 				s = [low,high]
+
+		 				console.log(s)
+		 			}
+		 			
+		 			min = d3.min(times, function(d) { return d; });
+		 			max = d3.max(times, function(d) { return d; });
+		 			// console.log(min)
+		 			// console.log(max)
+		 			// var minDate = new Date(min * 1000);
+		 			// var maxDate = new Date(max * 1000);
+		 			// console.log(minDate)
+		 			// console.log(maxDate)
+
+		 			var lowerTime = (s[0] - 50) * (max - min) / (1550 - 50) + min;
+		 			var upperTime = (s[1] - 50) * (max - min) / (1550 - 50) + min;
+
+		 			// console.log(lowerTime)
+		 			// console.log(upperTime)
+
+		 			oldTime = currentTime;
+
+		 			currentTime = [];
+		 			currentTime = [lowerTime, upperTime];
+
+		 			console.log(currentTime)
+
+		 			var lower = new Date(currentTime[0] * 1000)
+		 			var upper = new Date(currentTime[1] * 1000)
+
+		 			document.getElementById('timeFilterLeft').innerHTML = "Timeline Filter (Left Date): " + lower;
+		 			document.getElementById('timeFilterRight').innerHTML = "Timeline Filter (Right Date): " + upper;
+
+		 			updateCloud();
+		 			updateBar();
+
+		 			dispatch.call("statechangeCloud", this, dictFiltered);
+		 			dispatch.call("statechangeBar", this, barFiltered);
+	 			}
+	 			
+
+	 			
+	 			
+	 		}
+
+
+	 		function createWordCloud(){
+
+	 			document.getElementById('SVG1').innerHTML = '';
+	 			var svg_location = "#SVG1";
+		        var width = 700;
+		        var height = 500;
+
+		        var fill = d3.scaleOrdinal(d3.schemeCategory10);
+
+		        var word_entries = d3.entries(dictFiltered);
+
+		        var xScale = d3.scaleLinear()
+		           .domain([0, d3.max(word_entries, function(d) { return d.value; }) ])
+		           .range([10,100]);
+
+		        var cloud = d3.layout.cloud().size([width, height])
+		        	.timeInterval(20)
+		        	.words(word_entries)
+		        	.fontSize(function(d) { return xScale(+d.value); })
+		        	.text(function(d) { return d.key; })
+		        	.rotate(function() { return ~~(Math.random() * 2) * 90; })
+		         	.font("Impact")
+		        	.on("end", draw)
+		         	.start();
+
+
+		        function draw(words) {
+		          	d3.select(svg_location).append("svg")
+		              	.attr("width", width)
+		            	.attr("height", height)
+		            	.append("g")
+		              	.attr("transform", "translate(" + [width >> 1, height >> 1] + ")")
+		            	.selectAll("text")
+		              	.data(words)
+		            	.enter().append("text")
+		              	.style("font-size", function(d) { return xScale(d.value) + "px"; })
+		              	.style("font-family", "Impact")
+		              	.style("fill", function(d, i) { return fill(i); })
+		              	.style("opacity", function(d, i){
+		              		if(currentSummary.length == 0){
+		              			return 1
+		              		}
+		              		else if(currentSummary.includes(d.key)){
+		              			return 1
+		              		}
+		              		else{
+		              			return 0.2
+		              		}
+		              	})
+		              	.attr("text-anchor", "middle")
+		              	.attr("transform", function(d) {
+		                	return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+		              	})
+		              	.text(function(d) { return d.key; })
+		              	.on('click', function(d){
+		              		// console.log(currentSummary)
+							if(currentSummary.length == 0){
+								d3.selectAll("text").style('opacity', 0.2)
+								d3.select(this).style('opacity', 1);
+								currentSummary.push(d.key);
+							}
+							else{
+								if(d3.select(this).style('opacity') == 1){
+									d3.select(this).style('opacity', 0.2);
+									var index = currentSummary.indexOf(d.key);
+									if(index != -1){
+										currentSummary.splice(index, 1);
+									}
+									if(currentSummary.length == 0){
+										d3.selectAll("text").style('opacity', 1)
+									}
+								}
+								else{
+									d3.select(this).style('opacity', 1);
+									currentSummary.push(d.key);
+								}
+							}
+							
+							document.getElementById('wordFilter').innerHTML = "Word Filter: " + currentSummary.sort();
+
+							// console.log(currentSummary);
+							updateBar();
+							updateTimeline();
+							//console.log(barFiltered);
+							dispatch.call("statechangeBar", this, barFiltered);
+							dispatch.call("statechangeTimeline", this, timeData);
+						    //d3.select(this).style('opacity', 0.2);
+						});
+		        }
+
+		        d3.layout.cloud().stop();
+	 		}
+
+
+	 		var dispatch = d3.dispatch("loadBar", "loadCloud", "loadTimeline", "statechangeCloud", "statechangeBar", "statechangeTimeline");
+
+
+	 		dispatch.on("loadTimeline.timeline", function(data, dict){
+
+	 			var chart = d3.timelines()
+		          	.tickFormat(
+			            {format: d3.timeFormat("%B %d, %Y"),
+			            tickTime: d3.timeHour,
+			            tickInterval: 1,
+			            tickSize: 30})
+		          	.display("circle")
+		          	.margin({left: 50, right:50, top: 30, bottom:30});
+
+		        var svg = d3.select("#SVG3").append("svg").attr("width", 1600)
+		          	.datum(timeData).call(chart);
+
+		        var brush = d3.brushX()
+				    .extent([[50, 0], [1550, 100]])
+				    .on("end", filterTimes);
+
+				svg.append("g")
+					.attr("class", "brush")
+					.call(brush)
+					.call(brush.move, [50, 1550]);
+
+	 			dispatch.on("statechangeTimeline.timeline", function(time) {
+	 				//update Timeline
+	 				svg.selectAll("*").remove();
+	 				chart = d3.timelines()
+		          	.tickFormat(
+			            {format: d3.timeFormat("%B %d, %Y"),
+			            tickTime: d3.timeHour,
+			            tickInterval: 1,
+			            tickSize: 30})
+		          	.display("circle")
+		          	.margin({left: 50, right:50, top: 30, bottom:30});
+	 				svg.attr("width", 1600).datum(time).call(chart)
+
+	 				// var brushLower = (currentTime[0] - oldMin) * (max - min) / (oldMax - oldMin) + min;
+	 				// var brushUpper = (currentTime[1] - oldMin) * (max - min) / (oldMax - oldMin) + min;
+	 				// console.log("brush lower " + brushLower)
+	 				// console.log(brushUpper)
+
+	 				// console.log(min)
+	 				// console.log(max)
+
+	 				var screenLower;
+	 				var screenUpper;
+
+	 				if(min != max){
+	 					screenLower = (currentTime[0] - min) * (1550 - 50) / (max - min) + 50;
+	 					screenUpper = (currentTime[1] - min) * (1550 - 50) / (max - min) + 50;
+	 					// console.log('here')
+	 				}
+	 				else{
+	 					screenLower = 50
+	 					screenUpper = 1550
+	 				}
+	 				
+
+	 				// console.log(screenLower)
+	 				// console.log(screenUpper)
+
+
+	 				svg.append("g")
+					.attr("class", "brush")
+					.call(brush)
+					.call(brush.move, [screenLower, screenUpper]);
+
+					// console.log(currentTime)
+				});
+	 		});
+
+
+	 		dispatch.on("loadCloud.cloud", function(data, dict){
+
+	 			createWordCloud();
+
+
+	 			dispatch.on("statechangeCloud.cloud", function(dict) {
+	 				// console.log(data)
+	 				// console.log(dict)
+				    createWordCloud();
+				    // console.log('changed')
+				});
+	 		});
+
+
+	 		dispatch.on("loadBar.bar", function(data, dict) {
+
+				var svg = d3.select('#SVG2').append("svg")
+					.attr("width",  barChartOptions.w )
+					.attr("height", barChartOptions.h )
+					.attr("class", "bar");
+				
+				var height = barChartOptions.h;
+				var width = barChartOptions.w;
+
+				var fill = d3.scaleOrdinal(d3.schemeCategory10);
+				
+				var x = d3.scaleBand()
+					.domain(data.map(d => d.Name))
+					.range([30, width - 30]);
+
+				
+				var y = d3.scaleLinear()
+					.domain([0, d3.max(data, d => d.Value)]).nice()
+					.range([height - 30, 30]);
+				
+				var xAxis = g => g
+					.attr("transform", `translate(0,${height - 30})`)
+					.call(d3.axisBottom(x).tickSizeOuter(0));
+				
+				var yAxis = g => g
+					.attr("transform", `translate(${30},0)`)
+					.call(d3.axisLeft(y).ticks(7));
+
+
+
+				var xLine = svg.append("g")
+					.call(xAxis);
+
+				var yLine = svg.append("g")
+					.call(yAxis);
+
+
+				//console.log(data);
+
+				var bars = svg.selectAll(".bar")
+					.data(data)
+					.enter()
+					.append("rect")
+					.attr("class", "bar")
+					.attr("x", d => x(d.Name))
+					.attr("y", d => y(d.Value))
+					.attr("height", d => y(0) - y(d.Value))
+					.attr("width", x.bandwidth())
+					.attr("fill", "None")
+					.attr("fill", function(d, i) { return fill(i); })
+					.on('click', function(d){
+						if(currentRating.length == 0){
+							d3.selectAll("rect").style('opacity', 0.2)
+							d3.select(this).style('opacity', 1);
+							currentRating.push(d.Name);
+						}
+						else{
+							if(d3.select(this).style('opacity') == 1){
+								d3.select(this).style('opacity', 0.2);
+								var index = currentRating.indexOf(d.Name);
+								currentRating.splice(index, 1);
+								if(currentRating.length == 0){
+									d3.selectAll("rect").style('opacity', 1)
+								}
+							}
+							else{
+								d3.select(this).style('opacity', 1);
+								currentRating.push(d.Name);
+							}
+						}
+						
+						// console.log(currentRating);
+
+						document.getElementById('barNumbers').innerHTML = "Bar Filter: " + currentRating.sort();
+
+						updateCloud();
+						updateTimeline();
+						//dispatch.call("statechangeCloud", this, dictFiltered);
+						dispatch.call("statechangeTimeline", this, timeData);
+					});
+				
+				dispatch.on("statechangeBar.bar", function(data) {
+					// console.log(data)
+					// console.log(bars._groups)
+					y.domain([0, d3.max(data, d => d.Value)]).nice()
+					.range([height - 30, 30]);
+
+					yLine.call(yAxis);
+
+					bars.data(data, d => d.Name)
+						.transition().duration(1000)
+						.attr("y", d => y(d.Value))
+						.attr("height", d => y(0) - y(d.Value));
+
+					// console.log(yLine)
+
+					
+				    // console.log('changed')
+				});
+
+			});		
+
+
+	 	</script>
+	 	
+	</body>
+</html>
