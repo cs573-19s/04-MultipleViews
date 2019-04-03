@@ -90,11 +90,12 @@ Used to help understand D3 dispatch
 - kept track of all the data and filtering manually instead of using an outside library
 - Brush position will update based on the other selected values to fit the change in the timeline
 - Allowed for clearing filters in each of the visualizations
+- Mapping of D3 space to unix time for the timeline filtering using the brush
 
 
 ## Design Achievements
 - Used bootstrap to help format the webpage
 - Used D3 color scheme to color the bar chart and the word cloud text
 - Show the current filters applied to the visualizations
-- Timeline and barchart dates and numbers update to distribute the area its using well
-- Highlighted selected words and bars to make it easier to see which ones are selected in the filter
+- Timeline and barchart axis values update to distribute the area its using well
+- Made a highlight functionality for word and bars to make it easier to see which ones are selected in the filter
