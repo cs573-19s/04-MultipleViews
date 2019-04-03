@@ -36,7 +36,6 @@ var svg = d3.select("svg"),
     height3 = +svg.attr("height") - margin3.top - margin3.bottom;
 
 var parseDate = d3.timeParse("%Y-%m-%d");
-//2013/11/6
 var parseDate2 = d3.timeParse("%Y/%m/%d"); 
 
 var x = d3.scaleTime().range([0, width]),
@@ -56,15 +55,15 @@ var brush = d3.brushX()
     .extent([[0, 0], [width, height2]])
     .on("brush end", brushed);
 
-var brush_map = d3.brush()
-    .extent([[0, 0], [width3, height3]])
-    .on('end',brushed_map);
- 
 var zoom = d3.zoom()
     .scaleExtent([1, Infinity])
     .translateExtent([[0, 0], [width, height]])
     .extent([[0, 0], [width, height]])
     .on("zoom", zoomed);
+
+var brushInfo = d3.select('body')
+                .append('p')
+                .html('<i>Select a region</i>');
 
 var area = d3.area()
     .curve(d3.curveMonotoneX)
@@ -86,6 +85,8 @@ svg.append("defs").append("clipPath")
 
 var map = svg.append("g")
     .attr("class", "map")
+    //.attr("viewBox", "0 0 900 800")
+	//.attr("preserveAspectRatio", "xMidYMid meet");
     .attr("transform", "translate(" + margin3.left + "," + margin3.top + ")");
 
 var focus = svg.append("g")
@@ -97,12 +98,16 @@ var context = svg.append("g")
     .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
 
+//var projection = d3.geoMercator().scale(110000).translate([200,200]);
+
 /*NEED TO PROJECT LONG/LAT POINTS CORRECTLY*/
 d3.csv("Divvy_Stations_2013.csv", type, function(error, data) {
   if (error) throw error;
-
+     
  x3.domain(d3.extent(data, function(d) { return d.longitude; })).nice();
  y3.domain(d3.extent(data, function(d) { return d.latitude; })).nice();
+
+//d.coord = [parseFloat(d.longitude),parseFloat(d.latitude)];
 
 map.selectAll("circle")
         .data(data)
@@ -112,13 +117,14 @@ map.selectAll("circle")
         .attr("cy", function(d) { return y3(d.latitude); })
         .attr("r", 4)
         .append("title")
-        .text(function(d) { return d["name"] + '\n' + d["id"] });
-        
+        .text(function(d) { return d["name"] + '\n' + d["id"] })
+        //.attr("transform", function(d) { return "translate(" + projection([d.longitude,d.latitude]) + ")" });
+  
   map.append("g")
         .attr("class","brush map")
-        //.call(brush_map);
         .call(d3.brush().extent([[0, 0], [width3, height3]]).on("brush", brushed_map).on("end", brushended));
 });
+
 
 /* ^ NEED BRUSHING TO RETURN WHICH ids TO FILTER*/
 var filters = {
@@ -162,9 +168,8 @@ function filter_group_sum(data){
 
 d3.csv("DV_Data.csv", type, function(error, data) {
   if (error) throw error;
-  //console.log(data); 
+
   data = filter_group_sum(data);
-  //console.log(data); 
    
   x.domain(d3.extent(data, function(d) { return d.date; }));
   y.domain([0, d3.max(data, function(d) { return d.tripduration; })]);
@@ -234,25 +239,24 @@ function type(d) {
   return d;
 }
 
-
-
 function brushed_map() {
     var s = d3.event.selection,
         x0 = s[0][0],
         y0 = s[0][1],
         dx = s[1][0] - x0,
         dy = s[1][1] - y0;
-    // console.log(s);
-    
-    var f = [];
+    var f = [];     
     map.selectAll('circle')
     .style("fill", function (d) {
         if (x3(d.longitude) >= x0 && x3(d.longitude) <= x0 + dx && y3(d.latitude) >= y0 && y3(d.latitude) <= y0 + dy)
                 {   f.push(d.id);
-                    return "#ec7014"; }
+                    console.log(f);
+                    return "Green"; }
         else { return "#4292c6"; }
     });
     
+    brushInfo
+            .html('<b>Selected Stations:</b> ' + f);
 }
 
 function brushended() {
@@ -265,34 +269,4 @@ function brushended() {
     }
 }
 
-
-
-/*
-function brushed_map() {
-
-  //use the brush object's values to set the data domains:
-  if (d3.event.selection === null) {
-      //either the height OR the width is empty
-      x.domain( x2.domain() ); //reset X scale
-      y.domain( y2.domain() ); //reset Y scale
-  }
-
-  var extent = brush.extent();
-  x.domain( [extent[0][0] , extent[1][0] ] ); //min and max data X values
-  y.domain( [extent[0][1] , extent[1][1] ] ); //min and max data Y values
-
-  //use the brush extent rectangle to get the SVG coordinates:
-  var extentRect = d3.select("g.x.brush rect.extent");
-
-  var rangeWidth  = extentRect.attr("width");
-  var rangeHeight = extentRect.attr("height");
-  var rangeLeft = extentRect.attr("x");
-  var rangeTop = extentRect.attr("y");
-
-
-  focus.select(".area").attr("d", area);
-  focus.select(".x.axis").call(xAxis);
-  focus.select(".y.axis").call(yAxis);
-}
-*/
 </script>
