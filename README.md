@@ -42,7 +42,7 @@ There are a few issues that I couldn't fix no matter what I tried.
 
 3) I included a floating tooltip so that users can see the exact measurements displayed by the circles on the line chart.
 
-4) My text readouts will change from ppm/ppb accordingly on the fly depending on the pollutant.
+4) The colors for the line chart are colorblind friendly as approved by ColorBrewer.
 
 ## Technical Achievements
 
@@ -51,6 +51,8 @@ There are a few issues that I couldn't fix no matter what I tried.
 2) Accordingly, my average calculations for the AQI and ppm/ppb do not include missing entries in their average, and will instead dynamically include or disclude them from the dataset in the map and text readouts.
 
 3) My text display includes tween transitions for both the AQI and concentration. In addition, I was able to format the floating point numbers to only display 3 digits instead of spitting out the entire float data type during the transition for easier reading using a d3 number format. My tween animation also includes the color scale and will transition accordingly. 
+
+4) My text readouts will change from ppm/ppb accordingly on the fly depending on the pollutant.
 
 
 # References
