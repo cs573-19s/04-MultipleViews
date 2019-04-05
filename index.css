@@ -1,0 +1,47 @@
+html,
+body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+  padding: 20px;
+  color: grey;
+}
+
+h2 {
+  padding: 30px;
+}
+
+#bar {
+  display: block;
+  float:left;
+}
+
+#pie{
+  display: block;
+  float: right;
+}
+
+#bubble {
+  display: block;
+  margin: 0 auto;
+}
+
+.lines{
+  opacity: .3;
+  stroke: black;
+  stroke-width: 2px;
+  transform: translateX(200px);
+}
+polyline{
+	opacity: .3;
+	stroke: black;
+	stroke-width: 2px;
+	fill: none;
+}
+
+/* #title{
+  color: red;
+} */
