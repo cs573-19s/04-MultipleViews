@@ -214,30 +214,30 @@ function renderPieChart(data) {
   renderBarChart(data[name], name);
 
   // Add lines
-  svg.append("g")
-	.attr("class", "lines");
-
-  var polyline = svg.select(".lines").selectAll("polyline")
-  .data(data);
-
-  polyline.enter()
-    .append("polyline");
-
-  polyline.transition().duration(1000)
-		.attrTween("points", function(d){
-			this._current = this._current || d;
-			var interpolate = d3.interpolate(this._current, d);
-			this._current = interpolate(0);
-			return function(t) {
-				var d2 = interpolate(t);
-				var pos = arc.centroid(d)[0];
-				pos[0] = radius * 0.95 ;
-				return [arc.centroid(d)[0], arc.centroid(d)[1], pos];
-			};
-		});
-
-	polyline.exit()
-		.remove();
+  // svg.append("g")
+	// .attr("class", "lines");
+  //
+  // var polyline = svg.select(".lines").selectAll("polyline")
+  // .data(data);
+  //
+  // polyline.enter()
+  //   .append("polyline");
+  //
+  // polyline.transition().duration(1000)
+	// 	.attrTween("points", function(d){
+	// 		this._current = this._current || d;
+	// 		var interpolate = d3.interpolate(this._current, d);
+	// 		this._current = interpolate(0);
+	// 		return function(t) {
+	// 			var d2 = interpolate(t);
+	// 			var pos = arc.centroid(d)[0];
+	// 			pos[0] = radius * 0.95 ;
+	// 			return [arc.centroid(d)[0], arc.centroid(d)[1], pos];
+	// 		};
+	// 	});
+  //
+	// polyline.exit()
+	// 	.remove();
 }
 
 //BubbleChart
@@ -303,6 +303,13 @@ function renderBubbleChart(data) {
     .attr("r", d => d.r)
     .attr("cx", d => d.x)
     .attr("cy", d => d.y)
+    .on("mouseover", d => {
+      renderBarChart(data[d.data.name], d.data.name);
+      $("#bubble_" + d.data.name).popover("show");
+    })
+    .on("mouseout", d => {
+      $("#bubble_" + d.data.name).popover("hide");
+    })
     .style("fill", () => randColor());
 
   bubbles
@@ -315,4 +322,5 @@ function renderBubbleChart(data) {
     .attr("y", d => d.y)
     .text(d => d.data.name)
     .attr("font-size", d => (d.r)/1.9 );
+
 }
