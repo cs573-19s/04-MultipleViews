@@ -1,5 +1,10 @@
 Assignment 4 - Visualizations and Multiple Views  
 ===
+### Sam Longenbach
+#### Visualization: https://longenbach.github.io/03-Experiment/index.html
+#### Code: https://github.com/longenbach/04-MultipleViews?organization=longenbach&organization=longenbach
+
+## Introduction:
 
 One of the most powerful techniques for mitigating the shortcomings of a given visualization is to link it with other views.
 Linking a map to a bar or scatterplot, for instance, may allow you to overcome the shortcomings of a map.
