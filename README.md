@@ -7,7 +7,14 @@ Assignment 4 - Visualizations and Multiple Views
 ## Overview:
 ![Visual](img/full.png)
 
-Above is a screenshot of the mutiple views visulzation I created. Divvy is a bike sharing platform in Chicago started in 2013. All of their trip and station data is public and avaible on their [website](https://www.divvybikes.com/system-data). 
+Above is a screenshot of the mutiple views visulzation I created. Divvy is a bike sharing platform in Chicago started in 2013. Users can check out a bike form one station and return it to another station for a small fee. I wanted to create a basic visulation to show the number of trips taken from different subsets of stations over time. All Divvy's trip and station data is public and avaible on their [website](https://www.divvybikes.com/system-data). For this visulzation I focused on 2013 stations and trips since working with all of the trip data would be quite large ~2.5gb.  
+
+![Map](img/geo_raw.png)
+![Map_Raw](img/map.png)
+
+
+
+
 
 ## Introduction:
 
