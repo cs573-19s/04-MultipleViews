@@ -507,12 +507,18 @@ d3.json('connections_by_station_name.json').then(function(d) {
                         .attr("height",function(d){a=MetroBarYscale(0)-MetroBarYscale(d[3]); return a;});
 
                 }
+                var sliderdrag=false;
 
                 //timer slider drawing
                 var SliderXAxis = d3.sliderBottom(sliderXscale).step(1).fill("grey")
-                    .on('start',function(){moving=false; timestep.stop();})
+                    .on('start',function(){ if (moving==true){sliderdrag=true; timestep.stop();}  })
                     .on('onchange', value => draw(value))
-                    .on('end',function(){moving=true; timestep=d3.interval(function(){step()},intervalTime);});
+                    .on('end',function(){
+                        sliderdrag=false;
+                        if (moving==true){
+                            timestep=d3.interval(function(){step()},intervalTime);
+                        }
+                        });
                 function draw(value){
                     //draw pointer
                     timerCanvas.select("#sliderPointer").remove();
@@ -524,7 +530,7 @@ d3.json('connections_by_station_name.json').then(function(d) {
                             .attr("y2",timerCanvas.height)
                             .style("stroke","grey");
                     //control animation
-                    if (moving==false){
+                    if (sliderdrag=true){
                         barUpdate(Metro[value-300],1,0.5);
                         mapUpdate(Metro[value-300],1);
                         largemapUpdate(Metro[value-300],1);
