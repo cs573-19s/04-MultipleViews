@@ -3,7 +3,7 @@ function debug(obj) {
   return obj;
 }
 (async () => {
-  let data = await d3.csv("AppleStore3.csv");
+  let data = await d3.csv("data/AppleStore3.csv");
 
   data = data.reduce((pre, cur) => {
     if (pre[cur.prime_genre]) {
