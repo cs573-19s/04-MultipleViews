@@ -1,23 +1,70 @@
-<script src="https://d3js.org/d3.v5.min.js"></script>
-<script src="https://unpkg.com/d3-simple-slider"></script>
-<link
-  rel="stylesheet"
-  href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-  integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
-  crossorigin="anonymous"
-/>
+<head>
+    <title>SHMetro</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <style>
+        /* Remove the navbar's default margin-bottom and rounded borders */ 
+        .navbar {
+          margin-bottom: 0;
+          border-radius: 0;
+        }
+        
+        /* Add a gray background color and some padding to the footer */
+        footer {
+          background-color: #f2f2f2;
+          padding: 25px;
+        }
+    </style>
+</head>
 
 <body>
-<div>
-<h1> SHMetro <button id="play-button">Pause</button> </h1>
-<svg id="geo"/>
-<svg id="geolarge"/>
-<svg id="passengerNo"/>
-<div class="row align-items-center">
-    <div class="col-sm-2"><p id="value-time">aa</p></div>
-    <div class="col-sm"><svg id="timerSVG"></svg></div>
-</div>
-
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid  ">
+             <h class="navbar-brand" >SHMetro</h>
+        </div>
+    </nav>
+<div class="container text-center">
+    <h3>Animation: <button id="play-button">Pause</button></h3>
+    <div class="row align-items-center">
+        <div class="col-sm-4">
+            <div class="panel panel-info">
+                <div class="panel-heading" style="background-color: #212121; color:#FFFFFF; border-color: #212121">GeoMap</div>
+                <div class="panel-body"><svg id="geo"/></div>
+                <div class="panel-footer">SHMetro's 16 lines</div>
+            </div>  
+        </div>
+        <div class="col-sm-2">
+            <div class="panel panel-info">
+                <div class="panel-heading" style="background-color: #212121; color:#FFFFFF; border-color: #212121">Magnification</div>
+                <div class="panel-body"><svg id="geolarge"/></div>
+                <div class="panel-footer">Line 5</div>
+            </div>  
+        </div>
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="background-color: #212121; color:#FFFFFF; border-color: #212121">Load</div>
+                <div class="panel-body"><svg id="passengerNo"/></div>
+                <div class="panel-footer">Each bar represent one metro and the height denotes the load.</div>
+            </div>  
+        </div>
+    </div>
+    <div class="row align-items-center">
+      
+                
+             <div class="col-sm-1">
+                   <p id="value-time">aa</p>
+             </div>
+            <div class="col-sm-11">
+                  <svg id="timerSVG"></svg>
+            </div>
+                
+        
+        
+    </div>
 
 
 </div>
@@ -28,10 +75,6 @@
 
 
 </style>
-<script>
-
-
-</script>
 
 <script>
 /*
@@ -40,10 +83,10 @@ Ref: https://bl.ocks.org/officeofjane/47d2b0bfeecfcb41d2212d06d095c763
 Ref: https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
 */
 var timerSVG=d3.select("#timerSVG");
-timerSVG.width=1200;
-timerSVG.height=200;
+timerSVG.width=1000;
+timerSVG.height=140;
 timerSVG.attr("width",timerSVG.width).attr("height",timerSVG.height);
-timerSVG.margin = ({top: 10, right: 40, bottom: 40, left: 40});
+timerSVG.margin = ({top: 10, right: 10, bottom: 40, left: 20});
 var timerCanvas=timerSVG.append("svg").append("g").attr("id","timerCanvas");
 timerCanvas.width=timerSVG.width-timerSVG.margin.left-timerSVG.margin.right;
 timerCanvas.height=timerSVG.height-timerSVG.margin.top-timerSVG.margin.bottom;
@@ -103,10 +146,10 @@ d3.json('trains.json').then(function(data) {
 canvas and margin setting
 */
 var passengerNo=d3.select("#passengerNo");
-passengerNo.width=600;
-passengerNo.height=400;
+passengerNo.width=550;
+passengerNo.height=250;
 passengerNo.attr("width",passengerNo.width).attr("height",passengerNo.height);
-passengerNo.margin = ({top: 20, right: 20, bottom: 20, left: 40});
+passengerNo.margin = ({top: 20, right: 20, bottom: 20, left: 35});
 
 var passengerNoCanvas=passengerNo.append("svg").append("g").attr("id","Barcanvas");
 passengerNoCanvas.width=passengerNo.width-passengerNo.margin.left-passengerNo.margin.right;
@@ -171,10 +214,10 @@ function barXPosition(d){
 <script>
 //geocanvas setting
 var geo = d3.select("#geo");
-geo.width=500;
-geo.height=400;
+geo.width=330;
+geo.height=250;
 geo.attr("width",geo.width).attr("height",geo.height);
-geo.margin = ({top: 20, right: 0, bottom: 10, left: 40});
+geo.margin = ({top: 5, right: 5, bottom: 5, left: 5});
 
 var geocanvas=geo.append("svg").append("g");
 geocanvas.width=geo.width-geo.margin.left-geo.margin.right;
@@ -183,27 +226,27 @@ geocanvas.attr("width", geocanvas.width)
          .attr("height", geocanvas.height)
          .attr("transform","translate("+geo.margin.left+","+geo.margin.top+")");
 
-// var cscale=d3.scaleOrdinal()
-//              .domain([0,16])
-//              .range(d3.schemeCategory10)
-var yellow = "#FFC039",
-    orange = "#FF9339",
-    red = "#FF1907",
-    lawngreen="#7CFC00",
-    rebeccapurple="#663399",
-    mediumslateblue="#7b68ee",
-    orchid="#da70d6",
-    blue="#4169E1",
-    lightskyblue="#87cefa",
-    mediumpurple="#9370db",
-    saddlebrown="#8b4513",
-    green="#00FF00",
-    lightpink="#FFC0CB",
-    mediumaquamarine="#66DDAA";
-var color=[red,lawngreen,yellow,rebeccapurple,mediumslateblue,orchid,orange,blue,lightskyblue,mediumpurple,saddlebrown,green,lightpink];
 var cscale=d3.scaleOrdinal()
-             .domain([1,16])
-             .range(color);
+             .domain([0,16])
+             .range(d3.schemeCategory10)
+// var yellow = "#FFC039",
+//     orange = "#FF9339",
+//     red = "#FF1907",
+//     lawngreen="#7CFC00",
+//     rebeccapurple="#663399",
+//     mediumslateblue="#7b68ee",
+//     orchid="#da70d6",
+//     blue="#4169E1",
+//     lightskyblue="#87cefa",
+//     mediumpurple="#9370db",
+//     saddlebrown="#8b4513",
+//     green="#00FF00",
+//     lightpink="#FFC0CB",
+//     mediumaquamarine="#66DDAA";
+// var color=[red,lawngreen,yellow,rebeccapurple,mediumslateblue,orchid,orange,blue,lightskyblue,mediumpurple,saddlebrown,green,lightpink];
+// var cscale=d3.scaleOrdinal()
+//              .domain([1,16])
+//              .range(color);
 
 function geoxscale(d){
     return d3.scaleLinear()
@@ -221,10 +264,10 @@ function geoyscale(d){
 
 //geolargecanvas setting
 var geolarge = d3.select("#geolarge");
-geolarge.width=200;
-geolarge.height=400;
+geolarge.width=130;
+geolarge.height=250;
 geolarge.attr("width",geolarge.width).attr("height",geolarge.height);
-geolarge.margin = ({top: 30, right: 20, bottom: 10, left: 10});
+geolarge.margin = ({top: 10, right: 10, bottom: 5, left: 5});
 
 var geolargecanvas=geolarge.append("svg").append("g");
 geolargecanvas.width=geolarge.width-geolarge.margin.left-geolarge.margin.right;
@@ -324,7 +367,7 @@ d3.json('connections_by_station_name.json').then(function(d) {
 
             metroCircleScale=d3.scaleLinear()
                  .domain([0,1600])
-                 .range([0,10]);
+                 .range([2,8]);
 
             function metroCircleX(d){
                 startStation=d[0][0];
@@ -348,7 +391,7 @@ d3.json('connections_by_station_name.json').then(function(d) {
                 console.log(d);
                 var i=0;
                 var time=100;
-                var intervalTime=100;
+                var intervalTime=150;
 
                 var playButton = d3.select("#play-button");
                 var moving = true;
@@ -492,7 +535,7 @@ d3.json('connections_by_station_name.json').then(function(d) {
                                 .attr("class","bar")
                                 .attr("x",function(d){return barXPosition(d[2])} )
                                 .attr("y",MetroBarYscale(0))
-                                .attr("width",MetroBarXscale.bandwidth()/4)
+                                .attr("width",MetroBarXscale.bandwidth()/3)
                                 .attr("height",0)
                                 .on("mouseover", function(d){handleMouseOver(d[1])})
                                 .on("mouseout", function(d){handleMouseOut(d[1])})
