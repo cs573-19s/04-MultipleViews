@@ -1,59 +1,47 @@
 Assignment 4 - Visualizations and Multiple Views  
 ===
+#### Sam Longenbach
+##### Visualization: https://longenbach.github.io/04-MultipleViews/indexv2.html
+##### Code: https://github.com/longenbach/04-MultipleViews/blob/master/indexv2.html
 
-One of the most powerful techniques for mitigating the shortcomings of a given visualization is to link it with other views.
-Linking a map to a bar or scatterplot, for instance, may allow you to overcome the shortcomings of a map.
-In general, linking visualizations allows you to explore different parts of the data between views, and mitigates the shortcomings of a given view by pairing it with other views.
-This technique, called coordinated multiple views, is the focus of this assignment.
+## Overall Visualization:
+![Visual](img/full.png)
 
-Your task is to choose an interesting dataset and visualize it in *at least three* **linked** views, where interactions in any given view updates the other two.
-Each view should use a different visualization type, and interaction in one of the views should impact what's shown in the other views.
+Above is a screenshot of the multiple views visualization I created. Divvy is a bike-sharing platform in Chicago started in 2013. Users can check out a bike from one station and return it to another station for a small fee. I wanted to create a basic visualization to show the number of trips taken from different subsets of stations over time. All Divvy's trip and station data is public and available on their [website](https://www.divvybikes.com/system-data). For this visualization I focused on 2013 stations and trips since working with all of the trip data would be quite large ~2.5gb.  
 
-You should choose data and visualizations that are sufficiently complex and interesting to ensure a user can discover interesting patterns and trends on their own.
+## Map Chart:
 
-For this assignment you should write everything from scratch.
-You may *reference and adapt* code from books or the web, and if you do please provide a References section with links at the end of your Readme.
+![Map](img/geo_raw2.png)
+![Map_Raw](img/map.png)
 
-Resources
----
+From [OpenStreetMap](https://www.openstreetmap.org/#map=11/41.8370/-87.6742) using the [Overpass API](https://overpass-turbo.eu/) I was able to extract the GeoJSON file containing all bike paths in Chicago. The image above on the right is the selection of the various Chicago bike paths after running the following query below on Overpass. 
 
-Data is Plural has a list of interesting datasets, many of which require processing.
+```Java 
+[out:json];
+(
+  // get cycle route relatoins
+  relation[route=bicycle]({{bbox}});
+  // get cycleways
+  way[highway=cycleway]({{bbox}});
+  way[highway=path][bicycle=designated]({{bbox}});
+);
 
-These three examples are intended to show you what multiple views visualizations might look like. 
-I wouldn't recommend using them as a your starting point, but you may find some inspiration:
+out body;
+>;
+out skel qt;
+```
+The image above on the left is the map of Chicago bike paths [(file: Chicago_BikePaths.geojson)](https://github.com/longenbach/04-MultipleViews/blob/master/Chicago_BikePaths.geojson) with the 2013 Divvy stations [(file:Divvy_Stations_2013.csv)](https://github.com/longenbach/04-MultipleViews/blob/master/Divvy_Stations_2013.csv) plotted on top. For the interactive component you can brush over and select which stations you would like to see the number of trips over time displayed by the area charts. The selected stations appear in orange and their respective names appear at the bottom of the graphic. One feature I would have liked to add but did not have time is a map zoom feature. It is a little busy in downtown Chicago and selecting particular stations is difficult.   
 
-1. This [scatterplot matrix](http://bl.ocks.org/mbostock/4063663) has code that explains brushing and linking. But remember you'll be doing this with different types of views.
+## Area Charts:
 
-2. The example visualization for [Crossfilter](http://square.github.io/crossfilter/) uses coordinated multiple views. The interaction and brushing technique is well-executed.
+![Area](img/freq.png)
 
-3. The [dispatching events](https://github.com/d3/d3-dispatch) page is a good example of using events, rather than explicit functions, for controlling behavior. Views can listen for events in other views and respond accordingly.
+Once a brush selection is made in the map portion of the visualization, the number of trips stored in 2013 [(file: Divvy_Trips_2013_Processed.csv)](https://github.com/longenbach/04-MultipleViews/blob/master/Divvy_Trips_2013_Processed.csv) is filtered by the brush selected station ids. The filtered aggregated number of trips over time is what is then shown in the following area charts above. Both area charts are interactive with brush and zoom interaction. On the larger "focused" area chart you can click to zoom and drag to focus on different periods in time. The smaller "context" area chart you can slide/expand the brush to change the focused area as well. If you change the "focused" area chart, the "context" area chart will change and vice versa. Both charts allow you to see the severity of seasonality and rush hour affect after selecting different stations.         
 
-This GIF from a similar course shows how views can work together:
+## Technical & Design Achievement Highlights:
 
-![cmv gif](https://raw.githubusercontent.com/dataviscourse/2015-dataviscourse-homework/master/hw3/preview.gif)
+- Building off Week 10 reflection, I learned more about OpenStreetMap and used it to plot bike path data. 
+- Wrangled Divvy data in Python notebook to make this visualization possible. 
+- Implemented some of my first brush interactions in D3.
 
-*If you aren't familiar with event-based programming you should experiment with d3.dispatch and other approaches to coordinating views well before the deadline (it's tricky.)*
 
-Don't forget to run a local webserver when you're coding and debugging.
-
-Requirements
----
-
-0. Your code should be forked from the GitHub repo and linked using GitHub pages.
-1. Your project should load a dataset you found on the web. Put this file in your repo.
-2. Your project should use d3 to build a visualization of the dataset. 
-3. Your writeup (readme.md in the repo) should contain the following:
-
-- Working link to the visualization hosted on gh-pages.
-- Concise description and screenshot of your visualization.
-- Description of the technical achievements you attempted with this visualization.
-- Description of the design achievements you attempted with this visualization.
-
-GitHub Details
----
-
-- Fork the GitHub Repository. You now have a copy associated with your username.
-- Make changes to index.html to fulfill the project requirements. 
-- Make sure your "master" branch matches your "gh-pages" branch. See the GitHub Guides referenced above if you need help.
-- Edit the README.md with a link to your gh-pages site, for example http://YourUsernameGoesHere.github.io/04-MapsAndViews/index.html
-- To submit, make a [Pull Request](https://help.github.com/articles/using-pull-requests/) on the original repository.
