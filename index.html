@@ -380,7 +380,7 @@
     dispatch.on("load.text", function (stateById) {
         var state = stateById.get("1/1/2016 CO");
 
-        var format = d3.format("00.1f");
+        var format = d3.format("00.3f");
 
         var aqi = d3.select("body").select(".aqi");
         var concentration = d3.select("body").select(".concentration");
@@ -414,12 +414,7 @@
 
             aqi.transition()
                 .duration(1000)
-                .style("color", function() {
-                    if(stateById.averageAQI === 0) {
-                        return 'blue';
-                    } else {
-                        return d3.interpolateRdYlGn(AQIColorNumbers(stateById.averageAQI));
-                    }})
+                .style("color", d3.interpolateRdYlGn(AQIColorNumbers(stateById.averageAQI)))
                 .tween("text", function () {
                     var node = this;
                     var i = d3.interpolate(node.textContent, stateById.averageAQI);
@@ -429,12 +424,7 @@
                 });
             concentration.transition()
                 .duration(1000)
-                .style("color", function() {
-                    if(stateById.averageConcentration === 0) {
-                        return 'blue';
-                    } else {
-                        return d3.interpolateRdYlGn(concentrationNumberScale(stateById.averageConcentration));
-                    }})
+                .style("color", d3.interpolateRdYlGn(concentrationNumberScale(stateById.averageConcentration)))
                 .tween("text", function () {
                     var node = this;
                     var i = d3.interpolate(node.textContent, stateById.averageConcentration);
