@@ -5,8 +5,6 @@ Assignment 4 - Visualizations and Multiple Views
 ##### Code: https://github.com/longenbach/04-MultipleViews/blob/master/indexv2.html
 
 ## Overview:
-===
-
 ![Visual](img/full.png)
 
 
