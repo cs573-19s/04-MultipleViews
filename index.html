@@ -148,9 +148,9 @@ canvas and margin setting
 */
 var passengerNo=d3.select("#passengerNo");
 passengerNo.width=550;
-passengerNo.height=250;
+passengerNo.height=300;
 passengerNo.attr("width",passengerNo.width).attr("height",passengerNo.height);
-passengerNo.margin = ({top: 20, right: 20, bottom: 20, left: 35});
+passengerNo.margin = ({top: 20, right: 20, bottom: 45, left: 35});
 
 var passengerNoCanvas=passengerNo.append("svg").append("g").attr("id","Barcanvas");
 passengerNoCanvas.width=passengerNo.width-passengerNo.margin.left-passengerNo.margin.right;
@@ -158,11 +158,7 @@ passengerNoCanvas.height=passengerNo.height-passengerNo.margin.top-passengerNo.m
 passengerNoCanvas.attr("width", passengerNoCanvas.width)
          .attr("height", passengerNoCanvas.height)
          .attr("transform","translate("+passengerNo.margin.left+","+passengerNo.margin.top+")");
-//background
-// passengerNoCanvas.append("rect")
-//     .attr("width", passengerNoCanvas.width)
-//     .attr("height", passengerNoCanvas.height)
-//     .attr("fill", "pink");
+
 
 /*
 scale setting
@@ -183,16 +179,88 @@ var MetroBarYscale=d3.scaleLinear()
 Axis drawing
 */
 var MetroBarXAxis = d3.axisBottom(MetroBarXscale);
-passengerNoCanvas.append("g")
-                 .attr("transform", "translate(0," + passengerNoCanvas.height+ ")")
-                 .call(MetroBarXAxis)
+passengerNoCanvasXaxis=passengerNoCanvas.append("g")
+                 .attr("transform", "translate(0," + passengerNoCanvas.height+ ")");
+passengerNoCanvasXaxis.call(MetroBarXAxis)
                  .selectAll("line,path")
                  .style("stroke","grey");
+passengerNoCanvasXaxis.append("text")
+                    .attr("class","label")
+                    .style("font-size","10pt")
+                    .attr("x",passengerNoCanvas.width/2)
+                    .attr("y",45)
+                    .style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("Line Five Stations");
+passengerNoCanvasXaxis.append("text").style("font-size","7pt")
+                    .attr("x",MetroBarXscale("闵行开发区")+MetroBarXscale.bandwidth()/2)
+                    .attr("y",30).style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("MinHang");
+passengerNoCanvasXaxis.append("text").style("font-size","7pt")
+                    .attr("x",MetroBarXscale("文井路")+MetroBarXscale.bandwidth()/2)
+                    .attr("y",30).style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("WenJin");
+passengerNoCanvasXaxis.append("text").style("font-size","7pt")
+                    .attr("x",MetroBarXscale("华宁路")+MetroBarXscale.bandwidth()/2)
+                    .attr("y",30).style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("HuaNin");
+passengerNoCanvasXaxis.append("text").style("font-size","7pt")
+                    .attr("x",MetroBarXscale("金平路")+MetroBarXscale.bandwidth()/2)
+                    .attr("y",30).style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("JinPing");
+passengerNoCanvasXaxis.append("text").style("font-size","7pt")
+                    .attr("x",MetroBarXscale("东川路")+MetroBarXscale.bandwidth()/2)
+                    .attr("y",30).style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("DongC");
+passengerNoCanvasXaxis.append("text").style("font-size","7pt")
+                    .attr("x",MetroBarXscale("剑川路")+MetroBarXscale.bandwidth()/2)
+                    .attr("y",30).style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("JianChuan");
+passengerNoCanvasXaxis.append("text").style("font-size","7pt")
+                    .attr("x",MetroBarXscale("北桥")+MetroBarXscale.bandwidth()/2)
+                    .attr("y",30).style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("BeiQiao");
+passengerNoCanvasXaxis.append("text").style("font-size","7pt")
+                    .attr("x",MetroBarXscale("颛桥")+MetroBarXscale.bandwidth()/2)
+                    .attr("y",30).style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("ZhuanQiao");
+passengerNoCanvasXaxis.append("text").style("font-size","7pt")
+                    .attr("x",MetroBarXscale("银都路")+MetroBarXscale.bandwidth()/2)
+                    .attr("y",30).style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("YinDu");
+passengerNoCanvasXaxis.append("text").style("font-size","7pt")
+                    .attr("x",MetroBarXscale("春申路")+MetroBarXscale.bandwidth()/2)
+                    .attr("y",30).style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("ChunShen");
+passengerNoCanvasXaxis.append("text").style("font-size","7pt")
+                    .attr("x",MetroBarXscale("莘庄")+MetroBarXscale.bandwidth()/2)
+                    .attr("y",30).style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("ZiZhuang");
+
 var MetroBarYAxis = d3.axisLeft(MetroBarYscale);
-passengerNoCanvas.append("g")
-                 .call(MetroBarYAxis)
+passengerNoCanvasYaxis=passengerNoCanvas.append("g");
+passengerNoCanvasYaxis.call(MetroBarYAxis)
                  .selectAll("line,path")
                  .style("stroke","grey");
+passengerNoCanvasYaxis.append("text")
+                    .attr("class","label")
+                    .style("font-size","10pt")
+                    .attr("x",-15)
+                    .attr("y",-5)
+                    .style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("Load");
 
 
 
@@ -216,7 +284,7 @@ function barXPosition(d){
 //geocanvas setting
 var geo = d3.select("#geo");
 geo.width=330;
-geo.height=250;
+geo.height=300;
 geo.attr("width",geo.width).attr("height",geo.height);
 geo.margin = ({top: 5, right: 5, bottom: 5, left: 5});
 
@@ -266,9 +334,9 @@ function geoyscale(d){
 //geolargecanvas setting
 var geolarge = d3.select("#geolarge");
 geolarge.width=130;
-geolarge.height=250;
+geolarge.height=300;
 geolarge.attr("width",geolarge.width).attr("height",geolarge.height);
-geolarge.margin = ({top: 10, right: 10, bottom: 5, left: 5});
+geolarge.margin = ({top: 15, right: 10, bottom: 5, left: 5});
 
 var geolargecanvas=geolarge.append("svg").append("g");
 geolargecanvas.width=geolarge.width-geolarge.margin.left-geolarge.margin.right;
