@@ -31,21 +31,21 @@
 <div class="container text-center">
     <h3>Animation: <button id="play-button">Pause</button></h3>
     <div class="row align-items-center">
-        <div class="col-sm-4">
-            <div class="panel panel-info">
+        <div class="col-md-4">
+            <div class="panel panel-default">
                 <div class="panel-heading" style="background-color: #212121; color:#FFFFFF; border-color: #212121">GeoMap</div>
                 <div class="panel-body"><svg id="geo"/></div>
                 <div class="panel-footer">SHMetro's 16 lines</div>
             </div>  
         </div>
-        <div class="col-sm-2">
-            <div class="panel panel-info">
+        <div class="col-md-2">
+            <div class="panel panel-default">
                 <div class="panel-heading" style="background-color: #212121; color:#FFFFFF; border-color: #212121">Magnification</div>
                 <div class="panel-body"><svg id="geolarge"/></div>
                 <div class="panel-footer">Line 5</div>
             </div>  
         </div>
-        <div class="col-sm-6">
+        <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading" style="background-color: #212121; color:#FFFFFF; border-color: #212121">Passenger Load</div>
                 <div class="panel-body"><svg id="passengerNo"/></div>
@@ -56,9 +56,12 @@
     <div class="row align-items-center">
       
                 
-             <div class="col-sm-1">
-                   <p id="value-time">aa</p>
-             </div>
+            <div class="col-sm-1">
+                <div class="panel panel-default">
+                    <div class="panel-heading" style="background-color: #212121; color:#FFFFFF; border-color: #212121">Time</div>
+                    <div class="panel-body"><p class="text-center" id="time" style="font-size: 15px; font-weight: bold;">05:00</p></div>
+                </div> 
+            </div>
             <div class="col-sm-11">
                   <svg id="timerSVG"></svg>
             </div>
@@ -111,6 +114,7 @@ var sliderYscale=d3.scaleLinear()
                    .domain([0,6])
                    .range([timerCanvas.height,0]);
 
+
 /*
 Axis drawing
 */
@@ -136,7 +140,7 @@ timerCanvas.append("text")
                     .attr("y",timerCanvas.height+50)
                     .style("fill","black")
                     .style("text-anchor","middle")
-                    .text("Time");
+                    .text("Time (mins)");
 //TimerLine chart
 d3.json('trains.json').then(function(data) {
     //draw basic line
@@ -151,7 +155,14 @@ d3.json('trains.json').then(function(data) {
          .style("stroke","grey");
 
     });
-//var slider=timerCanvas.sliderBottom
+
+function minsToTime(m){
+    h=Math.floor(m/60);
+    m=m%60;
+    if(h<10){h="0"+h;}
+    if(m<10){m="0"+m;}
+    return h+":"+m;
+}
 
 
 </script>
@@ -290,6 +301,7 @@ function barXPosition(d){
     return MetroBarXscale(d[0][0]) + ( MetroBarXscale(d[0][1]) - MetroBarXscale(d[0][0]) ) * d[1]
 
 }
+
 
 
 
@@ -496,10 +508,12 @@ d3.json('connections_by_station_name.json').then(function(d) {
                     barUpdate(Metro[i],time,time*1.3);
                     mapUpdate(Metro[i],time);
                     largemapUpdate(Metro[i],time);
+                    d3.select("#time").node().innerHTML=minsToTime(i+300);
                     SliderXAxis.value(i+300);
                     i=i+1;
                     if(i>1038){i=0}
                 }
+
                 
                 
 
@@ -661,6 +675,7 @@ d3.json('connections_by_station_name.json').then(function(d) {
                         barUpdate(Metro[value-300],1,0.5);
                         mapUpdate(Metro[value-300],1);
                         largemapUpdate(Metro[value-300],1);
+                        d3.select("#time").node().innerHTML=minsToTime(i+300);
                         i=value-300;
                     }
 
