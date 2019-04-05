@@ -144,40 +144,6 @@ passengerNoCanvas.append("g")
 
 
 
-function barUpdate(d,time){
-    /*
-    Input data: Array(n), n denotes the # of metro on the line at this moment.
-    Element in Array(n): [nowTime, startTime, [[station i, station i+1], position] ,people#] 
-    */
-    var t = d3.transition().duration(time);
-    //Here, d[1] denotes the start time in second.
-    var bars= passengerNoCanvas.selectAll("rect")
-              .data(d,function(d){a=d[1]; return a});
-    //Exit and remove old elements
-    bars.exit().transition(t)
-        .attr("class","exit")
-        .attr("y",MetroBarYscale(0))
-        .attr("height",0)
-        .style('fill-opacity', 1e-6)
-        .remove();
-    //Enter new elements as needed
-    bars.enter().append("rect")
-                .attr("class","bar")
-                .attr("x",function(d){return barXPosition(d[2])} )
-                .attr("y",MetroBarYscale(0))
-                .attr("width",MetroBarXscale.bandwidth()/4)
-                .attr("height",0)
-        .transition(t)
-                .attr("y",function(d){return MetroBarYscale(d[3])})
-                .attr("height",function(d){a=MetroBarYscale(0)-MetroBarYscale(d[3]); return a;});
-
-    //Update old elements as needed
-    bars.transition(t).attr("class","update")
-        .attr("x",function(d){return barXPosition(d[2])})
-        .attr("y",function(d){return MetroBarYscale(d[3])})
-        .attr("height",function(d){a=MetroBarYscale(0)-MetroBarYscale(d[3]); return a;});
-
-}
 
 function barXPosition(d){
     /*
@@ -250,7 +216,7 @@ var geolarge = d3.select("#geolarge");
 geolarge.width=200;
 geolarge.height=400;
 geolarge.attr("width",geolarge.width).attr("height",geolarge.height);
-geolarge.margin = ({top: 20, right: 20, bottom: 10, left: 10});
+geolarge.margin = ({top: 30, right: 20, bottom: 10, left: 10});
 
 var geolargecanvas=geolarge.append("svg").append("g");
 geolargecanvas.width=geolarge.width-geolarge.margin.left-geolarge.margin.right;
@@ -345,39 +311,7 @@ d3.json('connections_by_station_name.json').then(function(d) {
 
 
 
-            d3.json('trains.json').then(function(d) {
-                Metro=d;
-                var i=0;
-                var time=100
-
-                var playButton = d3.select("#play-button");
-                var moving = true;
-                playButton.on("click",function(){
-                                var button=d3.select(this);
-                                if(button.text()=="Pause"){
-                                    moving=false;
-                                    timestep.stop();
-                                    button.text("Play");
-                                }else{
-                                    moving=true;
-                                    timestep=d3.interval(function(){step()},100);
-                                    button.text("Pause");
-                                }
-                            });
-
-                function step(){
-                    
-                    barUpdate(Metro[i],time);
-                    mapUpdate(Metro[i],time);
-                    largemapUpdate(Metro[i],time);
-                    i=i+1;
-                    if(i>1338){i=0}}
-                
-                
-
-                var timestep=d3.interval(function(){step()},100);
-        
-            } );
+           
 
 
             metroCircleScale=d3.scaleLinear()
@@ -400,88 +334,200 @@ d3.json('connections_by_station_name.json').then(function(d) {
                 end=geoy(+(stationsraw[endStation].LAT));
                 return start+p*(end-start);
             }
-            function mapUpdate(d,time){
-                /*
-                Input data: Array(n), n denotes the # of metro on the line at this moment.
-                Element in Array(n): [nowTime, startTime, [[station i, station i+1], position] ,people#] 
-                */
-                var t = d3.transition().duration(time);
-                //Here, d[1] denotes the start time in second.
-                var circle= geocanvas.selectAll(".metrocircle")
-                          .data(d,function(d){a=d[1]; return a});
-                //Exit and remove old elements
-                circle.exit().transition(t)
-                    .attr("class","exit")
-                    .attr("r",0)
-                    .style('fill-opacity', 1e-6)
-                    .remove();
-                //Enter new elements as needed
-                circle.enter().append("circle")
-                            .attr("class","metroCircle")
-                            .attr("cx",function(d){return metroCircleX(d[2])} )
-                            .attr("cy",function(d){return metroCircleY(d[2])} )
-                            .attr("r",1)
-                    .transition(t)
-                            .attr("r",function(d){return metroCircleScale(d[3])});
 
-                //Update old elements as needed
-                circle.transition(t)
-                    .attr("cx",function(d){return metroCircleX(d[2])} )
-                    .attr("cy",function(d){return metroCircleY(d[2])} )
-                    .attr("r",function(d){return metroCircleScale(d[3])});
+            d3.json('trains.json').then(function(d) {
+                Metro=d;
+                console.log(d);
+                var i=0;
+                var time=100;
+                var intervalTime=100;
 
-            }
+                var playButton = d3.select("#play-button");
+                var moving = true;
+                playButton.on("click",function(){
+                                var button=d3.select(this);
+                                if(button.text()=="Pause"){
+                                    moving=false;
+                                    timestep.stop();
+                                    button.text("Play");
+                                }else{
+                                    moving=true;
+                                    timestep=d3.interval(function(){step()},intervalTime);
+                                    button.text("Pause");
+                                }
+                            });
+
+                function step(){
+                    barUpdate(Metro[i],time);
+                    mapUpdate(Metro[i],time);
+                    largemapUpdate(Metro[i],time);
+                    i=i+1;
+                    if(i>1038){i=0}
+                }
+                
+                
+
+                var timestep=d3.interval(function(){step()},100);
+        
+            
+
+                function mapUpdate(d,time){
+                    /*
+                    Input data: Array(n), n denotes the # of metro on the line at this moment.
+                    Element in Array(n): [nowTime, startTime, [[station i, station i+1], position] ,people#] 
+                    */
+                    var t = d3.transition().duration(time);
+                    //Here, d[1] denotes the start time in second.
+                    var circle= geocanvas.selectAll(".metrocircle")
+                              .data(d,function(d){a=d[1]; return a});
+                    //Exit and remove old elements
+                    circle.exit().transition(t)
+                        .attr("class","exit")
+                        .attr("r",0)
+                        .style('fill-opacity', 1e-6)
+                        .remove();
+                    //Enter new elements as needed
+                    circle.enter().append("circle")
+                                .attr("id",function(d){return "circle"+d[1]})
+                                .attr("class","metroCircle")
+                                .attr("cx",function(d){return metroCircleX(d[2])} )
+                                .attr("cy",function(d){return metroCircleY(d[2])} )
+                                .attr("r",1)
+                                .on("mouseover", function(d){handleMouseOver(d[1])})
+                                .on("mouseout", function(d){handleMouseOut(d[1])})
+                        .transition(t)
+                                .attr("r",function(d){return metroCircleScale(d[3])});
+
+                    //Update old elements as needed
+                    circle.transition(t)
+                        .attr("cx",function(d){return metroCircleX(d[2])} )
+                        .attr("cy",function(d){return metroCircleY(d[2])} )
+                        .attr("r",function(d){return metroCircleScale(d[3])});
+
+                }
 
 
 
-            function fiveCircleX(d){
-                startStation=d[0][0];
-                endStation=d[0][1];
-                p=+d[1];
-                start=fivegeox(+(fivestationsraw[startStation].LNG));
-                end=fivegeox(+(fivestationsraw[endStation].LNG));
-                return start+p*(end-start);
-            }
-            function fiveCircleY(d){
-                startStation=d[0][0];
-                endStation=d[0][1];
-                p=+d[1];
-                start=fivegeoy(+(fivestationsraw[startStation].LAT));
-                end=fivegeoy(+(fivestationsraw[endStation].LAT));
-                return start+p*(end-start);
-            }
+                function fiveCircleX(d){
+                    startStation=d[0][0];
+                    endStation=d[0][1];
+                    p=+d[1];
+                    start=fivegeox(+(fivestationsraw[startStation].LNG));
+                    end=fivegeox(+(fivestationsraw[endStation].LNG));
+                    return start+p*(end-start);
+                }
+                function fiveCircleY(d){
+                    startStation=d[0][0];
+                    endStation=d[0][1];
+                    p=+d[1];
+                    start=fivegeoy(+(fivestationsraw[startStation].LAT));
+                    end=fivegeoy(+(fivestationsraw[endStation].LAT));
+                    return start+p*(end-start);
+                }
 
-            function largemapUpdate(d,time){
-                /*
-                Input data: Array(n), n denotes the # of metro on the line at this moment.
-                Element in Array(n): [nowTime, startTime, [[station i, station i+1], position] ,people#] 
-                */
-                var t = d3.transition().duration(time);
-                //Here, d[1] denotes the start time in second.
-                var circle= geolargecanvas.selectAll(".metrocircle")
-                          .data(d,function(d){a=d[1]; return a});
-                //Exit and remove old elements
-                circle.exit().transition(t)
-                    .attr("class","exit")
-                    .attr("r",0)
-                    .style('fill-opacity', 1e-6)
-                    .remove();
-                //Enter new elements as needed
-                circle.enter().append("circle")
-                            .attr("class","metroCircle")
-                            .attr("cx",function(d){return fiveCircleX(d[2])} )
-                            .attr("cy",function(d){return fiveCircleY(d[2])} )
-                            .attr("r",1)
-                    .transition(t)
-                            .attr("r",function(d){return 3*metroCircleScale(d[3])});
+                function largemapUpdate(d,time){
+                    /*
+                    Input data: Array(n), n denotes the # of metro on the line at this moment.
+                    Element in Array(n): [nowTime, startTime, [[station i, station i+1], position] ,people#] 
+                    */
+                    var t = d3.transition().duration(time);
+                    //Here, d[1] denotes the start time in second.
+                    var circle= geolargecanvas.selectAll(".metrocircle")
+                              .data(d,function(d){a=d[1]; return a});
+                    //Exit and remove old elements
+                    circle.exit().transition(t)
+                        .attr("class","exit")
+                        .attr("r",0)
+                        .style('fill-opacity', 1e-6)
+                        .remove();
+                    //Enter new elements as needed
+                    circle.enter().append("circle")
+                                .attr("id",function(d){return "largecircle"+d[1];})
+                                .attr("class","metroCircle")
+                                .attr("cx",function(d){ fiveCircleX(d[2])} )
+                                .attr("cy",function(d){return fiveCircleY(d[2])} )
+                                .attr("r",1)
+                                .on("mouseover", function(d){handleMouseOver(d[1])})
+                                .on("mouseout", function(d){handleMouseOut(d[1])})
+                        .transition(t)
+                                .attr("r",function(d){return 3*metroCircleScale(d[3])});
 
-                //Update old elements as needed
-                circle.transition(t)
-                    .attr("cx",function(d){return fiveCircleX(d[2])} )
-                    .attr("cy",function(d){return fiveCircleY(d[2])} )
-                    .attr("r",function(d){return 3*metroCircleScale(d[3])});
+                    //Update old elements as needed
+                    circle.transition(t)
+                        .attr("cx",function(d){return fiveCircleX(d[2])} )
+                        .attr("cy",function(d){return fiveCircleY(d[2])} )
+                        .attr("r",function(d){return 3*metroCircleScale(d[3])});
 
-            }
+                }
+
+                function barUpdate(d,time){
+                    /*
+                    Input data: Array(n), n denotes the # of metro on the line at this moment.
+                    Element in Array(n): [nowTime, startTime, [[station i, station i+1], position] ,people#] 
+                    */
+                    var t = d3.transition().duration(time);
+                    //Here, d[1] denotes the start time in second.
+                    var bars= passengerNoCanvas.selectAll("rect")
+                              .data(d,function(d){a=d[1]; return a});
+                    //Exit and remove old elements
+                    bars.exit().transition(t*1.3)
+                        .attr("class","exit")
+                        .attr("x",function(d){return MetroBarXscale("莘庄")+MetroBarXscale.bandwidth()/2;})
+                        .attr("y",MetroBarYscale(0))
+                        .attr("height",0)
+                        .style('fill-opacity', 1e-6)
+                        .remove();
+                    //Enter new elements as needed
+                    bars.enter().append("rect")
+                                .attr("id",function(d){return "bar"+d[1];})
+                                .attr("class","bar")
+                                .attr("x",function(d){return barXPosition(d[2])} )
+                                .attr("y",MetroBarYscale(0))
+                                .attr("width",MetroBarXscale.bandwidth()/4)
+                                .attr("height",0)
+                                .on("mouseover", function(d){handleMouseOver(d[1])})
+                                .on("mouseout", function(d){handleMouseOut(d[1])})
+                        .transition(t)
+                                .attr("y",function(d){return MetroBarYscale(d[3])})
+                                .attr("height",function(d){a=MetroBarYscale(0)-MetroBarYscale(d[3]); return a;});
+
+                    //Update old elements as needed
+                    bars.transition(t).attr("class","update")
+                        .attr("x",function(d){return barXPosition(d[2])})
+                        .attr("y",function(d){return MetroBarYscale(d[3])})
+                        .attr("height",function(d){a=MetroBarYscale(0)-MetroBarYscale(d[3]); return a;});
+
+                }
+
+                function handleMouseOver(d){
+                    d3.select("#largecircle"+d)
+                     .style("fill","red");
+                    d3.select("#circle"+d)
+                     .style("fill","red");
+                    d3.select("#bar"+d)
+                     .style("fill","red");
+                    if(playButton.text()=="Pause"){
+                        moving=false;
+                        timestep.stop();
+                    }
+                    
+                }
+                function handleMouseOut(d){
+                    d3.select("#largecircle"+d)
+                     .style("fill","black");
+                    d3.select("#circle"+d)
+                     .style("fill","black");
+                    d3.select("#bar"+d)
+                     .style("fill","black");
+                    if(playButton.text()=="Pause"){
+                        moving=true;
+                        timestep=d3.interval(function(){step()},intervalTime);
+                    }
+                    
+
+                }
+
+            } );
         });});
 	});
 
