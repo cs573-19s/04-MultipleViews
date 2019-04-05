@@ -34,7 +34,7 @@ The image above on the left is the map of Chicago bike paths [(file: Chicago_Bik
 
 ## Area Charts:
 
-[Area](img/freq.png)
+![Area](img/freq.png)
 
 Once a brush selection is made in the map portion of the visulazation, the number of trips stored in 2013 [(file: Divvy_Trips_2013_Processed.csv)](https://github.com/longenbach/04-MultipleViews/blob/master/Divvy_Trips_2013_Processed.csv) is filtered by the brush selected station ids. The aggreagted number of trips over time is what is then shown in the following area charts above.     
 
