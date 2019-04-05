@@ -7,7 +7,7 @@ Assignment 4 - Visualizations and Multiple Views
 ## Overview:
 ![Visual](img/full.png)
 
-
+Above is a screenshot of the mutiple views visulzation I created. Divvy is a bike sharing platform in Chicago started in 2013. All of their trip and station data is public and avaible on their [website](https://www.divvybikes.com/system-data). 
 
 ## Introduction:
 
