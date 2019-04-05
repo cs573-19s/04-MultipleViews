@@ -57,3 +57,6 @@ GitHub Details
 - Make sure your "master" branch matches your "gh-pages" branch. See the GitHub Guides referenced above if you need help.
 - Edit the README.md with a link to your gh-pages site, for example http://YourUsernameGoesHere.github.io/04-MapsAndViews/index.html
 - To submit, make a [Pull Request](https://help.github.com/articles/using-pull-requests/) on the original repository.
+
+
+In bubble chart, text size changes according to bubble size.
