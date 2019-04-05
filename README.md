@@ -6,6 +6,7 @@ Assignment 4 - Visualizations and Multiple Views
 
 ## Overview:
 ===
+
 ![Visual](img/full.png)
 
 
