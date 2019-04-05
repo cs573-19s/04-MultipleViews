@@ -85,9 +85,9 @@ Ref: https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
 */
 var timerSVG=d3.select("#timerSVG");
 timerSVG.width=1000;
-timerSVG.height=140;
+timerSVG.height=160;
 timerSVG.attr("width",timerSVG.width).attr("height",timerSVG.height);
-timerSVG.margin = ({top: 10, right: 10, bottom: 40, left: 20});
+timerSVG.margin = ({top: 20, right: 40, bottom: 60, left: 20});
 var timerCanvas=timerSVG.append("svg").append("g").attr("id","timerCanvas");
 timerCanvas.width=timerSVG.width-timerSVG.margin.left-timerSVG.margin.right;
 timerCanvas.height=timerSVG.height-timerSVG.margin.top-timerSVG.margin.bottom;
@@ -116,12 +116,27 @@ Axis drawing
 */
 
                  
-var SliderYAxis = d3.axisLeft(sliderYscale).ticks(6);
-timerCanvas.append("g")
-                 .call(SliderYAxis)
+var SliderYAxis = d3.axisLeft(sliderYscale).ticks(3);
+timerCanvasYaxis=timerCanvas.append("g");
+timerCanvasYaxis.call(SliderYAxis)
                  .selectAll("line,path")
                  .style("stroke","grey");
-
+timerCanvasYaxis.append("text")
+                    .attr("class","label")
+                    .style("font-size","10pt")
+                    .attr("x",0)
+                    .attr("y",-10)
+                    .style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("Metros");
+timerCanvas.append("text")
+                    .attr("class","label")
+                    .style("font-size","10pt")
+                    .attr("x",timerCanvas.width/2+20)
+                    .attr("y",timerCanvas.height+50)
+                    .style("fill","black")
+                    .style("text-anchor","middle")
+                    .text("Time");
 //TimerLine chart
 d3.json('trains.json').then(function(data) {
     //draw basic line
@@ -336,7 +351,7 @@ var geolarge = d3.select("#geolarge");
 geolarge.width=130;
 geolarge.height=300;
 geolarge.attr("width",geolarge.width).attr("height",geolarge.height);
-geolarge.margin = ({top: 15, right: 10, bottom: 5, left: 5});
+geolarge.margin = ({top: 15, right: 14, bottom: 5, left: 5});
 
 var geolargecanvas=geolarge.append("svg").append("g");
 geolargecanvas.width=geolarge.width-geolarge.margin.left-geolarge.margin.right;
