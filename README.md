@@ -38,5 +38,8 @@ The image above on the left is the map of Chicago bike paths [(file: Chicago_Bik
 
 Once a brush selection is made in the map portion of the visulazation, the number of trips stored in 2013 [(file: Divvy_Trips_2013_Processed.csv)](https://github.com/longenbach/04-MultipleViews/blob/master/Divvy_Trips_2013_Processed.csv) is filtered by the brush selected station ids. The aggreagted number of trips over time is what is then shown in the following area charts above. Both area charts are interactive with brush and zoom interaction. On the larger "focused" area chart you can click to zoom and drag to focus on different periods in time. The smaller "context" area chart you can slide/expand the brush to change the focused area as well. If you chnage the "focused" area chart, the "context" area chart will change and vice versa. Both charts allow you to see the severaity of seasonality and rush hour affact after selecting different stations.         
 
+## Technical & Design Achievement Highlights:
 
-
+- Building off Week 10 reflection, leanred more about OpenStreetMap and used it to plot bike path data. 
+- Wrangled Divvy data in Python notebook to make this visulzation possible. 
+- Implemeted some of my first brush interactions in D3.
