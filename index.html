@@ -1,4 +1,11 @@
 <script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://unpkg.com/d3-simple-slider"></script>
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+  integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+  crossorigin="anonymous"
+/>
 
 <body>
 <div>
@@ -6,7 +13,10 @@
 <svg id="geo"/>
 <svg id="geolarge"/>
 <svg id="passengerNo"/>
-<svg id="timerSVG"></svg>
+<div class="row align-items-center">
+    <div class="col-sm-2"><p id="value-time">aa</p></div>
+    <div class="col-sm"><svg id="timerSVG"></svg></div>
+</div>
 
 
 
@@ -27,6 +37,7 @@
 /*
 
 Ref: https://bl.ocks.org/officeofjane/47d2b0bfeecfcb41d2212d06d095c763
+Ref: https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
 */
 var timerSVG=d3.select("#timerSVG");
 timerSVG.width=1200;
@@ -59,12 +70,8 @@ var sliderYscale=d3.scaleLinear()
 /*
 Axis drawing
 */
-var SliderXAxis = d3.axisBottom(sliderXscale);
-timerCanvas.append("g")
-                 .attr("transform", "translate(0," + timerCanvas.height+ ")")
-                 .call(SliderXAxis)
-                 .selectAll("line,path")
-                 .style("stroke","grey");
+
+                 
 var SliderYAxis = d3.axisLeft(sliderYscale).ticks(6);
 timerCanvas.append("g")
                  .call(SliderYAxis)
@@ -85,6 +92,7 @@ d3.json('trains.json').then(function(data) {
          .style("stroke","grey");
 
     });
+//var slider=timerCanvas.sliderBottom
 
 
 </script>
@@ -358,9 +366,10 @@ d3.json('connections_by_station_name.json').then(function(d) {
                             });
 
                 function step(){
-                    barUpdate(Metro[i],time);
+                    barUpdate(Metro[i],time,time*1.3);
                     mapUpdate(Metro[i],time);
                     largemapUpdate(Metro[i],time);
+                    SliderXAxis.value(i+300);
                     i=i+1;
                     if(i>1038){i=0}
                 }
@@ -460,7 +469,7 @@ d3.json('connections_by_station_name.json').then(function(d) {
 
                 }
 
-                function barUpdate(d,time){
+                function barUpdate(d,time,exitTime){
                     /*
                     Input data: Array(n), n denotes the # of metro on the line at this moment.
                     Element in Array(n): [nowTime, startTime, [[station i, station i+1], position] ,people#] 
@@ -470,7 +479,7 @@ d3.json('connections_by_station_name.json').then(function(d) {
                     var bars= passengerNoCanvas.selectAll("rect")
                               .data(d,function(d){a=d[1]; return a});
                     //Exit and remove old elements
-                    bars.exit().transition(t*1.3)
+                    bars.exit().transition(exitTime)
                         .attr("class","exit")
                         .attr("x",function(d){return MetroBarXscale("莘庄")+MetroBarXscale.bandwidth()/2;})
                         .attr("y",MetroBarYscale(0))
@@ -479,7 +488,7 @@ d3.json('connections_by_station_name.json').then(function(d) {
                         .remove();
                     //Enter new elements as needed
                     bars.enter().append("rect")
-                                .attr("id",function(d){return "bar"+d[1];})
+                                .attr("id",function(d){console.log(d);return "bar"+d[1];})
                                 .attr("class","bar")
                                 .attr("x",function(d){return barXPosition(d[2])} )
                                 .attr("y",MetroBarYscale(0))
@@ -499,6 +508,41 @@ d3.json('connections_by_station_name.json').then(function(d) {
 
                 }
 
+                //timer slider drawing
+                var SliderXAxis = d3.sliderBottom(sliderXscale).step(1).fill("grey")
+                    .on('start',function(){moving=false; timestep.stop();})
+                    .on('onchange', value => draw(value))
+                    .on('end',function(){moving=true; timestep=d3.interval(function(){step()},intervalTime);});
+                function draw(value){
+                    //draw pointer
+                    timerCanvas.select("#sliderPointer").remove();
+                    timerCanvas.append("line")
+                            .attr("id","sliderPointer")
+                            .attr("x1",sliderXscale(value))
+                            .attr("y1",sliderYscale(value))
+                            .attr("x2",sliderXscale(value))
+                            .attr("y2",timerCanvas.height)
+                            .style("stroke","grey");
+                    //control animation
+                    if (moving==false){
+                        barUpdate(Metro[value-300],1,0.5);
+                        mapUpdate(Metro[value-300],1);
+                        largemapUpdate(Metro[value-300],1);
+                        i=value-300;
+                    }
+
+
+                }
+
+
+                timerCanvas.append("g")
+                                 .attr("transform", "translate(0," + timerCanvas.height+ ")")
+                                 .call(SliderXAxis)
+                                 .selectAll("line,path")
+
+
+
+                //mouseover and mouseout function
                 function handleMouseOver(d){
                     d3.select("#largecircle"+d)
                      .style("fill","red");
