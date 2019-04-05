@@ -138,7 +138,7 @@ map.selectAll("circle")
         .call(d3.brush().extent([[0, 0], [width3, height3]]).on("brush", brushed_map).on("end", brushended));
 });
 
-
+//https://observablehq.com/@floledermann/drawing-maps-from-geodata-in-d3
 d3.json('Chicago_BikePaths.geojson', function(error, paths) {
     console.log(paths.features[0]);
     street = paths //paths.features[0];
