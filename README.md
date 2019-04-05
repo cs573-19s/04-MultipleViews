@@ -1,59 +1,62 @@
-Assignment 4 - Visualizations and Multiple Views  
-===
+# Overview
 
-One of the most powerful techniques for mitigating the shortcomings of a given visualization is to link it with other views.
-Linking a map to a bar or scatterplot, for instance, may allow you to overcome the shortcomings of a map.
-In general, linking visualizations allows you to explore different parts of the data between views, and mitigates the shortcomings of a given view by pairing it with other views.
-This technique, called coordinated multiple views, is the focus of this assignment.
+The goal of my visualization is to give some analysis of air quality data in Boston, Chicago, LA, and Austin throughout the year of 2016. The dataset includes Air Quality Index (AQI), ppm or ppb measurements, and 4 different pollutants for each city for each date. 
 
-Your task is to choose an interesting dataset and visualize it in *at least three* **linked** views, where interactions in any given view updates the other two.
-Each view should use a different visualization type, and interaction in one of the views should impact what's shown in the other views.
+[Link to webpage](https://justinm1295.github.io/04-MultipleViews/)
 
-You should choose data and visualizations that are sufficiently complex and interesting to ensure a user can discover interesting patterns and trends on their own.
+# Visualizations
 
-For this assignment you should write everything from scratch.
-You may *reference and adapt* code from books or the web, and if you do please provide a References section with links at the end of your Readme.
+## Map
 
-Resources
----
+![Map](img/Map.PNG)
 
-Data is Plural has a list of interesting datasets, many of which require processing.
+The map shows a display of the 4 cities with the AQI data displayed as a circle for the date and pollutant chosen. The circles are double-encoded by size and a Green-Yellow-Red colorscale, and placed with the latitude and longitude data. Hovering over the circles will display a tooltip giving the city name and the exact AQI number for that day. Clicking a city's circle will transition the line chart as explained below.
 
-These three examples are intended to show you what multiple views visualizations might look like. 
-I wouldn't recommend using them as a your starting point, but you may find some inspiration:
+## Text Displays
 
-1. This [scatterplot matrix](http://bl.ocks.org/mbostock/4063663) has code that explains brushing and linking. But remember you'll be doing this with different types of views.
+![TextDisplays](img/Text.PNG)
 
-2. The example visualization for [Crossfilter](http://square.github.io/crossfilter/) uses coordinated multiple views. The interaction and brushing technique is well-executed.
+The text display gives a display of the average AQI and the average concentration of pollutants for the given day. The text will transition with each selection from the dropdown menu. The text is again encoded with the Green-Yellow-Red colorscale.
 
-3. The [dispatching events](https://github.com/d3/d3-dispatch) page is a good example of using events, rather than explicit functions, for controlling behavior. Views can listen for events in other views and respond accordingly.
+## Line Chart
 
-This GIF from a similar course shows how views can work together:
+![LineChart1](img/Line1.PNG)
+![LineChart2](img/Line2.PNG)
 
-![cmv gif](https://raw.githubusercontent.com/dataviscourse/2015-dataviscourse-homework/master/hw3/preview.gif)
+The line chart gives the average AQI for each of the 4 cities and the combined average over 2016 for the pollutant chosen by the dropdown menu. Each of the cities can be toggled on and off by clicking that respective city on the map. 
 
-*If you aren't familiar with event-based programming you should experiment with d3.dispatch and other approaches to coordinating views well before the deadline (it's tricky.)*
+# Details
 
-Don't forget to run a local webserver when you're coding and debugging.
+## Known Bugs
 
-Requirements
----
+There are a few issues that I couldn't fix no matter what I tried.
 
-0. Your code should be forked from the GitHub repo and linked using GitHub pages.
-1. Your project should load a dataset you found on the web. Put this file in your repo.
-2. Your project should use d3 to build a visualization of the dataset. 
-3. Your writeup (readme.md in the repo) should contain the following:
+1) The x-axis, while displaying the data correctly, will not correctly display the dates along the axis. d3 is interpreting my dates as a 24-hour day instead of a year, even though I added in a date parse function. This does not affect the readout of the data however.
+2) Likewise, the line chart will not remove the previous lines from the last chosen date for some reason. I've tried selecting by element type, class, and id, but nothing will do the trick. The only solution I found was to select all paths from the svg element, but this deletes the axes and isn't a suitable solution.
 
-- Working link to the visualization hosted on gh-pages.
-- Concise description and screenshot of your visualization.
-- Description of the technical achievements you attempted with this visualization.
-- Description of the design achievements you attempted with this visualization.
+## Design Achievements
 
-GitHub Details
----
+1) I was able to correctly space my map, text displays, and line chart so that the readouts display to the right of the map as intended, and each graph has its respective legend right above it.
 
-- Fork the GitHub Repository. You now have a copy associated with your username.
-- Make changes to index.html to fulfill the project requirements. 
-- Make sure your "master" branch matches your "gh-pages" branch. See the GitHub Guides referenced above if you need help.
-- Edit the README.md with a link to your gh-pages site, for example http://YourUsernameGoesHere.github.io/04-MapsAndViews/index.html
-- To submit, make a [Pull Request](https://help.github.com/articles/using-pull-requests/) on the original repository.
+2) I included a d3 legend for both my map and my line chart. 
+
+3) I included a floating tooltip so that users can see the exact measurements displayed by the circles on the line chart.
+
+4) The colors for the line chart are colorblind friendly as approved by ColorBrewer.
+
+## Technical Achievements
+
+1) My map and text displays both will catch dates with no data for particular cities and color them blue instead of just assigning them a value of 0.
+
+2) Accordingly, my average calculations for the AQI and ppm/ppb do not include missing entries in their average, and will instead dynamically include or disclude them from the dataset in the map and text readouts.
+
+3) My text display includes tween transitions for both the AQI and concentration. In addition, I was able to format the floating point numbers to only display 3 digits instead of spitting out the entire float data type during the transition for easier reading using a d3 number format. My tween animation also includes the color scale and will transition accordingly. 
+
+4) My text readouts will change from ppm/ppb accordingly on the fly depending on the pollutant.
+
+
+# References
+
+https://bl.ocks.org/mbostock/5872848
+
+https://bl.ocks.org/d3noob/4db972df5d7efc7d611255d1cc6f3c4f

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    .land {
+        fill: #bdbdbd;
+    }
+
+    .state-boundary {
+        fill: none;
+        stroke: #fff;
+    }
+
+    .tooltip {
+        position: absolute;
+        text-align: center;
+        width: 85px;
+        height: 30px;
+        padding: 2px;
+        font: 12px sans-serif;
+        background: black;
+        border: 0;
+        border-radius: 8px;
+        pointer-events: none;
+        color: white;
+        opacity: 0;
+    }
+
+    .value {
+        margin: 0 !important;
+    }
+
+    .key-dot {
+        display: inline-block;
+        height: 20px;
+        margin-right: .5em;
+        width: 20px;
+    }
+
+    .Low {
+        background: green
+    }
+
+    .High {
+        background: red;
+    }
+
+    .None {
+        background: blue;
+    }
+
+    #legend {
+        overflow: hidden;
+    }
+
+    .legend {
+        float: left;
+        margin-right: 1em;
+    }
+
+    .readouts {
+        text-align: right;
+        float: right;
+    }
+
+    h2 {
+        font-size: 30px;
+    }
+
+    #selection {
+    }
+
+    #linelegend {
+        overflow: hidden;
+        float: left;
+        width: 100%;
+    }
+
+    #map {
+        float: left;
+        width: 960px;
+        height: 500px;
+        margin: 0;
+    }
+
+    #line {
+        float: left;
+    }
+
+    .average {
+        background: #ffffbf;
+    }
+
+    .boston {
+        background: #d7191c;
+    }
+
+    .chicago {
+        background: #fdae61;
+    }
+
+    .la {
+        background: #abd9e9;
+    }
+
+    .austin {
+        background: #2c7bb6;
+    }
+
+    .averageline {
+        fill: none;
+        stroke: #ffffbf;
+        stroke-width: 2.5;
+    }
+
+    .bostonline {
+        fill: none;
+        stroke: #d7191c;
+    }
+
+    .chicagoline {
+        fill: none;
+        stroke: #fdae61;
+    }
+
+    .laline {
+        fill: none;
+        stroke: #abd9e9;
+    }
+
+    .austinline {
+        fill: none;
+        stroke: #2c7bb6;
+    }
+
+</style>
+
+<body>
+<h2>Air Quality Data</h2>
+<p>Choose a Pollutant and a Date to display information for that day and type. You can also hover over data points to
+    see more detailed information, or click a city's circle to show/hide it on the line chart. Note that a lower Air
+    Quality Index (AQI) is better as displayed on the map. Some days or types do not have information for a particular city.
+    This is often because the city did not take a reading on that day, or the data was discarded due to experimental error.</p>
+
+<br>
+<div id="legend">
+    <h3>AQI Map</h3>
+    <div class="legend"><p class="value"><span class="key-dot Low"></span>Low AQI (Good)</p></div>
+    <div class="legend"><p class="value"><span class="key-dot High"></span>High AQI (Bad)</p></div>
+    <div class="legend"><p class="value"><span class="key-dot None"></span>No Data</p></div>
+</div>
+<div id="selection"></div>
+<div id="map"></div>
+<div class=readouts>
+    <h2 class="aqititle">Average AQI</h2>
+    <h2 class="aqi">0</h2>
+    <h2 class="conctitle">Average Concentration</h2>
+    <h2 class="concentration">0</h2>
+</div>
+<br>
+<div id="linelegend">
+    <h3>Line Graph</h3>
+    <div class="legend"><p class="value"><span class="key-dot boston"></span>Boston</p></div>
+    <div class="legend"><p class="value"><span class="key-dot chicago"></span>Chicago</p></div>
+    <div class="legend"><p class="value"><span class="key-dot la"></span>Los Angeles</p></div>
+    <div class="legend"><p class="value"><span class="key-dot austin"></span>Austin</p></div>
+    <div class="legend"><p class="value"><span class="key-dot average"></span>4-City Average</p></div>
+</div>
+<div id=line></div>
+</body>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/topojson.v1.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
+
+<script>
+
+    var dispatch = d3.dispatch("load", "statechange");
+
+    var AQINumberScale;
+    var AQIColorNumbers;
+    var concentrationNumberScale;
+
+    d3.csv("Daily-Data.csv", type, function (error, states) {
+        if (error) throw error;
+        var stateById = d3.map();
+        states.forEach(function (d) {
+            stateById.set(d.Date + " " + d.Type, d);
+        });
+
+        AQINumberScale = d3.scaleLinear()
+            .domain([0, d3.max(stateById.values(), function (d) {
+                return d3.max([d.BAQI, d.CAQI, d.LAQI, d.AAQI]);
+            })])
+            .range([10, 50]);
+
+        AQIColorNumbers = d3.scaleLinear()
+            .domain([0, d3.max(stateById.values(), function (d) {
+                return d3.max([d.BAQI, d.CAQI, d.LAQI, d.AAQI]);
+            }) * .5])
+            .range([1, 0]);
+
+        concentrationNumberScale = d3.scaleLinear()
+            .domain([0, d3.max(stateById.values(), function (d) {
+                return d3.max([d.BMeasurement, d.CMeasurement, d.LMeasurement, d.AMeasurement]);
+            })])
+            .range([1, 0]);
+
+        dispatch.call("load", this, stateById);
+        dispatch.call("statechange", this, stateById.get("1/1/2016 CO"));
+    });
+
+    dispatch.on("load.menu", function (stateById) {
+        var select = d3.select("#selection")
+            .append("div")
+            .append("select")
+            .on("change", function () {
+                dispatch.call("statechange", this, stateById.get(this.value));
+            });
+
+        select.selectAll("option")
+            .data(stateById.values())
+            .enter().append("option")
+            .attr("value", function (d) {
+                return d.Date + " " + d.Type;
+            })
+            .text(function (d) {
+                return d.Date + " " + d.Type;
+            });
+
+        dispatch.on("statechange.menu", function (state) {
+            select.property("value", state.Date + " " + state.Type);
+        });
+
+    });
+
+    dispatch.on("load.map", function (stateById) {
+        d3.json("states.json", function (error, us) {
+            if (error) throw error;
+
+            var projection = d3.geoAlbers()
+                .rotate([96, 0])
+                .center([-.6, 38.7])
+                .parallels([29.5, 45.5])
+                .scale(1000)
+                .precision(.1);
+
+            var path = d3.geoPath()
+                .projection(projection);
+
+            var svg = d3.select("#map")
+                .append("svg")
+                .attr("class", "map")
+                .attr("width", 960)
+                .attr("height", 500);
+
+            svg.insert("path")
+                .datum(topojson.feature(us, us.objects.land))
+                .attr("class", "land")
+                .attr("d", path);
+
+            svg.insert("path")
+                .datum(topojson.mesh(us, us.objects.states, function (a, b) {
+                    return a !== b;
+                }))
+                .attr("class", "state-boundary")
+                .attr("d", path);
+
+            var state = stateById.get("1/1/2016 CO");
+
+            var AQIs = [+state.BAQI, +state.CAQI, +state.LAQI, +state.AAQI];
+            var Lats = [+state.BLat, +state.CLat, +state.LLat, +state.ALat];
+            var Lons = [+state.BLon, +state.CLon, +state.LLon, +state.ALon];
+            var Cities = [state.BCity, state.CCity, state.LCity, state.ACity];
+            var data = [AQIs, Lats, Lons, Cities];
+
+            var div = d3.select("body")
+                .append("div")
+                .attr("class", "tooltip");
+
+            d3.select(".map").selectAll("circle")
+                .data(data).enter()
+                .append("circle")
+                .attr("cx", function (d, i) {
+                    return projection([data[2][i], data[1][i]])[0];
+                })
+                .attr("cy", function (d, i) {
+                    return projection([data[2][i], data[1][i]])[1];
+                })
+                .attr("r", function (d, i) {
+                    return AQINumberScale(data[0][i]);
+                })
+                .attr("fill", function (d, i) {
+                    if (data[0][i] === 0) {
+                        return 'blue';
+                    } else {
+                        return d3.interpolateRdYlGn(AQIColorNumbers(data[0][i]));
+                    }
+                })
+                .on("mouseover", function (d, i) {
+                    div.transition().duration(200).style("opacity", .9);
+                    if (data[0][i] === 0) {
+                        div.text(data[3][i] + " (NO DATA)")
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY - 30) + "px");
+                    } else {
+                        div.text(data[3][i] + " (AQI: " + data[0][i] + ")")
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY - 30) + "px");
+                    }
+                })
+                .on("mouseout", function () {
+                    div.transition().duration(500).style("opacity", 0);
+                })
+                .on("click", function(d, i) {
+                    changeopacity(data[3][i].split(" ")[0]);
+                });
+        });
+
+        dispatch.on("statechange.map", function (stateById) {
+            var projection = d3.geoAlbers()
+                .rotate([96, 0])
+                .center([-.6, 38.7])
+                .parallels([29.5, 45.5])
+                .scale(1000)
+                .precision(.1);
+
+            var AQIs = [+stateById.BAQI, +stateById.CAQI, +stateById.LAQI, +stateById.AAQI];
+            var Lats = [+stateById.BLat, +stateById.CLat, +stateById.LLat, +stateById.ALat];
+            var Lons = [+stateById.BLon, +stateById.CLon, +stateById.LLon, +stateById.ALon];
+            var Cities = [stateById.BCity, stateById.CCity, stateById.LCity, stateById.ACity];
+            var data = [AQIs, Lats, Lons, Cities];
+
+            var div = d3.select("body")
+                .select(".tooltip");
+
+            d3.select(".map").selectAll("circle").remove();
+
+            d3.select(".map").selectAll("circle")
+                .data(data).enter()
+                .append("circle")
+                .attr("cx", function (d, i) {
+                    return projection([data[2][i], data[1][i]])[0];
+                })
+                .attr("cy", function (d, i) {
+                    return projection([data[2][i], data[1][i]])[1];
+                })
+                .attr("r", function (d, i) {
+                    return AQINumberScale(data[0][i]);
+                })
+                .attr("fill", function (d, i) {
+                    if (data[0][i] === 0) {
+                        return 'blue';
+                    } else {
+                        return d3.interpolateRdYlGn(AQIColorNumbers(data[0][i]));
+                    }
+                })
+                .on("mouseover", function (d, i) {
+                    div.transition().duration(200).style("opacity", .9);
+                    if (data[0][i] === 0) {
+                        div.text(data[3][i] + " (NO DATA)")
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY - 30) + "px");
+                    } else {
+                        div.text(data[3][i] + " (AQI: " + data[0][i] + ")")
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY - 30) + "px");
+                    }
+                })
+                .on("mouseout", function () {
+                    div.transition().duration(500).style("opacity", 0);
+                })
+                .on("click", function(d, i) {
+                    changeopacity(data[3][i].split(" ")[0]);
+                });
+
+        });
+
+    });
+
+    dispatch.on("load.text", function (stateById) {
+        var state = stateById.get("1/1/2016 CO");
+
+        var format = d3.format("00.3f");
+
+        var aqi = d3.select("body").select(".aqi");
+        var concentration = d3.select("body").select(".concentration");
+        d3.select("body").select(".conctitle").text("Average Concentration (" + stateById.Units + ")");
+
+        aqi.transition()
+            .duration(1000)
+            .style("color", d3.interpolateRdYlGn(AQIColorNumbers(state.averageAQI)))
+            .tween("text", function () {
+                var node = this;
+                var i = d3.interpolate(node.textContent, state.averageAQI);
+                return function (t) {
+                    node.textContent = format(i(t));
+                };
+            });
+        concentration.transition()
+            .duration(1000)
+            .style("color", d3.interpolateRdYlGn(concentrationNumberScale(state.averageConcentration)))
+            .tween("text", function () {
+                var node = this;
+                var i = d3.interpolate(node.textContent, state.averageConcentration);
+                return function (t) {
+                    node.textContent = format(i(t));
+                };
+            });
+        dispatch.on("statechange.text", function (stateById) {
+            var aqi = d3.select("body").select(".aqi");
+            var concentration = d3.select("body").select(".concentration");
+            d3.select("body").select(".conctitle").text("Average Concentration (" + stateById.Units + ")");
+
+
+            aqi.transition()
+                .duration(1000)
+                .style("color", d3.interpolateRdYlGn(AQIColorNumbers(stateById.averageAQI)))
+                .tween("text", function () {
+                    var node = this;
+                    var i = d3.interpolate(node.textContent, stateById.averageAQI);
+                    return function (t) {
+                        node.textContent = format(i(t));
+                    };
+                });
+            concentration.transition()
+                .duration(1000)
+                .style("color", d3.interpolateRdYlGn(concentrationNumberScale(stateById.averageConcentration)))
+                .tween("text", function () {
+                    var node = this;
+                    var i = d3.interpolate(node.textContent, stateById.averageConcentration);
+                    return function (t) {
+                        node.textContent = format(i(t));
+                    };
+                });
+        });
+    });
+
+    dispatch.on("load.line", function (stateById) {
+        var margin = {top: 20, right: 20, bottom: 30, left: 50},
+            width = 1400 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        var parseTime = d3.timeParse("%m/%e/%Y");
+
+        var x = d3.scaleTime().range([0, width]);
+        var y = d3.scaleLinear().range([height, 0]);
+
+        var averageline = d3.line()
+            .x(function (d) {
+                return x(d.Date);
+            })
+            .y(function (d) {
+                return y(d.averageAQI);
+            });
+
+        var bostonline = d3.line()
+            .x(function (d) {
+                return x(d.Date);
+            })
+            .y(function (d) {
+                return y(d.BAQI);
+            });
+
+        var chicagoline = d3.line()
+            .x(function (d) {
+                return x(d.Date);
+            })
+            .y(function (d) {
+                return y(d.CAQI);
+            });
+
+        var laline = d3.line()
+            .x(function (d) {
+                return x(d.Date);
+            })
+            .y(function (d) {
+                return y(d.LAQI);
+            });
+
+        var austinline = d3.line()
+            .x(function (d) {
+                return x(d.Date);
+            })
+            .y(function (d) {
+                return y(d.AAQI);
+            });
+
+        var svg = d3.select("#line").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        var states = stateById;
+
+        // Add the X Axis
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        // Add the Y Axis
+        svg.append("g")
+            .call(d3.axisLeft(y));
+
+
+        dispatch.on("statechange.line", function (stateById) {
+            d3.select(".averageline").select("path").remove();
+            d3.select(".bostonline").select("path").remove();
+            d3.select(".chicagoline").select("path").remove();
+            d3.select(".laline").select("path").remove();
+            d3.select(".austinline").select("path").remove();
+
+            var keys = states.keys();
+
+            var data = [];
+
+            keys.forEach(function (d) {
+                if (d.split(" ")[1] === stateById.Type) {
+                    data.push(states.get(d));
+                }
+            });
+
+            data.forEach(function(d) {
+                d.Date = parseTime(d.Date);
+            });
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function (d) {
+                return d.Date;
+            }));
+            y.domain([0, d3.max(data, function (d) {
+                return Math.max(d.averageAQI, d.BAQI, d.CAQI, d.LAQI, d.AAQI);
+            })]);
+
+            // Add the valueline path.
+            svg.append("path")
+                .data([data])
+                .attr("class", "averageline")
+                .style("opacity", 1)
+                .attr("d", averageline);
+
+            svg.append("path")
+                .data([data])
+                .attr("class", "bostonline")
+                .style("opacity", 1)
+                .attr("d", bostonline);
+
+            svg.append("path")
+                .data([data])
+                .attr("class", "chicagoline")
+                .style("opacity", 1)
+                .attr("d", chicagoline);
+
+            svg.append("path")
+                .data([data])
+                .attr("class", "laline")
+                .style("opacity", 1)
+                .attr("d", laline);
+
+            svg.append("path")
+                .data([data])
+                .attr("class", "austinline")
+                .style("opacity", 1)
+                .attr("d", austinline);
+
+        });
+    });
+
+    function changeopacity(city) {
+        switch (city) {
+            case "Boston,":
+                if (d3.select(".bostonline").style("opacity") == 1) {
+                    d3.select(".bostonline").style("opacity", .1);
+                } else {
+                    d3.select(".bostonline").style("opacity", 1);
+                }
+                break;
+            case "Chicago,":
+                if (d3.select(".chicagoline").style("opacity") == 1) {
+                    d3.select(".chicagoline").style("opacity", .1);
+                } else {
+                    d3.select(".chicagoline").style("opacity", 1);
+                }
+                break;
+            case "Los":
+                if (d3.select(".laline").style("opacity") == 1) {
+                    d3.select(".laline").style("opacity", .1);
+                } else {
+                    d3.select(".laline").style("opacity", 1);
+                }
+                break;
+            case "Austin,":
+                if (d3.select(".austinline").style("opacity") == 1) {
+                    d3.select(".austinline").style("opacity", .1);
+                } else {
+                    d3.select(".austinline").style("opacity", 1);
+                }
+                break;
+        }
+    }
+
+    function type(d) {
+
+        var aqi = [d.BAQI, d.CAQI, d.LAQI, d.AAQI];
+        var conc = [d.BMeasurement, d.CMeasurement, d.LMeasurement, d.AMeasurement];
+        var newaqi = aqi.filter(function (d) {
+            return d > 0;
+        });
+        var newconc = conc.filter(function (d) {
+            return d > 0;
+        });
+        if (newaqi.length === 0) {
+            d.averageAQI = 0;
+            d.averageConcentration = 0;
+        } else {
+            d.averageAQI = Math.round(d3.mean(newaqi) * 100) / 100;
+            d.averageConcentration = Math.round(d3.mean(newconc) * 100) / 100;
+        }
+        return d;
+    }
+
+</script>
