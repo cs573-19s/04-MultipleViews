@@ -3,7 +3,7 @@
 <style>
 
 .area {
-  fill: steelblue;
+  fill: #00b9e7;
   clip-path: url(#clip);
 }
 
@@ -14,7 +14,7 @@
 }
 
 circle {
-  fill: #4292c6;
+  fill: #00b9e7;
 }
 
 
@@ -28,7 +28,7 @@ circle {
 var svg = d3.select("svg"),
     margin = {top: 20, right: 20, bottom: 110, left: 600},
     margin2 = {top: 430, right: 20, bottom: 30, left: 600},
-    margin3 = {top: 20, right: 600, bottom: 30, left: 20},
+    margin3 = {top: 20, right: 650, bottom: 30, left: 20},
     width = +svg.attr("width") - margin.left - margin.right,
     width3 = +svg.attr("width") - margin3.left - margin3.right,
     height = +svg.attr("height") - margin.top - margin.bottom,
@@ -97,8 +97,9 @@ var context = svg.append("g")
     .attr("class", "context")
     .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-
-//var projection = d3.geoMercator().scale(110000).translate([200,200]);
+var projection = d3.geoMercator()
+      .scale(100000)
+      .center([-87.654312, 41.875767]);
 
 /*NEED TO PROJECT LONG/LAT POINTS CORRECTLY*/
 d3.csv("Divvy_Stations_2013.csv", type, function(error, data) {
@@ -113,6 +114,8 @@ map.selectAll("circle")
         .data(data)
       .enter().append("circle")
       .attr("class", "map")
+        //.attr("cx", function(d) {return projection([d.longitude,d.latitude])[0]})
+        //.attr("cy", function(d) {return projection([d.longitude,d.latitude])[1]})
         .attr("cx", function(d) { return x3(d.longitude); })
         .attr("cy", function(d) { return y3(d.latitude); })
         .attr("r", 4)
@@ -127,13 +130,15 @@ map.selectAll("circle")
 
 
 /* ^ NEED BRUSHING TO RETURN WHICH ids TO FILTER*/
-var filters = {
-    'id': ["5","13","14","15","16","17","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","66","67","68","69","71","72","73","74","75","76","77","80","81","84","85","86","87","88","90","91","92","93","94","97","98","99","100","106","108","109","110","111","112","113","114","115","116","117","118","119","120","121","122","123","124","126","127","128","129","130","131","132","134","135","136","137","138","140","141","143","144","146","147","148","149","150","152","153","154","156","157","158","159","160","162","163","164","165","166","167","168","169","170","171","173","174","175","176","177","178","179","181","183","184","185","186","188","190","191","192","193","194","195","196","197","198","199","200","201","202","203","204","205","206","207","208","209","210","211","212","213","214","215","216","217","218","219","220","222","223","224","225","226","227","228","229","230","231","232","233","234","236","237","238","239","240","241","242","243","244","245","246","247","248","249","250","251","252","253","254","255","256","257","258","259","260","261","262","263","264","265","267","268","271","272","273","274","275","276","277","278","279","280","281","282","283","284","285","286","287","288","289","290","291","292","293","294","295","296","297","298","299","300","301","302","303","304","305","306","307","308","309","310","311","312","313","314","315","316","317","318","319","320","321","322","323","324","325","326","327","328","329","330","331","332","333","334","335","336","337","338","339","340","341","342","343","344","345","346","347","348","349","350","351"]
-    //'id': ["17","5"]
+var filters_base = {
+    //'id': ["5","13","14","15","16","17","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","66","67","68","69","71","72","73","74","75","76","77","80","81","84","85","86","87","88","90","91","92","93","94","97","98","99","100","106","108","109","110","111","112","113","114","115","116","117","118","119","120","121","122","123","124","126","127","128","129","130","131","132","134","135","136","137","138","140","141","143","144","146","147","148","149","150","152","153","154","156","157","158","159","160","162","163","164","165","166","167","168","169","170","171","173","174","175","176","177","178","179","181","183","184","185","186","188","190","191","192","193","194","195","196","197","198","199","200","201","202","203","204","205","206","207","208","209","210","211","212","213","214","215","216","217","218","219","220","222","223","224","225","226","227","228","229","230","231","232","233","234","236","237","238","239","240","241","242","243","244","245","246","247","248","249","250","251","252","253","254","255","256","257","258","259","260","261","262","263","264","265","267","268","271","272","273","274","275","276","277","278","279","280","281","282","283","284","285","286","287","288","289","290","291","292","293","294","295","296","297","298","299","300","301","302","303","304","305","306","307","308","309","310","311","312","313","314","315","316","317","318","319","320","321","322","323","324","325","326","327","328","329","330","331","332","333","334","335","336","337","338","339","340","341","342","343","344","345","346","347","348","349","350","351"]
+    'id': ["17","5"]
 };
 
-function filter_group_sum(data){
+function filter_group_sum(data,filters){
+        console.log("====");
 
+    console.log(filters);
     //FILTER:
     data = data.filter(function(row) {
     return ['id','date','tripduration'].reduce(function(pass, column) {
@@ -150,14 +155,14 @@ function filter_group_sum(data){
     return d;
   });
 
-    console.log(vdata);
+    //console.log(vdata);
     //GROUP:
      var ndata = d3.nest()
     .key(function(d) {return d.sdate;})
     .rollup(function(d) { return d3.sum(d, function(e) {return e.tripduration;}) })   
     .entries(vdata);
 
-    console.log(ndata);
+    //console.log(ndata);
     //Time Parse:
     ndata.forEach(function(d) {
     d.date = parseDate2(d.key);
@@ -166,18 +171,22 @@ function filter_group_sum(data){
     return ndata;
 }
 
+
+var dvdata;
 d3.csv("DV_Data.csv", type, function(error, data) {
   if (error) throw error;
 
-  data = filter_group_sum(data);
+  dvdata = data;
+
+  data_filter = filter_group_sum(dvdata,filters_base);
    
-  x.domain(d3.extent(data, function(d) { return d.date; }));
-  y.domain([0, d3.max(data, function(d) { return d.tripduration; })]);
+  x.domain(d3.extent(data_filter, function(d) { return d.date; }));
+  y.domain([0, d3.max(data_filter, function(d) { return d.tripduration; })]);
   x2.domain(x.domain());
   y2.domain(y.domain());
   
   focus.append("path")
-      .datum(data)
+      .datum(data_filter)
       .attr("class", "area")
       .attr("d", area);
 
@@ -191,7 +200,7 @@ d3.csv("DV_Data.csv", type, function(error, data) {
       .call(yAxis);
 
   context.append("path")
-      .datum(data)
+      .datum(data_filter)
       .attr("class", "area")
       .attr("d", area2);
 
@@ -251,12 +260,67 @@ function brushed_map() {
         if (x3(d.longitude) >= x0 && x3(d.longitude) <= x0 + dx && y3(d.latitude) >= y0 && y3(d.latitude) <= y0 + dy)
                 {   f.push(d.id);
                     console.log(f);
-                    return "Green"; }
-        else { return "#4292c6"; }
+                    return "#e77f00"; }
+        else { return "#00b9e7"; }
     });
-    
+
     brushInfo
             .html('<b>Selected Stations:</b> ' + f);
+
+    updateAreaChart({'id': f});
+}
+
+function updateAreaChart(toFilter) {
+  data_filter = filter_group_sum(dvdata,toFilter);
+  console.log(data_filter); 
+    //console.log(data);
+  focus.selectAll('path').remove();
+  focus.selectAll('g').remove();
+  context.selectAll('path').remove();
+  context.selectAll('g').remove();
+
+
+  x.domain(d3.extent(data_filter, function(d) { return d.date; }));
+  y.domain([0, d3.max(data_filter, function(d) { return d.tripduration; })]);
+  x2.domain(x.domain());
+  y2.domain(y.domain());
+  
+  focus.append("path")
+      .datum(data_filter)
+      .attr("class", "area")
+      .attr("d", area);
+
+  focus.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  focus.append("g")
+      .attr("class", "axis axis--y")
+      .call(yAxis);
+
+  context.append("path")
+      .datum(data_filter)
+      .attr("class", "area")
+      .attr("d", area2);
+
+  context.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height2 + ")")
+      .call(xAxis2);
+
+  context.append("g")
+      .attr("class", "brush")
+      .call(brush)
+      .call(brush.move, x.range());
+
+  svg.append("rect")
+      .attr("class", "zoom")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .call(zoom);
+
 }
 
 function brushended() {
@@ -265,7 +329,7 @@ function brushended() {
         .transition()
         .duration(150)
         .ease(d3.easeLinear)
-        .style("fill", "#4292c6");
+        .style("fill", "#00b9e7");
     }
 }
 
