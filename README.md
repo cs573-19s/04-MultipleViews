@@ -30,10 +30,11 @@ out body;
 >;
 out skel qt;
 ```
-The image above on the left is the map of [Chicago bike paths](https://github.com/longenbach/04-MultipleViews/blob/master/Chicago_BikePaths.geojson) with the [2013 Divvy stations](https://github.com/longenbach/04-MultipleViews/blob/master/Divvy_Stations_2013.csv) plotted on top. For the interactive compement you can brush over and select which stations you would like to see the number of trips over time displayed by the area charts.  
+The image above on the left is the map of Chicago bike paths [(file: Chicago_BikePaths.geojson)](https://github.com/longenbach/04-MultipleViews/blob/master/Chicago_BikePaths.geojson) with the 2013 Divvy stations [(file:Divvy_Stations_2013.csv)](https://github.com/longenbach/04-MultipleViews/blob/master/Divvy_Stations_2013.csv) plotted on top. For the interactive compement you can brush over and select which stations you would like to see the number of trips over time displayed by the area charts. The selected stations appear in orange and their respetice names appear at the bottom of the graphic. One feature I would have liked to add but did not have time is a map zoom feature. It is alittle busy in downtown Chicago and selecting partucilar stastions is diffcult.   
 
 ## Area Charts:
 
+Once a brush selection is made in the map portion of the visulzation
 
 
 
