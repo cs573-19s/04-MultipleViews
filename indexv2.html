@@ -19,16 +19,16 @@ circle {
 
 
 </style>
-<svg width="1200" height="500"></svg>
+<svg width="1200" height="530"></svg>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
 
 <script>
 
 var svg = d3.select("svg"),
-    margin = {top: 20, right: 20, bottom: 110, left: 600},
-    margin2 = {top: 430, right: 20, bottom: 30, left: 600},
-    margin3 = {top: 20, right: 650, bottom: 30, left: 20},
+    margin = {top: 50, right: 20, bottom: 110, left: 400},
+    margin2 = {top: 460, right: 20, bottom: 30, left: 400},
+    margin3 = {top: 50, right: 750, bottom: 30, left: 20},
     width = +svg.attr("width") - margin.left - margin.right,
     width3 = +svg.attr("width") - margin3.left - margin3.right,
     height = +svg.attr("height") - margin.top - margin.bottom,
@@ -63,7 +63,7 @@ var zoom = d3.zoom()
 
 var brushInfo = d3.select('body')
                 .append('p')
-                .html('<i>Select a region</i>');
+                .html('<i>Selected Stations</i>');
 
 var area = d3.area()
     .curve(d3.curveMonotoneX)
@@ -99,7 +99,17 @@ var context = svg.append("g")
 
 var projection = d3.geoMercator()
       .scale(100000)
-      .center([-87.654312, 41.875767]);
+      //.center([-87.654312, 41.875767]);
+      .center([-87.648727,41.884078])
+      .translate([width3/2,height3/2]);
+	
+focus.append("text")
+        .attr("x", 350)             
+        .attr("y", -20)
+        .attr("text-anchor", "middle")  
+        .style("font-size", "24px") 
+        .style("font-style", "italic")  
+        .text("Number of Bike Trips from Divvy Stations");
 
 /*NEED TO PROJECT LONG/LAT POINTS CORRECTLY*/
 d3.csv("Divvy_Stations_2013.csv", type, function(error, data) {
@@ -114,11 +124,11 @@ map.selectAll("circle")
         .data(data)
       .enter().append("circle")
       .attr("class", "map")
-        //.attr("cx", function(d) {return projection([d.longitude,d.latitude])[0]})
-        //.attr("cy", function(d) {return projection([d.longitude,d.latitude])[1]})
-        .attr("cx", function(d) { return x3(d.longitude); })
-        .attr("cy", function(d) { return y3(d.latitude); })
-        .attr("r", 4)
+        .attr("cx", function(d) {return projection([d.longitude,d.latitude])[0]})
+        .attr("cy", function(d) {return projection([d.longitude,d.latitude])[1]})
+        //.attr("cx", function(d) { return x3(d.longitude); })
+        //.attr("cy", function(d) { return y3(d.latitude); })
+        .attr("r", 3)
         .append("title")
         .text(function(d) { return d["name"] + '\n' + d["id"] })
         //.attr("transform", function(d) { return "translate(" + projection([d.longitude,d.latitude]) + ")" });
@@ -129,10 +139,30 @@ map.selectAll("circle")
 });
 
 
+d3.json('Chicago_BikePaths.geojson', function(error, paths) {
+    console.log(paths.features[0]);
+    street = paths //paths.features[0];
+    projectionM = d3.geoMercator().fitExtent([[margin3, margin3], [width3 - margin3, height3 - margin3]], street);
+    pathGeneratorM = d3.geoPath().projection(projection);
+    mapPath = pathGeneratorM(street)
+
+  map.append('path')
+    .datum(street)
+    .attr('d', pathGeneratorM)
+    .attr('fill', 'none')
+    .attr('stroke', '#999999')
+    .attr('stroke-width', '2')
+    .attr('opacity',0.6);
+  
+
+});  
+
+
+
 /* ^ NEED BRUSHING TO RETURN WHICH ids TO FILTER*/
 var filters_base = {
-    //'id': ["5","13","14","15","16","17","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","66","67","68","69","71","72","73","74","75","76","77","80","81","84","85","86","87","88","90","91","92","93","94","97","98","99","100","106","108","109","110","111","112","113","114","115","116","117","118","119","120","121","122","123","124","126","127","128","129","130","131","132","134","135","136","137","138","140","141","143","144","146","147","148","149","150","152","153","154","156","157","158","159","160","162","163","164","165","166","167","168","169","170","171","173","174","175","176","177","178","179","181","183","184","185","186","188","190","191","192","193","194","195","196","197","198","199","200","201","202","203","204","205","206","207","208","209","210","211","212","213","214","215","216","217","218","219","220","222","223","224","225","226","227","228","229","230","231","232","233","234","236","237","238","239","240","241","242","243","244","245","246","247","248","249","250","251","252","253","254","255","256","257","258","259","260","261","262","263","264","265","267","268","271","272","273","274","275","276","277","278","279","280","281","282","283","284","285","286","287","288","289","290","291","292","293","294","295","296","297","298","299","300","301","302","303","304","305","306","307","308","309","310","311","312","313","314","315","316","317","318","319","320","321","322","323","324","325","326","327","328","329","330","331","332","333","334","335","336","337","338","339","340","341","342","343","344","345","346","347","348","349","350","351"]
-    'id': ["17","5"]
+    'id': ["5","13","14","15","16","17","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","66","67","68","69","71","72","73","74","75","76","77","80","81","84","85","86","87","88","90","91","92","93","94","97","98","99","100","106","108","109","110","111","112","113","114","115","116","117","118","119","120","121","122","123","124","126","127","128","129","130","131","132","134","135","136","137","138","140","141","143","144","146","147","148","149","150","152","153","154","156","157","158","159","160","162","163","164","165","166","167","168","169","170","171","173","174","175","176","177","178","179","181","183","184","185","186","188","190","191","192","193","194","195","196","197","198","199","200","201","202","203","204","205","206","207","208","209","210","211","212","213","214","215","216","217","218","219","220","222","223","224","225","226","227","228","229","230","231","232","233","234","236","237","238","239","240","241","242","243","244","245","246","247","248","249","250","251","252","253","254","255","256","257","258","259","260","261","262","263","264","265","267","268","271","272","273","274","275","276","277","278","279","280","281","282","283","284","285","286","287","288","289","290","291","292","293","294","295","296","297","298","299","300","301","302","303","304","305","306","307","308","309","310","311","312","313","314","315","316","317","318","319","320","321","322","323","324","325","326","327","328","329","330","331","332","333","334","335","336","337","338","339","340","341","342","343","344","345","346","347","348","349","350","351"]
+    //'id': ["17","5"]
 };
 
 function filter_group_sum(data,filters){
@@ -173,7 +203,7 @@ function filter_group_sum(data,filters){
 
 
 var dvdata;
-d3.csv("DV_Data.csv", type, function(error, data) {
+d3.csv("Divvy_Trips_2013_Processed.csv", type, function(error, data) {
   if (error) throw error;
 
   dvdata = data;
@@ -255,17 +285,23 @@ function brushed_map() {
         dx = s[1][0] - x0,
         dy = s[1][1] - y0;
     var f = [];     
+    var names = [];
     map.selectAll('circle')
     .style("fill", function (d) {
-        if (x3(d.longitude) >= x0 && x3(d.longitude) <= x0 + dx && y3(d.latitude) >= y0 && y3(d.latitude) <= y0 + dy)
+        XL = projection([d.longitude,d.latitude])[0];
+        YL = projection([d.longitude,d.latitude])[1];
+        //if (x3(d.longitude) >= x0 && x3(d.longitude) <= x0 + dx && y3(d.latitude) >= y0 && y3(d.latitude) <= y0 + dy)
+        if (XL >= x0 && XL <= x0 + dx && YL >= y0 && YL <= y0 + dy)
                 {   f.push(d.id);
+                    names.push(" "+d.name);
                     console.log(f);
                     return "#e77f00"; }
         else { return "#00b9e7"; }
     });
 
     brushInfo
-            .html('<b>Selected Stations:</b> ' + f);
+            .html('<b>Selected Stations:</b> ' + names)
+            .style("font-style", "italic");
 
     updateAreaChart({'id': f});
 }
