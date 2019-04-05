@@ -12,7 +12,23 @@ Above is a screenshot of the mutiple views visulzation I created. Divvy is a bik
 ![Map](img/geo_raw2.png)
 ![Map_Raw](img/map.png)
 
+From [OpenStreetMap](https://www.openstreetmap.org/#map=11/41.8370/-87.6742) using the [Overpass API](https://overpass-turbo.eu/) I was able to extract the GeoJSON file containing all bike paths in Chicago. The image above on the right is the selection of the various Chicago bike paths after running the following query below. 
 
+```Java 
+[out:json];
+(
+  // get cycle route relatoins
+  relation[route=bicycle]({{bbox}});
+  // get cycleways
+  way[highway=cycleway]({{bbox}});
+  way[highway=path][bicycle=designated]({{bbox}});
+);
+
+out body;
+>;
+out skel qt;
+```
+Once finished you can download the output as a GeoJSON file. Using 
 
 
 
