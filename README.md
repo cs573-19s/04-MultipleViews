@@ -19,6 +19,7 @@ When you click a state on map, bubble chart will show the cause of shootings in 
 
 - In bubble chart, text size changes according to bubble size.
 - When mouse over chart, the label will show the amount.
+- Rotated x-axis label.
 - Used map in order to visualize the amount of shootings in each state.
 - Used bubble chart to visualize the amount of shootings by different causes.
 - Used bar chart visualize the amount of shootings in every year.
