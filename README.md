@@ -1,9 +1,9 @@
 Assignment 4 - Visualizations and Multiple Views  
-===
-data:
-link:
-
 ---
+Data:
+Link:
+
+===
 I get US mass shooting dataset from kaggle and visualized it by multiple views.
 
 - US map represents the shooting in all states. 
