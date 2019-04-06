@@ -25,7 +25,7 @@ Technique
 2. draw the choropleth world map with data.
 3. use other app to first filter the data and analysis it get the clean data.
 4. try to do the interactive bar chart with the world map, but fails, want to do map update and bar update with the same button, however fails.
-
+![4.png](image/4.png)
 
 
 Design
