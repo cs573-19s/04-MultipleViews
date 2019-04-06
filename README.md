@@ -3,7 +3,7 @@ Assignment 4 - Visualizations and Multiple Views
 
 visualization link: https://mkliu1013.github.io/04-MultipleViews/
 
-
+![Visualization](img/Visualization .png)
 Resources
 ---
 
