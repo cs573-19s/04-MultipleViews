@@ -1,59 +1,68 @@
-Assignment 4 - Visualizations and Multiple Views  
-===
+[**_Link for demo_**](https://loveice622.github.io/usEarthquakeViewer/)
 
-One of the most powerful techniques for mitigating the shortcomings of a given visualization is to link it with other views.
-Linking a map to a bar or scatterplot, for instance, may allow you to overcome the shortcomings of a map.
-In general, linking visualizations allows you to explore different parts of the data between views, and mitigates the shortcomings of a given view by pairing it with other views.
-This technique, called coordinated multiple views, is the focus of this assignment.
+## 1. Introduction
+An earthquake is the shaking of the surface of the Earth, resulting from the sudden release of energy in the Earth's lithosphere that creates seismic waves. Earthquakes can range in size from those that are so weak that they cannot be felt to those violent enough to toss people around and destroy whole cities.
+This project is a visualization of earthquake incidents on the earth from last century. The motivation of this project is to help people to understand more about the geographic distribution of the earthquakes on the earth. Meanwhile, it can also be used as a scientific research or teaching materials of studying the seismic activities in particular area.  
+The following tasks and questions will drive the visualization and interaction decisions for this project:
 
-Your task is to choose an interesting dataset and visualize it in *at least three* **linked** views, where interactions in any given view updates the other two.
-Each view should use a different visualization type, and interaction in one of the views should impact what's shown in the other views.
+- Where are the locations of earthquakes and is there any distribution pattern on the map?  Shows the places with the most frequently or biggest earthquake incidents on the map.
 
-You should choose data and visualizations that are sufficiently complex and interesting to ensure a user can discover interesting patterns and trends on their own.
+- Shows the trend of the earthquake by time from the year 1975. Which are the years with the most frequently earthquakes or biggest earthquakes happened? 
 
-For this assignment you should write everything from scratch.
-You may *reference and adapt* code from books or the web, and if you do please provide a References section with links at the end of your Readme.
+## 2. Dataset
+The data I propose to visualize for my project is earthquake incidents on the earth from year 1975 to year 2017, since the earthquake data of many counties is not complete or missing before the year 1975. The data is searched from USGS Earthquake Hazards Program, which is part of the National Earthquake Hazards Reduction Program (NEHRP), established by U.S. Congress in 1977. Below is the dataset summary:
+Data table summary: 
+19870 rows
+22 columns
+3052 kB
+![2](https://user-images.githubusercontent.com/25095189/32582820-b1346dd6-c4be-11e7-88df-a3822ea1c15f.png)
 
-Resources
----
+## 3. Sketches
+A sketch is made in early with the data only in the range of American. 
+![3](https://user-images.githubusercontent.com/25095189/32582967-553f28d0-c4bf-11e7-99f9-f6ecc79706dc.jpg)
+- The locations of earthquake incidences are plot on the map by given latitude and longitude pairs in the dataset.   
+- The scatters on the map should contain the information of earthquake rms and magnitude by changing the size and color of the scatters. 
+- A XY line chart is in the bottom of the map which shows the year in X and count in Y. The user is allowed to drag the window along the X on the line chart and the corresponding data of the year in the range of the window will be reflected on the map.
+- A combo box with the choice of hidden the earthquake data by selecting the minimum visible magnitude will be located on the upper right corner of the map. 
+- There is play button that will automatically update map along the time after pressed.
 
-Data is Plural has a list of interesting datasets, many of which require processing.
+## 4. Prototype
+![1](https://user-images.githubusercontent.com/25095189/32581084-6a63376e-c4b6-11e7-82fd-5f5c1a083178.png)
+### Scatters Plot on the Map
+- Map: A world map is used 
+- Mark: the scatters are denotes the incidents of the earthquake. 
+- Location: the scatters are merged on the map based on the pairs of latitude and longitude of each earthquake incidents.
+- Scatter Color: represent the magnitude level of the earthquake. 
+- Scatter Size: represent the rms value of the earthquake.
+- Zoom: user can zoom-in or zoom-out the map by using the scroll of the mouse
+- Details-on-demand: show the earthquake details when mouse hovers on the certain scatter point.
+![4](https://user-images.githubusercontent.com/25095189/32583723-31807440-c4c3-11e7-8ee4-8533881d8a04.png)
 
-These three examples are intended to show you what multiple views visualizations might look like. 
-I wouldn't recommend using them as a your starting point, but you may find some inspiration:
+### Bar Chart 
+- X axis: Year from 1975 to 2017
+- Y axis: the numbers of the earthquakes 
+- Bar Color: represent the magnitude level of the earthquake.
+- Brush: User can use brush to select the data in specific range of the years to display
 
-1. This [scatterplot matrix](http://bl.ocks.org/mbostock/4063663) has code that explains brushing and linking. But remember you'll be doing this with different types of views.
+![6](https://user-images.githubusercontent.com/25095189/32584881-a56e616e-c4c8-11e7-8f78-3a0e69bb5c94.png)
 
-2. The example visualization for [Crossfilter](http://square.github.io/crossfilter/) uses coordinated multiple views. The interaction and brushing technique is well-executed.
+- Tips: shows remark of the bar when mouse hovers on the certain bar
 
-3. The [dispatching events](https://github.com/d3/d3-dispatch) page is a good example of using events, rather than explicit functions, for controlling behavior. Views can listen for events in other views and respond accordingly.
+![5](https://user-images.githubusercontent.com/25095189/32583864-981899ee-c4c3-11e7-93f9-04e7cf02b67a.png)
 
-This GIF from a similar course shows how views can work together:
+### Menu
+- Animation Control:  Replay Animation or Stop Animation
+- Filter: Apply a magnitude filter to select the data in a specific magnitude range
 
-![cmv gif](https://raw.githubusercontent.com/dataviscourse/2015-dataviscourse-homework/master/hw3/preview.gif)
+### Animation
+The scatter will be drawn on the map in the time sequence according to the time of earthquake incidents. User can replay or stop the animation via the button in the menu.
+ 
+## 4. Reference
+Data Source: [The USGS Earthquake Hazards Program](https://earthquake.usgs.gov/earthquakes/search/).
 
-*If you aren't familiar with event-based programming you should experiment with d3.dispatch and other approaches to coordinating views well before the deadline (it's tricky.)*
+Inspired by: [Curran Kelleher’s Block-Cities on the Globe](https://bl.ocks.org/curran/115407b42ef85b0758595d05c825b346)
 
-Don't forget to run a local webserver when you're coding and debugging.
+[Anthony Skelton-Earthquake Animation](https://anthonyskelton.com/2016/d3-js-earthquake-visualizations/)
 
-Requirements
----
+[Mike Bostock’s Block-Brush Snapping](https://bl.ocks.org/mbostock/6232537)
 
-0. Your code should be forked from the GitHub repo and linked using GitHub pages.
-1. Your project should load a dataset you found on the web. Put this file in your repo.
-2. Your project should use d3 to build a visualization of the dataset. 
-3. Your writeup (readme.md in the repo) should contain the following:
-
-- Working link to the visualization hosted on gh-pages.
-- Concise description and screenshot of your visualization.
-- Description of the technical achievements you attempted with this visualization.
-- Description of the design achievements you attempted with this visualization.
-
-GitHub Details
----
-
-- Fork the GitHub Repository. You now have a copy associated with your username.
-- Make changes to index.html to fulfill the project requirements. 
-- Make sure your "master" branch matches your "gh-pages" branch. See the GitHub Guides referenced above if you need help.
-- Edit the README.md with a link to your gh-pages site, for example http://YourUsernameGoesHere.github.io/04-MapsAndViews/index.html
-- To submit, make a [Pull Request](https://help.github.com/articles/using-pull-requests/) on the original repository.
