@@ -9,7 +9,7 @@ https://yutinghan.github.io/04-MultipleViews/
 
 Overview
 ----
-This project visualizes one day of ShangHai MTR Line 5. There are Four coordinated views as shown in Figure 1. 
+This project visualizes one day of ShangHai MTR Line 5. There are four coordinated views as shown in Figure 1. 
 
 - View-GeoMap shows 17 Metro lines on geomap and each circle denotes one metro running at this moment.
 - View-Line5 is the enlarged view from View-GeoMap.
