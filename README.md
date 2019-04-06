@@ -30,12 +30,23 @@ Data
 - connections_by_station_name.json: Connections between linked stations are provided.
 <p align="center"><kbd><img src="img/connections_by_station_name.png" height="100%" width="100%"></kbd></p>
 
-- trains.json: Schedules on Line five are provided.
+- trains.json: The schedules on Line five is provided.
 
 Four Views
 ----
-- GeoMap
 - Line 5
+
+On Play-mode, circles indicating metros moves along Line 5. And when hovering on the circle, all animations on four views will be pause and the corresponding metro in View-GeoMap and View-Passenger-Load will be highlighted as red circle and red bar. The moving timeline will also pause.
+
+On Pause-mode, linked interactions are same as the Play-mode except for the pause-effect.
+
+<p align="center"><kbd><img src="img/Line5.png" height="50%" width="50%"></kbd></p>
+  
+- GeoMap
+  
+  View-GeoMap has the same linked interactions as View-Line5.
+  
+
 - Passenger Load
 - Timeline
 
