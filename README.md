@@ -9,4 +9,4 @@ I download the dataset for all pokemon from kaggle, It contains many data for ea
 
 Views:
 ---
-![image](img/1.png)
+![image](img/all.png)
