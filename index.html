@@ -6,7 +6,7 @@ body{
     margin:50px auto;
 }
 path {  stroke: #fff; }
-path:hover {  opacity:0.9; }
+path:hover {  opacity:0.6; }
 rect:hover {  fill:blue; }
 .axis {  font: 10px sans-serif; }
 .legend tr{    border-bottom:1px solid grey; }
@@ -62,7 +62,7 @@ function dashboard(id, fData){
             .attr("transform", "translate(" + hGDim.l + "," + hGDim.t + ")");
 
         // create function for x-axis mapping.
-        var x = d3.scale.ordinal().rangeRoundBands([0, hGDim.w], 0.1)
+        var x = d3.scale.ordinal().rangeRoundBands([0, hGDim.w], 0.4)
                 .domain(fD.map(function(d) { return d[0]; }));
 
         // Add x-axis to the histogram svg.
