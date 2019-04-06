@@ -58,19 +58,22 @@ Four Views
 
 - Timeline
 
-  The slider on the View-Timeline could control the playing time of other three views.
+  The slider on the View-Timeline could control animations of other three views.
   <p align="center"><kbd><img src="img/Timeline.png" height="100%" width="100%"></kbd></p>
   
 
 Technical Achievement Description
 ----
-slider
-moving exit update
-
-
+- Using Python(pandas) and Jupyter Notebook to clear data and export Json files.
+- Enter-Update-Exit is used to bulid animations.
+- Time slider is used to control the animation process.
 
 Design Achievement Description
 ----
+- SHMTR geolations are visualized.
+- Four linked interactive views
+- Provide interactions to help users discover information by themselves.
+  - On Play-mode
 
 Reference
 ----
