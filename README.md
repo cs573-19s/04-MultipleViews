@@ -1,6 +1,6 @@
 Assignment 4 - Visualizations and Multiple Views  
 ---
-Data: https://www.kaggle.com/zusmani/us-mass-shootings-last-50-years
+Data: https://www.kaggle.com/zusmani/us-mass-shootings-last-50-years  
 Link: https://ianhuang96.github.io/04-MultipleViews/
 
 ---
