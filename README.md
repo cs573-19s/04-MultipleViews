@@ -10,3 +10,7 @@ I download the dataset for all pokemon from kaggle, It contains many data for ea
 Views:
 ---
 ![image](img/all.png)
+
+The slopo chart each line stand by a data for each pokemon, From left to right is Generation, Legendary, Total, Sp.Atk, Sp.Def, Defence, Attack, HP, Speed, Type and their Global id. You can choose each part of every line and it will show what pokemon you choose in other plot.
+
+![image](img/1.gif)
