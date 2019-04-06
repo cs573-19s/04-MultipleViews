@@ -17,4 +17,11 @@ When you click a state on map, bubble chart will show the cause of shootings in 
 
 # Technical achievement
 
-In bubble chart, text size changes according to bubble size.
+- In bubble chart, text size changes according to bubble size.
+- When mouse over chart, the label will show the amount.
+-
+
+# Design achievement
+
+- In map chart, the more shootings, the deeper red of color in state is.
+- In bubble chart, I use category10 in order to distinguish differen causes.
