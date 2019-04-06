@@ -15,6 +15,8 @@ The slopo chart each line stand by a data for each pokemon, From left to right i
 
 ![image](img/1.gif)
 
+For other plot, you can select a box and it will change in other plot, too.
+
 ![image](img/2.gif)
 
 ![image](img/3.gif)
