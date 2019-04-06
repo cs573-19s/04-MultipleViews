@@ -29,14 +29,15 @@ Description:
 Views:
 ---
 Link view:
-
+![image](image/overview.png)
 toolip view:
-
+![image](image/toolip.png)
 Scatter plot:
-
+![image](image/scatter.png)
 Line plot:
-
+![image](image/line.png)
 Bar chart:
+![image](image/bar.png)
 
 Technical Achievement Description
 ----
