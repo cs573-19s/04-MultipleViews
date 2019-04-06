@@ -82,7 +82,7 @@
 <script>
     
     var dispatch = d3.dispatch('load');
-    var csvData = undefined;
+    var csvData;
     var data = d3.csv('Shootings Dataset.csv', function (error, data) {
         if (error) throw error;
         dispatch.load(data);
