@@ -36,7 +36,7 @@ Four Views
 ----
 - Line 5
 
-  On Play-mode, circles indicating metros moves along Line 5. And when hovering on the circle, all animations on four views will pause and the corresponding metro in View-GeoMap and View-Passenger-Load will be highlighted as red circle and red bar. The moving timeline will also pause. When hovering out the circle, all animation will continue to play.
+  On Play-mode, circles indicating metros moves along Line 5. And when hovering on the circle, all animations on four views will pause and the corresponding metro in View-GeoMap and View-Passenger-Load will be highlighted as red circle and red bar. The moving timeline will also pause and a red line indicating when the metro start will be presented. When hovering out the circle, all animation will continue to play.
 
   On Pause-mode, linked interactions are the same as the Play-mode except for the pause effect.
 
@@ -50,7 +50,7 @@ Four Views
   
 - Passenger Load
 
-  On Play-mode, bars indicating metros moves along Line 5. And when hovering on the bar, all animations on four views will pause and the corresponding metro in View-GeoMap and View-Line5 will be highlighted as red circles. The moving timeline will also pause. When hovering out the bar, all animation will continue to play.
+  On Play-mode, bars indicating metros moves along Line 5. And when hovering on the bar, all animations on four views will pause and the corresponding metro in View-GeoMap and View-Line5 will be highlighted as red circles. The moving timeline will also pause and a red line indicating when the metro start will be presented. When hovering out the bar, all animation will continue to play.
 
   On Pause-mode, linked interactions are same as the Play-mode except for the pause-effect and replay-effect.
 
