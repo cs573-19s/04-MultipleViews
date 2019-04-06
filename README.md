@@ -20,3 +20,17 @@ For other plot, you can select a box and it will change in other plot, too.
 ![image](img/2.gif)
 
 ![image](img/3.gif)
+
+Technical Achivement Description
+---
+- Know how to use brushing on plot
+- Using slopechart to sisplay multiple data for each one.
+- Skiiled for build slopechart and scatter plot.
+- In scatter plots, there will be change when the dots be selected in other plot.
+- Change the representation of the X axis and Y axis.
+
+Design Achivements
+---
+- In scatter plot, when the dot is choosen the color will be changed.
+- Each scatter plot are use different color.
+- When picking dots from the fourth scatter dot, The selected dots can show bigger so it can easy to see.
