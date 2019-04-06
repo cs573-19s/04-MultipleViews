@@ -41,10 +41,12 @@ Bar chart:
 Technical Achievement Description
 ----
 - Using Python(pandas) to clear data and export csv files.
-- Toolip ud to build scatter plot and line chart.
+- Toolip used to build scatter plot and line chart.
+- EnterUpdateExit usd to build scatter plot and line chart.
 - Can use brushing on the bar chart.
 - In scatter plot, dots color changes according to kills number.
 - When mouse over scatter plot and line chart, the label will show the detail.
+
 
 Design Achievement Description
 ----
