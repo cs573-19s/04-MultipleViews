@@ -11,6 +11,6 @@ When you click a state on map, bubble chart will show the cause of shootings in 
 
 ![image](img/)
 
-Technical achievement
----
+# Technical achievement
+
 In bubble chart, text size changes according to bubble size.
