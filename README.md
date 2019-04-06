@@ -1,59 +1,89 @@
-Assignment 4 - Visualizations and Multiple Views  
+Assignment 4 - Visualizations and Multiple Views
+===
+Topic: ShangHai MTR Visualization
 ===
 
-One of the most powerful techniques for mitigating the shortcomings of a given visualization is to link it with other views.
-Linking a map to a bar or scatterplot, for instance, may allow you to overcome the shortcomings of a map.
-In general, linking visualizations allows you to explore different parts of the data between views, and mitigates the shortcomings of a given view by pairing it with other views.
-This technique, called coordinated multiple views, is the focus of this assignment.
+Working Link
+----
+https://yutinghan.github.io/04-MultipleViews/
 
-Your task is to choose an interesting dataset and visualize it in *at least three* **linked** views, where interactions in any given view updates the other two.
-Each view should use a different visualization type, and interaction in one of the views should impact what's shown in the other views.
+Overview
+----
+This project visualizes one day of ShangHai MTR Line 5. There are four coordinated views as shown in Figure 1. 
 
-You should choose data and visualizations that are sufficiently complex and interesting to ensure a user can discover interesting patterns and trends on their own.
+- View-GeoMap shows 17 Metro lines on geomap and each circle denotes one metro running at this moment.
+- View-Line5 is the enlarged view from View-GeoMap.
+- View-Passenger-Load presents the passenger load on each metro at this moment. The X-axis denotes stations of Line 5 from the start to end and Y-axis denotes the passenger load, how many people on the metro.
+- The left side on View-Time indicates time in 24-hours and the right side is a line chart. Here, X-axis denotes the time in minutes. For example, 300 means 5:00 am. And Y-axis denotes how many metros on Line 5 at this moment.
 
-For this assignment you should write everything from scratch.
-You may *reference and adapt* code from books or the web, and if you do please provide a References section with links at the end of your Readme.
+There are two modes, "animation play" and "animation pause". And the linked interactions are somewhat different in these two modes, which will be introduced later. 
 
-Resources
----
+<p align="center"><kbd><img src="img/overview1.png" height="100%" width="100%"></kbd> Figure 1</p>
 
-Data is Plural has a list of interesting datasets, many of which require processing.
 
-These three examples are intended to show you what multiple views visualizations might look like. 
-I wouldn't recommend using them as a your starting point, but you may find some inspiration:
 
-1. This [scatterplot matrix](http://bl.ocks.org/mbostock/4063663) has code that explains brushing and linking. But remember you'll be doing this with different types of views.
+Data
+----
+- stations_by_name.json: The geolocations of each station are provided.
+<p align="center"><kbd><img src="img/stations_by_name.png" height="100%" width="100%"></kbd></p>
 
-2. The example visualization for [Crossfilter](http://square.github.io/crossfilter/) uses coordinated multiple views. The interaction and brushing technique is well-executed.
+- connections_by_station_name.json: Connections between linked stations are provided.
+<p align="center"><kbd><img src="img/connections_by_station_name.png" height="100%" width="100%"></kbd></p>
 
-3. The [dispatching events](https://github.com/d3/d3-dispatch) page is a good example of using events, rather than explicit functions, for controlling behavior. Views can listen for events in other views and respond accordingly.
+- trains.json: The schedules on Line five is provided.
 
-This GIF from a similar course shows how views can work together:
+Four Views
+----
+- Line 5
 
-![cmv gif](https://raw.githubusercontent.com/dataviscourse/2015-dataviscourse-homework/master/hw3/preview.gif)
+  On Play-mode, circles indicating metros moves along Line 5. And when hovering on the circle, all animations on four views will pause and the corresponding metro in View-GeoMap and View-Passenger-Load will be highlighted as red circle and red bar. The moving timeline will also pause and a red line indicating when the metro start will be presented. When hovering out the circle, all animation will continue to play.
 
-*If you aren't familiar with event-based programming you should experiment with d3.dispatch and other approaches to coordinating views well before the deadline (it's tricky.)*
+  On Pause-mode, linked interactions are the same as the Play-mode except for the pause effect.
 
-Don't forget to run a local webserver when you're coding and debugging.
+  <p align="center"><kbd><img src="img/Line5.png" height="50%" width="50%"></kbd></p>
+  
+- GeoMap
+  
+  View-GeoMap has the same linked interactions as View-Line5.
+  
+  <p align="center"><kbd><img src="img/GeoMap.png" height="80%" width="80%"></kbd></p>
+  
+- Passenger Load
 
-Requirements
----
+  On Play-mode, bars indicating metros moves along Line 5. And when hovering on the bar, all animations on four views will pause and the corresponding metro in View-GeoMap and View-Line5 will be highlighted as red circles. The moving timeline will also pause and a red line indicating when the metro start will be presented. When hovering out the bar, all animation will continue to play.
 
-0. Your code should be forked from the GitHub repo and linked using GitHub pages.
-1. Your project should load a dataset you found on the web. Put this file in your repo.
-2. Your project should use d3 to build a visualization of the dataset. 
-3. Your writeup (readme.md in the repo) should contain the following:
+  On Pause-mode, linked interactions are same as the Play-mode except for the pause-effect and replay-effect.
 
-- Working link to the visualization hosted on gh-pages.
-- Concise description and screenshot of your visualization.
-- Description of the technical achievements you attempted with this visualization.
-- Description of the design achievements you attempted with this visualization.
+  <p align="center"><kbd><img src="img/passenger.png" height="80%" width="80%"></kbd></p>
 
-GitHub Details
----
+- Timeline
 
-- Fork the GitHub Repository. You now have a copy associated with your username.
-- Make changes to index.html to fulfill the project requirements. 
-- Make sure your "master" branch matches your "gh-pages" branch. See the GitHub Guides referenced above if you need help.
-- Edit the README.md with a link to your gh-pages site, for example http://YourUsernameGoesHere.github.io/04-MapsAndViews/index.html
-- To submit, make a [Pull Request](https://help.github.com/articles/using-pull-requests/) on the original repository.
+  The slider on the View-Timeline could control animations of the other three views.
+  <p align="center"><kbd><img src="img/Timeline.png" height="100%" width="100%"></kbd></p>
+  
+
+Technical Achievement Description
+----
+- Using Python(pandas) and Jupyter Notebook to clear data and export JSON files.
+- Enter-Update-Exit is used to build animations.
+- Time slider is used to control the animation process.
+- When the time-slider moving to the end, it will return back to the start point automatically.
+
+Design Achievement Description
+----
+- SHMTR geolocations are visualized.
+- Four linked interactive views help users discover information by themselves.
+  - Users could see the whole SHMTR map, a clear single view of Line 5, passengers' number on each metro and how time flies explained by the timeline.
+  - On the Play-mode, users could explore links between each view without click "pause" button. Hovering on the circle or bar could achieve this effect. 
+  - On the Pause-mode, users could explore details at this timestamp.
+- Bootstrap layout is used.
+  
+
+
+Reference
+----
+- Data: https://github.com/jeevanyue/metro
+- Slider: https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
+
+
+
