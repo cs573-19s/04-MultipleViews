@@ -24,7 +24,7 @@ There are two modes, "animation play" and "animation pause". And the linked inte
 
 Data
 ----
-- stations_by_name.json: The geolocation of each stations are provided.
+- stations_by_name.json: The geolocations of each station are provided.
 <p align="center"><kbd><img src="img/stations_by_name.png" height="100%" width="100%"></kbd></p>
 
 - connections_by_station_name.json: Connections between linked stations are provided.
@@ -38,7 +38,7 @@ Four Views
 
   On Play-mode, circles indicating metros moves along Line 5. And when hovering on the circle, all animations on four views will pause and the corresponding metro in View-GeoMap and View-Passenger-Load will be highlighted as red circle and red bar. The moving timeline will also pause. When hovering out the circle, all animation will continue to play.
 
-  On Pause-mode, linked interactions are same as the Play-mode except for the pause-effect.
+  On Pause-mode, linked interactions are the same as the Play-mode except for the pause effect.
 
   <p align="center"><kbd><img src="img/Line5.png" height="50%" width="50%"></kbd></p>
   
@@ -58,25 +58,23 @@ Four Views
 
 - Timeline
 
-  The slider on the View-Timeline could control animations of other three views.
+  The slider on the View-Timeline could control animations of the other three views.
   <p align="center"><kbd><img src="img/Timeline.png" height="100%" width="100%"></kbd></p>
   
 
 Technical Achievement Description
 ----
-- Using Python(pandas) and Jupyter Notebook to clear data and export Json files.
-- Enter-Update-Exit is used to bulid animations.
+- Using Python(pandas) and Jupyter Notebook to clear data and export JSON files.
+- Enter-Update-Exit is used to build animations.
 - Time slider is used to control the animation process.
 - When the time-slider moving to the end, it will return back to the start point automatically.
 
 Design Achievement Description
 ----
-- SHMTR geolations are visualized.
-
+- SHMTR geolocations are visualized.
 - Four linked interactive views help users discover information by themselves.
-
 - Users could see the whole SHMTR map, a clear single view of Line 5, passengers' number on each metro and how time flies explained by the timeline.
-  - On the Play-mode, users could explore links between each view without click "pause" button. Hovering on the circle or bar could achive this effect. 
+  - On the Play-mode, users could explore links between each view without click "pause" button. Hovering on the circle or bar could achieve this effect. 
   - On the Pause-mode, users could explore details at this timestamp.
   
 
