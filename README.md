@@ -12,8 +12,11 @@ Description
 ----
 For this homework, get three views, are pie chart, bar chart and would map.
 1. use pie chart to show the data that in different years, the percentage of car makes.
+![1.png](image/1.png)
 2. use bar chart to show the data that the total sales of all the car makes.
+![2.png](image/2.png)
 3. use choropleth world map to show the data that in different years, which countery sales how many cars.
+![3.png](image/3.png)
 
 
 Technique
