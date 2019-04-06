@@ -73,9 +73,10 @@ Design Achievement Description
 ----
 - SHMTR geolocations are visualized.
 - Four linked interactive views help users discover information by themselves.
-- Users could see the whole SHMTR map, a clear single view of Line 5, passengers' number on each metro and how time flies explained by the timeline.
+  - Users could see the whole SHMTR map, a clear single view of Line 5, passengers' number on each metro and how time flies explained by the timeline.
   - On the Play-mode, users could explore links between each view without click "pause" button. Hovering on the circle or bar could achieve this effect. 
   - On the Pause-mode, users could explore details at this timestamp.
+- Bootstrap layout is used.
   
 
 
