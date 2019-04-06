@@ -48,6 +48,7 @@ Technical Achievement Description
 - Can use brushing on the bar chart.
 - In scatter plot, dots color changes according to kills number.
 - When mouse over scatter plot and line chart, the label will show the detail.
+- y axis will change due to the data we choose.
 
 
 Design Achievement Description
