@@ -1,59 +1,36 @@
-Assignment 4 - Visualizations and Multiple Views  
+Assignment 4 - Visualizations and Multiple Views
 ===
 
-One of the most powerful techniques for mitigating the shortcomings of a given visualization is to link it with other views.
-Linking a map to a bar or scatterplot, for instance, may allow you to overcome the shortcomings of a map.
-In general, linking visualizations allows you to explore different parts of the data between views, and mitigates the shortcomings of a given view by pairing it with other views.
-This technique, called coordinated multiple views, is the focus of this assignment.
+Link: https://eva1721.github.io/04-MultipleViews/a4.html
 
-Your task is to choose an interesting dataset and visualize it in *at least three* **linked** views, where interactions in any given view updates the other two.
-Each view should use a different visualization type, and interaction in one of the views should impact what's shown in the other views.
+Data: https://www.kaggle.com/abcsds/pokemon
 
-You should choose data and visualizations that are sufficiently complex and interesting to ensure a user can discover interesting patterns and trends on their own.
+I download the dataset for all pokemon from kaggle, It contains many data for each pokemon, like HP, attack, defense and speed. Then I use four plot to make this assignment.
 
-For this assignment you should write everything from scratch.
-You may *reference and adapt* code from books or the web, and if you do please provide a References section with links at the end of your Readme.
-
-Resources
+Views:
 ---
+![image](img/all.png)
 
-Data is Plural has a list of interesting datasets, many of which require processing.
+The slopo chart each line stand by a data for each pokemon, From left to right is Generation, Legendary, Total, Sp.Atk, Sp.Def, Defence, Attack, HP, Speed, Type and their Global id. You can choose each part of every line and it will show what pokemon you choose in other plot.
 
-These three examples are intended to show you what multiple views visualizations might look like. 
-I wouldn't recommend using them as a your starting point, but you may find some inspiration:
+![image](img/1.gif)
 
-1. This [scatterplot matrix](http://bl.ocks.org/mbostock/4063663) has code that explains brushing and linking. But remember you'll be doing this with different types of views.
+For other plot, you can select a box and it will change in other plot, too.
 
-2. The example visualization for [Crossfilter](http://square.github.io/crossfilter/) uses coordinated multiple views. The interaction and brushing technique is well-executed.
+![image](img/2.gif)
 
-3. The [dispatching events](https://github.com/d3/d3-dispatch) page is a good example of using events, rather than explicit functions, for controlling behavior. Views can listen for events in other views and respond accordingly.
+![image](img/3.gif)
 
-This GIF from a similar course shows how views can work together:
-
-![cmv gif](https://raw.githubusercontent.com/dataviscourse/2015-dataviscourse-homework/master/hw3/preview.gif)
-
-*If you aren't familiar with event-based programming you should experiment with d3.dispatch and other approaches to coordinating views well before the deadline (it's tricky.)*
-
-Don't forget to run a local webserver when you're coding and debugging.
-
-Requirements
+Technical Achivement Description
 ---
+- Know how to use brushing on plot
+- Using slopechart to sisplay multiple data for each one.
+- Skiiled for build slopechart and scatter plot.
+- In scatter plots, there will be change when the dots be selected in other plot.
+- Change the representation of the X axis and Y axis.
 
-0. Your code should be forked from the GitHub repo and linked using GitHub pages.
-1. Your project should load a dataset you found on the web. Put this file in your repo.
-2. Your project should use d3 to build a visualization of the dataset. 
-3. Your writeup (readme.md in the repo) should contain the following:
-
-- Working link to the visualization hosted on gh-pages.
-- Concise description and screenshot of your visualization.
-- Description of the technical achievements you attempted with this visualization.
-- Description of the design achievements you attempted with this visualization.
-
-GitHub Details
+Design Achivements
 ---
-
-- Fork the GitHub Repository. You now have a copy associated with your username.
-- Make changes to index.html to fulfill the project requirements. 
-- Make sure your "master" branch matches your "gh-pages" branch. See the GitHub Guides referenced above if you need help.
-- Edit the README.md with a link to your gh-pages site, for example http://YourUsernameGoesHere.github.io/04-MapsAndViews/index.html
-- To submit, make a [Pull Request](https://help.github.com/articles/using-pull-requests/) on the original repository.
+- In scatter plot, when the dot is choosen the color will be changed.
+- Each scatter plot are use different color.
+- When picking dots from the fourth scatter dot, The selected dots can show bigger so it can easy to see.
