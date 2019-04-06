@@ -21,7 +21,7 @@ When you click a state on map, bubble chart will show the cause of shootings in 
 - When mouse over chart, the label will show the amount.
 - Used map in order to visualize the amount of shootings in each state.
 - Used bubble chart to visualize the amount of shootings by different causes.
-- Used bar chart visualize the amount of shootings by in every year.
+- Used bar chart visualize the amount of shootings in every year.
 
 # Design achievement
 
