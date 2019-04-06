@@ -16,8 +16,7 @@
         text-align: center;
         padding: 20px;             
         margin: 10px;
-        font: 12px sans-serif;        
-        background: lightsteelblue;   
+        font: 12px sans-serif;       
         border: 1px;      
         border-radius: 2px;           
         pointer-events: none;
@@ -28,27 +27,13 @@
         font-size:14px;
         }
         #tooltip{
-        background:rgba(0,0,0,0.9);
-        border:1px solid grey;
+        background:rgba(0,0,0,1);
         border-radius:5px;
         font-size:12px;
         width:auto;
         padding:4px;
         color:white;
         opacity:0;
-        }
-        #tooltip table{
-        table-layout:fixed;
-        }
-        #tooltip tr td{
-        padding:0;
-        margin:0;
-        }
-        #tooltip tr td:nth-child(1){
-        width:50px;
-        }
-        #tooltip tr td:nth-child(2){
-        text-align:center;
         }
         #map{
             height: 630px;
@@ -108,7 +93,6 @@
     dispatch.on('load.pieChart', function (data) {
         var map = {};
 
-        //change the column in csv file to a map
         for (var i = 0; i < data.length; i++) {
             var key = data[i].cause;
             if (!map.hasOwnProperty(key)) {
@@ -204,7 +188,6 @@
     function loadPieChartWithProvidedData(bubbleData) {
         var bubbleChartWidth = 500;
         var bubbleChartHeight = 500;
-        // append a svg to pieChart div
         var svgPie = d3.select("#pieChart").append("svg")
             .attr("width", bubbleChartWidth)
             .attr("height", bubbleChartHeight)
@@ -214,7 +197,6 @@
         var color = d3.scale.category10();
 
         var bubble = d3.layout.pack()
-            .sort(null)
             .size([bubbleChartHeight, bubbleChartWidth])
             .padding(1.5); 
 
