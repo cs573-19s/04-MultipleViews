@@ -9,6 +9,7 @@ https://yutinghan.github.io/04-MultipleViews/
 
 Overview
 ----
+<p align="center"><img src="img/overview.png" height="100%" width="100%"></p>
 - screenshot
 - 2 mode
 
