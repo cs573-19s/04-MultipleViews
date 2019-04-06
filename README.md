@@ -24,8 +24,13 @@ There are two modes, "animation play" and "animation pause". And the linked inte
 
 Data
 ----
-- stations_by_name
-The geolocation of each stations are provided.
+- stations_by_name.json: The geolocation of each stations are provided.
+<p align="center"><kbd><img src="img/stations_by_name.png" height="100%" width="100%"></kbd></p>
+
+- connections_by_station_name.json: Connections between linked stations are provided.
+<p align="center"><kbd><img src="img/connections_by_station_name.png" height="100%" width="100%"></kbd></p>
+
+- trains.json: Schedules on Line five are provided.
 
 Four Views
 ----
