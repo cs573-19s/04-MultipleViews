@@ -1,11 +1,12 @@
 Assignment 4 - Visualizations and Multiple Views
 ===
 Topic: Summary of middle player performance in dota2
----
+===
 
 Data:
 ---
 https://www.kaggle.com/siegmundwang/dota2
+
 Link:
 ---
 
@@ -40,7 +41,7 @@ Bar chart:
 Technical Achievement Description
 ----
 - Using Python(pandas) to clear data and export csv files.
-- Enter-Update-Exit is used to build scatter plot and line chart.
+- Toolip ud to build scatter plot and line chart.
 - Can use brushing on the bar chart.
 - In scatter plot, dots color changes according to kills number.
 - When mouse over scatter plot and line chart, the label will show the detail.
