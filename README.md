@@ -67,13 +67,16 @@ Technical Achievement Description
 - Using Python(pandas) and Jupyter Notebook to clear data and export Json files.
 - Enter-Update-Exit is used to bulid animations.
 - Time slider is used to control the animation process.
+- When the time-slider moving to the end, it will return back to the start point automatically.
 
 Design Achievement Description
 ----
 - SHMTR geolations are visualized.
-- Four linked interactive views
-- Provide interactions to help users discover information by themselves.
-  - On Play-mode
+- Four linked interactive views help users discover information by themselves.
+
+  Users could see the whole SHMTR map, a clear single view of Line 5, passengers' number on each metro and how time flies explained by the timeline.
+  - On the Play-mode, users could explore links
+
 
 Reference
 ----
