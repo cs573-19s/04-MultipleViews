@@ -699,6 +699,13 @@ d3.json('connections_by_station_name.json').then(function(d) {
                      .style("fill","red");
                     d3.select("#bar"+d)
                      .style("fill","red");
+                    timerCanvas.append("line")
+                            .attr("id","startTimeLine")
+                            .attr("x1",sliderXscale(d))
+                            .attr("y1",sliderYscale(d))
+                            .attr("x2",sliderXscale(d))
+                            .attr("y2",timerCanvas.height)
+                            .style("stroke","red");
                     if(playButton.text()=="Pause"){
                         moving=false;
                         timestep.stop();
@@ -712,6 +719,7 @@ d3.json('connections_by_station_name.json').then(function(d) {
                      .style("fill","black");
                     d3.select("#bar"+d)
                      .style("fill","black");
+                    timerCanvas.select("#startTimeLine").remove();
                     if(playButton.text()=="Pause"){
                         moving=true;
                         timestep=d3.interval(function(){step()},intervalTime);
