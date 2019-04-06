@@ -1,59 +1,49 @@
 Assignment 4 - Visualizations and Multiple Views  
 ===
 
-One of the most powerful techniques for mitigating the shortcomings of a given visualization is to link it with other views.
-Linking a map to a bar or scatterplot, for instance, may allow you to overcome the shortcomings of a map.
-In general, linking visualizations allows you to explore different parts of the data between views, and mitigates the shortcomings of a given view by pairing it with other views.
-This technique, called coordinated multiple views, is the focus of this assignment.
 
-Your task is to choose an interesting dataset and visualize it in *at least three* **linked** views, where interactions in any given view updates the other two.
-Each view should use a different visualization type, and interaction in one of the views should impact what's shown in the other views.
+Link: 
+https://leixxli.github.io/04-MultipleViews/
 
-You should choose data and visualizations that are sufficiently complex and interesting to ensure a user can discover interesting patterns and trends on their own.
-
-For this assignment you should write everything from scratch.
-You may *reference and adapt* code from books or the web, and if you do please provide a References section with links at the end of your Readme.
-
-Resources
+Overview
 ---
 
-Data is Plural has a list of interesting datasets, many of which require processing.
+The data I got is from http://data.un.org/. In this assignment, I have built a dashboard including three kinds of plots, maps, pie chart and bar chart, to visulize the emissions of carbon dioxide in 1990 to 2011 through the world. The whole dashboard is viewed as follows:
 
-These three examples are intended to show you what multiple views visualizations might look like. 
-I wouldn't recommend using them as a your starting point, but you may find some inspiration:
+![whole chart](whole.jpg)
 
-1. This [scatterplot matrix](http://bl.ocks.org/mbostock/4063663) has code that explains brushing and linking. But remember you'll be doing this with different types of views.
 
-2. The example visualization for [Crossfilter](http://square.github.io/crossfilter/) uses coordinated multiple views. The interaction and brushing technique is well-executed.
 
-3. The [dispatching events](https://github.com/d3/d3-dispatch) page is a good example of using events, rather than explicit functions, for controlling behavior. Views can listen for events in other views and respond accordingly.
+The map uses color to represent the seriousness of carbon dioxide emissions. Color will change as different time periods. The pie chart shows the total emissions in different region. The bar chart shows the emissions in different year and in different region. Emissions in measured by thousand metric tons in this plot. 
 
-This GIF from a similar course shows how views can work together:
+The linked views show as follows: 
+1. Once selecting different year in the processing bar, map data will show the overall situation. You will notice the change in color. Pie chart will show the concrete data in that year, and bar chart will show the emissions in selected region. Emissions in selected year will mark as a different color. 
 
-![cmv gif](https://raw.githubusercontent.com/dataviscourse/2015-dataviscourse-homework/master/hw3/preview.gif)
+2. Once select the specific region in map, the bar chart will change correspindingly with marking the selected year. Besides that, the tooltip will show the data in select information. 
 
-*If you aren't familiar with event-based programming you should experiment with d3.dispatch and other approaches to coordinating views well before the deadline (it's tricky.)*
 
-Don't forget to run a local webserver when you're coding and debugging.
 
-Requirements
+Technical achievements
 ---
+1. Implemented tooltips in three plots.
+2. Included three kinds of plots. 
+3. Once selecting different year, map,pie chart and bar chart will change. 
+4. Selecting different region in map, the bar chart shows the emissions in this region through the time. 
 
-0. Your code should be forked from the GitHub repo and linked using GitHub pages.
-1. Your project should load a dataset you found on the web. Put this file in your repo.
-2. Your project should use d3 to build a visualization of the dataset. 
-3. Your writeup (readme.md in the repo) should contain the following:
 
-- Working link to the visualization hosted on gh-pages.
-- Concise description and screenshot of your visualization.
-- Description of the technical achievements you attempted with this visualization.
-- Description of the design achievements you attempted with this visualization.
-
-GitHub Details
+Design achievements
 ---
+1. Adding color palette to represnt the seriousness of carbon dioxide in the map and pie chart.
+2. Including a processing bar to select, in this way, users can easily get used to fetch the information.  
 
-- Fork the GitHub Repository. You now have a copy associated with your username.
-- Make changes to index.html to fulfill the project requirements. 
-- Make sure your "master" branch matches your "gh-pages" branch. See the GitHub Guides referenced above if you need help.
-- Edit the README.md with a link to your gh-pages site, for example http://YourUsernameGoesHere.github.io/04-MapsAndViews/index.html
-- To submit, make a [Pull Request](https://help.github.com/articles/using-pull-requests/) on the original repository.
+
+Reference 
+---
+1. I started with this example: http://bl.ocks.org/mattykuch/40ba19de703632ea2afbbc5156b9471f , http://bl.ocks.org/NPashaP/96447623ef4d342ee09b 
+2. tooltips: http://bl.ocks.org/anonymous/64f9c70bd629810bee67392f6224d414
+3. udemy courses - Mastering data visualization in D3.js - map and networks/file structures and linke views. I learned how to use TopoJSON file for map data (unpkg.com)and update the events to link different views.
+
+
+
+
+
