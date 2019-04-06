@@ -30,7 +30,7 @@ Views:
 ---
 Link view:
 
-Brushing view:
+toolip view:
 
 Scatter plot:
 
