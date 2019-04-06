@@ -1,4 +1,4 @@
-[**_Link for demo_**](https://loveice622.github.io/usEarthquakeViewer/)
+[**_Link for demo_**](https://github.com/XiaoDuWPI/04-MultipleViews/blob/master/index.html)
 
 ## 1. Introduction
 An earthquake is the shaking of the surface of the Earth, resulting from the sudden release of energy in the Earth's lithosphere that creates seismic waves. Earthquakes can range in size from those that are so weak that they cannot be felt to those violent enough to toss people around and destroy whole cities.
