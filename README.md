@@ -14,3 +14,7 @@ Views:
 The slopo chart each line stand by a data for each pokemon, From left to right is Generation, Legendary, Total, Sp.Atk, Sp.Def, Defence, Attack, HP, Speed, Type and their Global id. You can choose each part of every line and it will show what pokemon you choose in other plot.
 
 ![image](img/1.gif)
+
+![image](img/2.gif)
+
+![image](img/3.gif)
