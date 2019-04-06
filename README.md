@@ -81,8 +81,8 @@ Design Achievement Description
 
 Reference
 ----
-Data: https://github.com/jeevanyue/metro
-Slider: https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
+- Data: https://github.com/jeevanyue/metro
+- Slider: https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
 
 
 
