@@ -129,25 +129,6 @@
 
     var parseDate = d3.time.format("%Y").parse;
 
-    function filterCauseByYear(data, rawYear) {
-        d3.select('#pieChart svg').remove();
-        d3.select('#statesvg').remove();
-        var map1 = {},
-            map2 = {};
-        for (var i = 0; i < data.length; i++) {
-            var key1 = data[i].cause;
-            var key2 = data[i].state;
-            if (!map1.hasOwnProperty(key1)) {
-                map1[key1] = 0;
-            }
-            if (!map2.hasOwnProperty(key2)) {
-                map2[key2] = 0;
-            }
-            if (data[i].year == rawYear) {
-                map1[key1]++;
-                map2[key2]++;
-            }
-        };
 
     function filterYearByCause(data, cause) {
         d3.select('#barChart svg').remove();
@@ -167,13 +148,35 @@
                 map1[key1]++;
                 map2[key2]++;
             }
+
         }
+    
+
         var mapData = mapdataprocess1(map2);
         var barData = bardataprocess1(map1);
         loadBarChartWithProvidedData(barData);
         loadmapwithdata("#statesvg", mapData);
 
     }
+    function filterCauseByYear(data, rawYear) {
+        d3.select('#pieChart svg').remove();
+        d3.select('#statesvg').remove();
+        var map1 = {},
+            map2 = {};
+        for (var i = 0; i < data.length; i++) {
+            var key1 = data[i].cause;
+            var key2 = data[i].state;
+            if (!map1.hasOwnProperty(key1)) {
+                map1[key1] = 0;
+            }
+            if (!map2.hasOwnProperty(key2)) {
+                map2[key2] = 0;
+            }
+            if (data[i].year == rawYear) {
+                map1[key1]++;
+                map2[key2]++;
+            }
+        };
 
         var bubbleData = bubbledataprocess1(map1);
         var mapData = mapdataprocess1(map2);
