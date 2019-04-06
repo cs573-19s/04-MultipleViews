@@ -72,10 +72,13 @@ Technical Achievement Description
 Design Achievement Description
 ----
 - SHMTR geolations are visualized.
+
 - Four linked interactive views help users discover information by themselves.
 
-  Users could see the whole SHMTR map, a clear single view of Line 5, passengers' number on each metro and how time flies explained by the timeline.
-  - On the Play-mode, users could explore links
+- Users could see the whole SHMTR map, a clear single view of Line 5, passengers' number on each metro and how time flies explained by the timeline.
+  - On the Play-mode, users could explore links between each view without click "pause" button. Hovering on the circle or bar could achive this effect. 
+  - On the Pause-mode, users could explore details at this timestamp.
+  
 
 
 Reference
