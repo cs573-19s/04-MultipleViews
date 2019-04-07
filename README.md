@@ -29,3 +29,8 @@ When you click a state on map, bubble chart will show the cause of shootings in 
 - In map chart, the more shootings, the deeper red of color in state is.
 - In bubble chart, I use category10 in order to distinguish differen causes.
 - Used red color to represent shooting in both of map and bar chart.
+
+# Reference
+
+https://gist.github.com/NPashaP/a74faf20b492ad377312
+https://bl.ocks.org/mbostock/4063269
