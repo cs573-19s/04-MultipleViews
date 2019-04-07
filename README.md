@@ -32,5 +32,5 @@ When you click a state on map, bubble chart will show the cause of shootings in 
 
 # Reference
 
-https://gist.github.com/NPashaP/a74faf20b492ad377312 
+https://gist.github.com/NPashaP/a74faf20b492ad377312                
 https://bl.ocks.org/mbostock/4063269
