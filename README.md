@@ -1,59 +1,54 @@
 Assignment 4 - Visualizations and Multiple Views  
 ===
 
-One of the most powerful techniques for mitigating the shortcomings of a given visualization is to link it with other views.
-Linking a map to a bar or scatterplot, for instance, may allow you to overcome the shortcomings of a map.
-In general, linking visualizations allows you to explore different parts of the data between views, and mitigates the shortcomings of a given view by pairing it with other views.
-This technique, called coordinated multiple views, is the focus of this assignment.
+# Overview
 
-Your task is to choose an interesting dataset and visualize it in *at least three* **linked** views, where interactions in any given view updates the other two.
-Each view should use a different visualization type, and interaction in one of the views should impact what's shown in the other views.
+This dashboard is for a company that sells different kinds of wholesale goods to other companies. The sales team is split between four different regions, and the objective is to compare stats between them. The dashboard helps track the performance of the sales team, and to understand how call duration, revenue per call and the number of units sold changes throughout the year.
 
-You should choose data and visualizations that are sufficiently complex and interesting to ensure a user can discover interesting patterns and trends on their own.
+## Dataset
 
-For this assignment you should write everything from scratch.
-You may *reference and adapt* code from books or the web, and if you do please provide a References section with links at the end of your Readme.
+The dataset is obtained from one of the assignment projects for a course on Udemy: 'Mastering data visualization in D3.js'. The file contains the information about every sales call that was completed by each of the sales team in the year 2017.
 
-Resources
----
+Link: [Corporate Performance dashboard]()
 
-Data is Plural has a list of interesting datasets, many of which require processing.
+# Dashboard
 
-These three examples are intended to show you what multiple views visualizations might look like. 
-I wouldn't recommend using them as a your starting point, but you may find some inspiration:
+![dashboard](img/dashboard.png)
 
-1. This [scatterplot matrix](http://bl.ocks.org/mbostock/4063663) has code that explains brushing and linking. But remember you'll be doing this with different types of views.
+The dashboard has 3 types of visualizations: Stacked Area chart, Donut chart, and Bar chart. At any point, the user can select one of three metrics to view on the dashboard: the Revenue in USD, the Call time and the Units sold.
 
-2. The example visualization for [Crossfilter](http://square.github.io/crossfilter/) uses coordinated multiple views. The interaction and brushing technique is well-executed.
+The stacked area chart shows the monthly variation of the selected metric, with the four different areas representing the four regions: Northeast, West, South and Midwest.
 
-3. The [dispatching events](https://github.com/d3/d3-dispatch) page is a good example of using events, rather than explicit functions, for controlling behavior. Views can listen for events in other views and respond accordingly.
+The donut chart shows the percentage distribution of the metric across small, medium and large companies who made the sales call.
 
-This GIF from a similar course shows how views can work together:
+The 3 bar charts show the Units sold per call, the Average call revenue, and the Average call duration with respect to the type of goods sold: Electronics, Furniture, Appliances and other Materials.
 
-![cmv gif](https://raw.githubusercontent.com/dataviscourse/2015-dataviscourse-homework/master/hw3/preview.gif)
+In addition to the above visualizations, the dashboard also has a timeline which controls the range of data to be visualized. The user can drag the mouse across the timeline to select any date range he/she wishes to see, and all the above visualizations will automatically update accordingly. On clicking outside the selected date range, the filter is reset, and the user can proceed to select a new filter.
 
-*If you aren't familiar with event-based programming you should experiment with d3.dispatch and other approaches to coordinating views well before the deadline (it's tricky.)*
+Legends have also been included for the stacked area chart and the donut chart to support and better understand the visualizations.
 
-Don't forget to run a local webserver when you're coding and debugging.
 
-Requirements
----
+## Design Achievements
 
-0. Your code should be forked from the GitHub repo and linked using GitHub pages.
-1. Your project should load a dataset you found on the web. Put this file in your repo.
-2. Your project should use d3 to build a visualization of the dataset. 
-3. Your writeup (readme.md in the repo) should contain the following:
+1. Better organized the visualizations on the screen, with the barcharts and the donut chart on one side since they dont require as much space as the stacked area chart, which needs space to adequately show the whole year range. The timeline is also nicely aligned with the time axis of the stacked area chart.
 
-- Working link to the visualization hosted on gh-pages.
-- Concise description and screenshot of your visualization.
-- Description of the technical achievements you attempted with this visualization.
-- Description of the design achievements you attempted with this visualization.
+2. The colors used are quite distinct from each other, to better differentiate the categories.
 
-GitHub Details
----
+3. The date range displayed on the top of the screen updates as per the selection for the user to accurately understand the range he/she has selected.
 
-- Fork the GitHub Repository. You now have a copy associated with your username.
-- Make changes to index.html to fulfill the project requirements. 
-- Make sure your "master" branch matches your "gh-pages" branch. See the GitHub Guides referenced above if you need help.
-- Edit the README.md with a link to your gh-pages site, for example http://YourUsernameGoesHere.github.io/04-MapsAndViews/index.html
-- To submit, make a [Pull Request](https://help.github.com/articles/using-pull-requests/) on the original repository.
+## Technical Achievements
+
+1. Use of brush in d3 to make a visualization interactive.
+
+2. The axes of the stacked area chart and the bar chart dynamically update according to the data available in the selected date range.
+
+3. Use of d3 bootstrap to better segregate and organize the charts.
+
+
+## References
+
+Udemy's course: 'Mastering data visualization in D3.js'
+
+http://bl.ocks.org/mattykuch/40ba19de703632ea2afbbc5156b9471f
+
+http://bl.ocks.org/dukevis/6768900
