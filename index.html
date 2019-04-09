@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Multiple Views</title>
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+
+    <style>
+        .state {
+            fill: #cccccc;
+            stroke: #ffffff;
+        }
+
+        .state:hover {
+            fill: orangered;
+        }
+
+        .total {
+            font-family: system-ui;
+            font-size: 12px;
+            text-anchor: middle;
+        }
+
+        .legend text {
+            font-family: system-ui;
+            font-size: 10px;
+        }
+
+        .bar {
+            fill: cornflowerblue;
+        }
+
+        .axis text {
+            fill: black;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+<svg id = "chart" width="1000" height="500"></svg>
+
+<script>
+
+    var chart = d3.select('#chart');
+    var width = chart.attr('width');
+    var height = chart.attr('height');
+    var dispatch = d3.dispatch('load', 'change');
+
+
+    var groups = [
+        "Under 5 Years",
+        "5 to 13 Years",
+        "14 to 17 Years",
+        "18 to 24 Years",
+        "25 to 44 Years",
+        "45 to 64 Years",
+        "65 Years and Over"
+    ];
+
+    d3.json('us.json').then((mapData) => {
+        d3.csv('us-age.csv', d => {
+            d.total = d3.sum(groups, k => d[k] = +d[k]);
+            return d;
+        }).then(states => {
+            var ageData = d3.map();
+            states.forEach(state => ageData.set(state.id, state));
+
+            dispatch.call('load', this, ageData, mapData);
+
+        })
+    });
+
+    dispatch.on('load.map', (ageData, us) => {
+        var projection = d3.geoAlbersUsa()
+            .translate([750, height/2])
+            .scale([500]);
+
+
+        var path = d3.geoPath(projection);
+        var map = chart.append('g');
+
+        map.selectAll('.state')
+            .data(topojson.feature(us, us.objects.states).features)
+            .enter()
+            .append('path')
+            .attr('class', 'state')
+            .attr('d', path)
+            .on('mouseenter', (d) => dispatch.call('change', this, ageData.get(d.id)));
+    });
+
+    dispatch.on('load.pie', ()=> {
+        var radius = Math.min(width, height) / 8;
+
+        var pie = d3.pie()
+            .sort(null);
+
+        var arc = d3.arc()
+            .padAngle(0.02)
+            .outerRadius(radius)
+            .innerRadius(radius / 1.5);
+
+        var colorScale = d3.scaleOrdinal()
+            .domain(groups)
+            .range(d3['schemeCategory10']);
+
+        var group = chart.append('g')
+            .attr('transform', 'translate(' + width / 4 + ',' + height / 4 + ')');
+
+        var path = group.selectAll('path')
+            .data(groups)
+            .enter()
+            .append('path')
+            .attr('fill', colorScale)
+            .each(function () {
+                this._current = {startAngle: 0, endAngle: 0}
+
+            });
+
+        var legend = group.append('g')
+            .attr('transform', 'translate(' + -width / 4.5 + ', -50)');
+
+        legend.selectAll('.legend')
+            .data(groups)
+            .enter()
+            .append('g')
+            .attr('class', 'legend')
+            .attr('transform', (d, i) => 'translate(0,' + 15 * i + ')')
+            .append('rect')
+            .attr('width', 10)
+            .attr('height', 10)
+            .attr('stroke', 'none')
+            .attr('fill', colorScale)
+            .select(function () {
+                return this.parentNode;
+            })
+            .append('text')
+            .attr('fill', 'black')
+            .attr('stroke', 'none')
+            .attr('dx', 15)
+            .attr('dy', 9.25)
+            .text(d => d);
+
+        var total = group.append('text')
+            .attr('dy', '.45em')
+            .attr('class', 'total');
+
+        dispatch.on('change.pie', d => {
+            total.text(d.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+
+
+            path.data(pie.value(g => d[g])(groups))
+                .transition()
+                .attrTween('d', function (d) {
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = d;
+                    return t => arc(interpolate(t));
+                });
+        });
+    });
+
+    dispatch.on('load.bar', () => {
+        var xscale = d3.scaleBand()
+            .rangeRound([0, width/4])
+            .domain(groups)
+            .padding(0.1);
+
+        var yscale = d3.scaleLinear()
+            .rangeRound([height/4, 0]);
+            //.domain([0, d3.max(data, g=>data[g](groups))]);
+
+        var group = chart.append('g')
+            .attr('transform', 'translate(' +  width/6  + "," + height/2  + ')');
+
+        group.append('g')
+            .attr('class', 'axis x-axis')
+            .attr('transform', 'translate(0, ' + height/4  + ')')
+            .call(d3.axisBottom(xscale))
+            .selectAll('text').attr('transform', 'rotate(45)');
+
+        group.append('g')
+            .attr('class', 'axis y-axis')
+            .call(d3.axisLeft(yscale).ticks(4))
+            .append('text')
+            .attr('dx', -height/4)
+            .attr('dy', '-3.75em')
+            .attr('text-anchor', 'middle')
+            .text('Population');
+
+        dispatch.on('change.bar', d => {
+            console.log(d);
+            var age = g => d[g](groups);
+
+            yscale.domain([0, d3.max(d)]);
+
+            group.selectAll('.bar')
+                .data(g => d[g](groups))
+                .enter()
+                .append('rect')
+                .attr('class', 'bar')
+                /*.attr('x', d=>xscale(d.))
+                .attr('y', d=>yscale(d.))
+                .attr('width', x.bandwidth())
+                .attr('height', d=> );*/
+        })
+    });
+
+    chart.attr('width', '100%')
+        //.attr('height', '100%');
+
+
+</script>
+</body>
+</html>
