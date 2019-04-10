@@ -152,7 +152,6 @@
         dispatch.on('change.pie', d => {
             total.text(d.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
 
-
             path.data(pie.value(g => d[g])(groups))
                 .transition()
                 .attrTween('d', function (d) {
@@ -171,7 +170,6 @@
 
         var yscale = d3.scaleLinear()
             .rangeRound([height/4, 0]);
-            //.domain([0, d3.max(data, g=>data[g](groups))]);
 
         var group = chart.append('g')
             .attr('transform', 'translate(' +  width/6  + "," + height/2  + ')');
@@ -184,28 +182,41 @@
 
         group.append('g')
             .attr('class', 'axis y-axis')
-            .call(d3.axisLeft(yscale).ticks(4))
+            .call(d3.axisLeft(yscale).ticks(4).tickFormat(d3.format('.2s')))
             .append('text')
-            .attr('dx', -height/4)
-            .attr('dy', '-3.75em')
+            .attr('dx', 0)
+            .attr('dy', 0)
             .attr('text-anchor', 'middle')
             .text('Population');
 
+        var rect = group.selectAll('.bar')
+            .data(groups)
+            .enter()
+            .append('rect')
+            .attr('class', 'bar')
+            .attr('x', d=>xscale(d))
+            .attr('y', height/4)
+            .attr('width', xscale.bandwidth()/2)
+            .attr('height', 0);
+
         dispatch.on('change.bar', d => {
-            console.log(d);
-            var age = g => d[g](groups);
+            var newD = d3.map();
+           var  text = d3.sum(groups, k=>{
+                newD.set(k, d[k]);
+            });
 
-            yscale.domain([0, d3.max(d)]);
+            yscale.domain([0, d3.max(newD.values())]);
 
-            group.selectAll('.bar')
-                .data(g => d[g](groups))
-                .enter()
-                .append('rect')
-                .attr('class', 'bar')
-                /*.attr('x', d=>xscale(d.))
-                .attr('y', d=>yscale(d.))
-                .attr('width', x.bandwidth())
-                .attr('height', d=> );*/
+            var dv = newD.values();
+
+            var i = 0;
+
+            rect.transition()
+                .each(function () {
+                    this.setAttribute('y',yscale(dv[i]));
+                    this.setAttribute('height', yscale(0)-yscale(dv[i++]));
+                });
+
         })
     });
 
