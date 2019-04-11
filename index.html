@@ -47,7 +47,7 @@
 
 <body>
 <svg id = "chart" width="1000" height="500"></svg>
-
+<h2 align="middle">Population Distribution</h2>
 <script>
 
     var chart = d3.select('#chart');
@@ -206,6 +206,7 @@
             .attr('y', height/4)
             .attr('width', xscale.bandwidth()/2)
             .attr('height', 0);
+
 
         dispatch.on('change.bar', d => {
             var newD = d3.map();
