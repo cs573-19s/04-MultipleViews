@@ -25,6 +25,8 @@ Coordinated Multiple Views
 --
 The different visualizations are interconnected in the sense that 
 
+![Watch Video](https://github.com/asolergayoso/04-MultipleViews/blob/master/Interactive Map - Google Chrome 4_13_2019 7_36_38 PM.mp4)
+
 
 
 
