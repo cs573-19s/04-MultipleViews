@@ -1,11 +1,12 @@
 Assignment 4 - Visualizations and Multiple Views  
 ===
 
+The following is an example of coordinated multiple views. I decided to have an interacted world map, where different visualization types are interactive and linked together, to display different information about each country in the world.
+
 Link to GitHub Pages
 ---
 https://asolergayoso.github.io/04-MultipleViews
 
-The following is an example of coordinated multiple views. I decided to have an interacted world map, where different visualization types are interactive and linked together, to display different information about each country in the world.
 
 Visualization Details
 --
@@ -16,13 +17,13 @@ To represent the birthrate I decided to use a barchart, where each country is pl
 
 For the gdp growth from 1960 to 2017 information I decided to use multiple line chart, as it makes it easier to visualize information over time. Each line is color coded as ordinal data with the d3 color scheme function. When the user hovers over a particular line, it will automatically change the opacity of such line in contrast to the rest, to make it easier to differentiate. Additionally the name of the country that line represent will apear on the top of the screen.
 
-Finally, I used a world map to display geographical information. When the user hovers over a country on the map, a label with the name of the country will apear. 
+Finally, I used a world map to display geographical information. When the user hovers over a country on the map, a label with the name of the country will apear. Moreover, there is an additional zoom function, in which the view zooms into the specific country the user has clicked on. 
 
 
 
 Coordinated Multiple Views
 --
-
+The different visualizations are interconnected in the sense that 
 
 
 
