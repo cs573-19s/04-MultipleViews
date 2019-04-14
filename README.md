@@ -1,7 +1,7 @@
 Assignment 4 - Visualizations and Multiple Views  
 ===
 
-The following is an example of coordinated multiple views. I decided to have an interacted world map, where different visualization types are interactive and linked together, to display different information about each country in the world.
+The following is an example of coordinated multiple views. I decided to have an interactive world map where different visualization types are interactive and linked together, to display different information about each country in the world.
 
 Link to GitHub Pages
 ---
