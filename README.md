@@ -40,11 +40,11 @@ Technical Achievements
 ---
 - Synchronizing all the different datasets into a common array of hashmap data structure. It was particularly challenging since all the datasets were organized differently, so it took a lot of trial and error to get all the data in the correct index and format. 
 
-- Linking visualizations was particularly challenging. I learned to use unique IDs based on the specific country for every bar line and gheolocation. That way, I was able to link them all together and reference them individually. 
+- Linking visualizations was particularly challenging. I learned to use unique IDs based on the specific country for every bar line and geolocation. That way, I was able to link them all together and reference them individually. 
 
--Making the scrollable barchart work smoothly with the country dataset I was using was tricky at first, and it took a good amount of trials and errors to tune it, in a way that the scrollable bar could be updated withthe d3drag() function using the appropiate fields forom the input dataset.
+- Making the scrollable barchart work smoothly with the country dataset I was using was tricky at first, and it took a good amount of trials and errors to tune it, in a way that the scrollable bar could be updated withthe d3drag() function using the appropiate fields forom the input dataset.
 
--Plotting a large number of lines in the line chart, using a single svg.append() function, making the process of linking each line to a country's bar and geolocation much easier. At first I used a for loop for this process since the array of data I was using (gdp) was a sub array of the main hashmap. However this approach did not allow for individual recognition of a single path. 
+- Plotting a large number of lines in the line chart, using a single svg.append() function, making the process of linking each line to a country's bar and geolocation much easier. At first I used a for loop for this process since the array of data I was using (gdp) was a sub array of the main hashmap. However this approach did not allow for individual recognition of a single path. 
 
 -Adjusting the dimensions of the map to keep the 2:1 ratio. This proved particularly tricky when tweaking the initial zoom.
 
@@ -54,6 +54,8 @@ Design Achievments
 - Plotting a multiline chart with such a large number of lines on one plot. and still make it possible for the user to select individual paths and easily recognize which country they belong to.  
 
 - Arranging all the different elements on the screen, so each svg can sit on top of an indivdual div, makign it easier to resize elements. 
+
+- Adding labels to each element on the screen makes it easier for the user to see a particular value by hovering over with the mouse. This is also very convenient, because it indicates the user whether or not the pointer is on the object and can be clicked. This makes the whole interaction more intuitive.
 
 
 
