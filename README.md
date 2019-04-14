@@ -40,7 +40,7 @@ Technical Achievements
 ---
 - Synchronizing all the different datasets into a common array of hashmap data structure. It was particularly challenging since all the datasets were organized differently, so it took a lot of trial and error to get all the data in the correct index and format. 
 
-- Linking visualizations was particularly challenging. I learned to use unique IDs based on the specific country for every bar line and geolocation. That way, I was able to link them all together and reference them individually. 
+- Linking visualizations was particularly challenging. I learned to use unique IDs based on the specific country for every bar line and geolocation. That way, I was able to link them all together and reference them individually. Moreove, by being tied to a specifc country id, an event ocurring on one of the visualiztions will propagate to all other visualizations that carry the same id.
 
 - Making the scrollable barchart work smoothly with the country dataset I was using was tricky at first, and it took a good amount of trials and errors to tune it, in a way that the scrollable bar could be updated withthe d3drag() function using the appropiate fields forom the input dataset.
 
