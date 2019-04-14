@@ -21,15 +21,14 @@ For the gdp growth from 1960 to 2017 information I decided to use multiple line 
 
 ![Watch Video](https://github.com/asolergayoso/04-MultipleViews/blob/master/img/linechart.gif)
 
-Finally, I used a world map to display geographical information. When the user hovers over a country on the map, a label with the name of the country will apear. Moreover, there is an additional zoom function, in which the view zooms into the specific country the user has clicked on. 
+Finally, I used a world map to display geographical information. When the user hovers over a country on the map, a label with the name of the country will apear. Moreover, there is an additional zoom function thatzooms into the specific country the user has clicked on. 
 
 ![Watch Video](https://github.com/asolergayoso/04-MultipleViews/blob/master/img/map.gif)
 
 
-
 Coordinated Multiple Views
 --
-The different visualizations are interconnected in the sense that 
+The different visualizations are interconnected by intereaction, meaning that user interaction in any of the them will cause the other two to change, hence making it easier for the user to view different statistics about a country with one single click. For intance, clicking on a specific country on the map will make the multi line chart to highlight the speific line of that country, and similarly with the barchart. The process is the same for the barchart and the line chart, since clicking a specific line or chart, will cause the map to zoom into the corresponding country. See below:
 
 ![Watch Video](https://github.com/asolergayoso/04-MultipleViews/blob/master/img/interactive_map.gif)
 
