@@ -46,7 +46,7 @@ Technical Achievements
 
 - Plotting a large number of lines in the line chart, using a single svg.append() function, making the process of linking each line to a country's bar and geolocation much easier. At first I used a for loop for this process since the array of data I was using (gdp) was a sub array of the main hashmap. However this approach did not allow for individual recognition of a single path. 
 
--Adjusting the dimensions of the map to keep the 2:1 ratio. This proved particularly tricky when tweaking the initial zoom.
+- Adjusting the dimensions of the map to keep the 2:1 ratio. This proved particularly tricky when tweaking the initial zoom.
 
 Design Achievments
 ---
@@ -56,6 +56,23 @@ Design Achievments
 - Arranging all the different elements on the screen, so each svg can sit on top of an indivdual div, makign it easier to resize elements. 
 
 - Adding labels to each element on the screen makes it easier for the user to see a particular value by hovering over with the mouse. This is also very convenient, because it indicates the user whether or not the pointer is on the object and can be clicked. This makes the whole interaction more intuitive.
+
+References
+---
+For the multiline chart:
+1. https://codepen.io/zakariachowdhury/pen/JEmjwq/
+2. https://observablehq.com/@d3/multi-line-chart
+3. https://code.tutsplus.com/tutorials/building-a-multi-line-chart-using-d3js--cms-22935
+
+For the barchart:
+1. https://observablehq.com/@d3/zoomable-bar-chart
+2. https://codepen.io/ghiden/pen/EhBpy
+
+For the map:
+1. https://bost.ocks.org/mike/map/
+2. https://www.knoyd.com/blog/2017/6/23/create-map-in-d3-part1
+3. https://medium.com/@andybarefoot/making-a-map-using-d3-js-8aa3637304ee
+4. https://d3indepth.com/geographic/
 
 
 
