@@ -1,59 +1,83 @@
 Assignment 4 - Visualizations and Multiple Views  
 ===
 
-One of the most powerful techniques for mitigating the shortcomings of a given visualization is to link it with other views.
-Linking a map to a bar or scatterplot, for instance, may allow you to overcome the shortcomings of a map.
-In general, linking visualizations allows you to explore different parts of the data between views, and mitigates the shortcomings of a given view by pairing it with other views.
-This technique, called coordinated multiple views, is the focus of this assignment.
+The following is an example of coordinated multiple views. I decided to have an interactive world map where different visualization types are linked together to display a variety of information about every country in the world.
 
-Your task is to choose an interesting dataset and visualize it in *at least three* **linked** views, where interactions in any given view updates the other two.
-Each view should use a different visualization type, and interaction in one of the views should impact what's shown in the other views.
+Link to GitHub Pages
+---
+https://asolergayoso.github.io/04-MultipleViews
 
-You should choose data and visualizations that are sufficiently complex and interesting to ensure a user can discover interesting patterns and trends on their own.
 
-For this assignment you should write everything from scratch.
-You may *reference and adapt* code from books or the web, and if you do please provide a References section with links at the end of your Readme.
+Visualization Details
+--
 
-Resources
+For this project, I decided to utilize three different visualization techniques that display information about a particular country. In particular, the data being displayed is birthrate calculated in number of births divided by 1000 population, evolution of Gross Domestic Product from 1960 to 2017, and finally the geographical location of every country through a map. Unfortunately, I was unable to find all the necessary data on a single dataset, so I had to pull information from different datasets and form my own. The following datasets make up the overall data visualized in this project. 
+- *factbook.csv* contains the birthdate information for each country (obtained from https://perso.telecom-paristech.fr/eagan/class/igr204/datasets)
+- *gdp.csv* contains the gdp growth for every country since 1960 (obtained from https://data.worldbank.org/indicator/ny.gdp.mktp.cd)
+- *map.json* contains all the additional data for the map to work (obtained from https://raw.githubusercontent.com/andybarefoot/andybarefoot-www/master/maps/mapdata/custom50.json)
+
+To represent the birthrate I decided to use a barchart, where each country is placed on the x-axis and the birthrate value on the y-axis. As seen in the image below, the number countries surpasses the length of the x-axis, for that reason the dragging function was added in order to scroll left and righgt in the x-axis to see all the countries. When the user hovers over a specific bar, the birthrate value is pappears on the top of the bar. 
+
+![Watch Video](https://github.com/asolergayoso/04-MultipleViews/blob/master/img/barchart.gif)
+
+For the gdp growth from 1960 to 2017 information I decided to use multiple line chart, as it makes it easier to visualize information over time. Each line is color coded as ordinal data with the d3 color scheme function. When the user hovers over a particular line, it will automatically change the opacity of such line in contrast to the rest, to make it easier to differentiate. Additionally the name of the country that line represent will apear on the top of the screen.
+
+![Watch Video](https://github.com/asolergayoso/04-MultipleViews/blob/master/img/linechart.gif)
+
+Finally, I used a world map to display geographical information. When the user hovers over a country on the map, a label with the name of the country will apear. Moreover, there is an additional zoom function thatzooms into the specific country the user has clicked on. 
+
+![Watch Video](https://github.com/asolergayoso/04-MultipleViews/blob/master/img/map.gif)
+
+
+Coordinated Multiple Views
+--
+The different visualizations are interconnected by intereaction, meaning that user interaction in any of the them will cause the other two to change, hence making it easier for the user to view different statistics about a country with one single click. For intance, clicking on a specific country on the map will make the multi line chart to highlight the speific line of that country, and similarly with the barchart. The process is the same for the barchart and the line chart, since clicking a specific line or chart, will cause the map to zoom into the corresponding country. See below:
+
+![Watch Video](https://github.com/asolergayoso/04-MultipleViews/blob/master/img/interactive_map.gif)
+
+
+Technical Achievements
+---
+- Synchronizing all the different datasets into a common array of hashmap data structure. It was particularly challenging since all the datasets were organized differently, so it took a lot of trial and error to get all the data in the correct index and format. 
+
+- Linking visualizations was particularly challenging. I learned to use unique IDs based on the specific country for every bar line and geolocation. That way, I was able to link them all together and reference them individually. Moreove, by being tied to a specifc country id, an event ocurring on one of the visualiztions will propagate to all other visualizations that carry the same id.
+
+- Making the scrollable barchart work smoothly with the country dataset I was using was tricky at first, and it took a good amount of trials and errors to tune it, in a way that the scrollable bar could be updated withthe d3drag() function using the appropiate fields forom the input dataset.
+
+- Plotting a large number of lines in the line chart, using a single svg.append() function, making the process of linking each line to a country's bar and geolocation much easier. At first I used a for loop for this process since the array of data I was using (gdp) was a sub array of the main hashmap. However this approach did not allow for individual recognition of a single path. 
+
+- Adjusting the dimensions of the map to keep the 2:1 ratio. This proved particularly tricky when tweaking the initial zoom.
+
+Design Achievments
 ---
 
-Data is Plural has a list of interesting datasets, many of which require processing.
+- Plotting a multiline chart with such a large number of lines on one plot. and still make it possible for the user to select individual paths and easily recognize which country they belong to.  
 
-These three examples are intended to show you what multiple views visualizations might look like. 
-I wouldn't recommend using them as a your starting point, but you may find some inspiration:
+- Arranging all the different elements on the screen, so each svg can sit on top of an indivdual div, makign it easier to resize elements. 
 
-1. This [scatterplot matrix](http://bl.ocks.org/mbostock/4063663) has code that explains brushing and linking. But remember you'll be doing this with different types of views.
+- Adding labels to each element on the screen makes it easier for the user to see a particular value by hovering over with the mouse. This is also very convenient, because it indicates the user whether or not the pointer is on the object and can be clicked. This makes the whole interaction more intuitive.
 
-2. The example visualization for [Crossfilter](http://square.github.io/crossfilter/) uses coordinated multiple views. The interaction and brushing technique is well-executed.
-
-3. The [dispatching events](https://github.com/d3/d3-dispatch) page is a good example of using events, rather than explicit functions, for controlling behavior. Views can listen for events in other views and respond accordingly.
-
-This GIF from a similar course shows how views can work together:
-
-![cmv gif](https://raw.githubusercontent.com/dataviscourse/2015-dataviscourse-homework/master/hw3/preview.gif)
-
-*If you aren't familiar with event-based programming you should experiment with d3.dispatch and other approaches to coordinating views well before the deadline (it's tricky.)*
-
-Don't forget to run a local webserver when you're coding and debugging.
-
-Requirements
+References
 ---
+For the multiline chart:
+1. https://codepen.io/zakariachowdhury/pen/JEmjwq/
+2. https://observablehq.com/@d3/multi-line-chart
+3. https://code.tutsplus.com/tutorials/building-a-multi-line-chart-using-d3js--cms-22935
 
-0. Your code should be forked from the GitHub repo and linked using GitHub pages.
-1. Your project should load a dataset you found on the web. Put this file in your repo.
-2. Your project should use d3 to build a visualization of the dataset. 
-3. Your writeup (readme.md in the repo) should contain the following:
+For the barchart:
+1. https://observablehq.com/@d3/zoomable-bar-chart
+2. https://codepen.io/ghiden/pen/EhBpy
 
-- Working link to the visualization hosted on gh-pages.
-- Concise description and screenshot of your visualization.
-- Description of the technical achievements you attempted with this visualization.
-- Description of the design achievements you attempted with this visualization.
+For the map:
+1. https://bost.ocks.org/mike/map/
+2. https://www.knoyd.com/blog/2017/6/23/create-map-in-d3-part1
+3. https://medium.com/@andybarefoot/making-a-map-using-d3-js-8aa3637304ee
+4. https://d3indepth.com/geographic/
 
-GitHub Details
----
 
-- Fork the GitHub Repository. You now have a copy associated with your username.
-- Make changes to index.html to fulfill the project requirements. 
-- Make sure your "master" branch matches your "gh-pages" branch. See the GitHub Guides referenced above if you need help.
-- Edit the README.md with a link to your gh-pages site, for example http://YourUsernameGoesHere.github.io/04-MapsAndViews/index.html
-- To submit, make a [Pull Request](https://help.github.com/articles/using-pull-requests/) on the original repository.
+
+
+
+
+
+
