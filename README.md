@@ -12,7 +12,7 @@ Visualization Details
 --
 
 For this project, I decided to utilize three different visualization techniques that display information about a particular country. In particular, the data being displayed is birthrate calculated in number of births divided by 1000 population, evolution of Gross Domestic Product from 1960 to 2017, and finally the geographical location of every country through a map. Unfortunately, I was unable to find all the necessary data on a single dataset, so I had to pull information from different datasets and form my own. The following datasets make up the overall data visualized in this project. 
-- *factbook.csv* contains the birthdate information for each country (obtained from https://perso.telecom-paristech.fr/eagan/class/igr204/datasets)
+- *factbook.csv* contains the birth rate information for each country (obtained from https://perso.telecom-paristech.fr/eagan/class/igr204/datasets)
 - *gdp.csv* contains the gdp growth for every country since 1960 (obtained from https://data.worldbank.org/indicator/ny.gdp.mktp.cd)
 - *map.json* contains all the additional data for the map to work (obtained from https://raw.githubusercontent.com/andybarefoot/andybarefoot-www/master/maps/mapdata/custom50.json)
 
