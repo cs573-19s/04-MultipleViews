@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="initial-scale=1.0, width=device-width" />    
+    <title>Interactive Map</title>
+     <script src="https://d3js.org/d3.v4.min.js"></script>
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Yanone+Kaffeesatz:200" rel="stylesheet">
+    <style>
+
+      body {
+        margin: 0;
+        background-color: #2A2C39;
+        font-family: 'Yanone Kaffeesatz', sans-serif;
+        font-weight: 200;
+        font-size: 60px;
+        color: #FFEFD5;
+      }
+      #map-holder {
+        width: 100vw;
+        height: 600px;
+        margin-left: 1;
+        display: inline-block;
+      }
+
+      #barchart {
+        width: 35%;
+        margin-left: 1%;
+        
+      }
+      #linechart{
+        width:60%;
+        margin-left: 1%;
+        overflow:hidden;
+      }
+
+      .chart {
+        height: 530px;
+        display: inline-block;
+      }
+        
+      .line {
+        fill:none;
+      } 
+      
+      .axis{
+        stroke-width: 0.6px;
+        font-size: 16px;
+        stroke: white;
+      }
+
+      .axis path{
+        stroke: white;
+        stroke-width:2px;
+      }
+
+      .country{
+        fill: #d0d0d0;   
+        stroke: #2A2C39; 
+        stroke-width: 1; 
+      }
+      .country-on{
+        fill: #4B5358;   
+      }
+      .bar-on{
+        fill: #4B5358;   
+      }
+      .countryLabel{
+        display: none;  
+      }
+      .barLabel{
+        display: none;  
+        font-size: 30px;
+        stroke-width: 2;
+      }
+
+      .line-on{
+        stroke-width:4;
+        stroke: white;
+        
+      }
+      .countryName{
+        fill: #FFFAFF;   
+      }
+      .countryLabelBg{
+        fill: #30BCED;   
+      }
+    </style>
+  </head>
+  <h2 align="center", style="margin-top: 0; margin-bottom: 0">Interactive World Map</h2>
+  <body>
+    <div id="content">
+      <div id="map-holder" class="map"></div>
+      <div id="barchart" class="chart">
+        <div class="title">Birthrate (births/1000)</div>
+      </div>
+      <div id="linechart" class="chart">
+        <div class="title">GDP Growth (USD)</div>
+    </div>
+
+   
+    <script type="text/javascript">
+    
+      //MAP
+      w = 5000;//5000;
+      h = 2500;//1870;
+      
+      var minZoom;
+      var maxZoom;
+
+      var projection = d3
+        .geoEquirectangular()
+        .center([0, 15]) 
+        .scale([w / (2 * Math.PI)]) 
+        .translate([w / 2, h / 2]) 
+      ;
+
+    
+      var path = d3
+        .geoPath()
+        .projection(projection)
+      ;
+
+     
+      function zoomed() {
+        t = d3
+          .event
+          .transform
+        ;
+        countriesGroup
+          .attr("transform","translate(" + [t.x, t.y] + ")scale(" + t.k + ")")
+        ;
+      }
+
+     
+      var zoom = d3
+        .zoom()
+        .on("zoom", zoomed)
+      ;
+
+      function getTextBox(selection) {
+        selection
+          .each(function(d) {
+            d.bbox = this
+              .getBBox();
+            })
+        ;
+      }
+
+     
+      function initiateZoom() {
+        
+        minZoom = Math.max($("#map-holder").width() / w, $("#map-holder").height() / h)/1.5;
+        maxZoom = 20 * minZoom;
+        
+        zoom
+          .scaleExtent([minZoom, maxZoom])
+          .translateExtent([[0, 0], [w, h]])
+        ;
+       
+        midX = ($("#map-holder").width() - minZoom * w)/2;
+        
+        midY = ($("#map-holder").height() - minZoom * h)/2;
+       
+        svg.call(zoom.transform, d3.zoomIdentity.translate(midX, midY).scale(minZoom));
+      }
+
+      
+      function boxZoom(box, centroid, paddingPerc) {
+        minXY = box[0];
+        maxXY = box[1];
+        
+        zoomWidth = Math.abs(minXY[0] - maxXY[0]);
+        zoomHeight = Math.abs(minXY[1] - maxXY[1]);
+       
+        zoomMidX = centroid[0];
+        zoomMidY = centroid[1];
+        
+        zoomWidth = zoomWidth * (1 + paddingPerc / 100);
+        zoomHeight = zoomHeight * (1 + paddingPerc / 100);
+        
+        maxXscale = $("svg").width() / zoomWidth;
+        maxYscale = $("svg").height() / zoomHeight;
+        zoomScale = Math.min(maxXscale, maxYscale);
+       
+        zoomScale = Math.min(zoomScale, maxZoom);
+       
+        zoomScale = Math.max(zoomScale, minZoom);
+       
+        offsetX = zoomScale * zoomMidX;
+        offsetY = zoomScale * zoomMidY;
+        
+        dleft = Math.min(0, $("svg").width() / 2 - offsetX);
+        dtop = Math.min(0, $("svg").height() / 2 - offsetY);
+        
+        dleft = Math.max($("svg").width() - w * zoomScale, dleft);
+        dtop = Math.max($("svg").height() - h * zoomScale, dtop);
+      
+        svg
+          .transition()
+          .duration(500)
+          .call(
+            zoom.transform,
+            d3.zoomIdentity.translate(dleft, dtop).scale(zoomScale)
+          );
+      }
+
+
+
+
+      $(window).resize(function() {
+        svg
+          .attr("width", $("#map-holder").width())
+          .attr("height", $("#map-holder").height())
+        ;
+        initiateZoom();
+      });
+
+      
+      var svg = d3
+        .select("#map-holder")
+        .append("svg")
+        .attr("width", $("#map-holder").width())
+        .attr("height", $("#map-holder").height())
+        .attr("fill", "#00BFFF")
+        .call(zoom)
+      ;
+
+      
+     
+      d3.json(
+        "./data/map.json",
+        function(json) {
+          
+          countriesGroup = svg.append("g").attr("id", "map");
+         
+          countriesGroup
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", w)
+            .attr("height", h);
+
+          
+          countries = countriesGroup
+            .selectAll("path")
+            .data(json.features)
+            .enter()
+            .append("path")
+            .attr("d", path)
+            .attr("id", function(d, i) {
+              return "country" + d.properties.iso_a3;
+            })
+            .attr("class", "country")
+          
+            .on("mouseover", function(d, i) {
+                d3.select("#countryLabel" + d.properties.iso_a3).style("display", "block");
+            })
+            .on("mouseout", function(d, i) {
+                d3.select("#countryLabel" + d.properties.iso_a3).style("display", "none");
+            })
+            
+            .on("click", function(d, i) {
+                d3.selectAll(".country").classed("country-on", false);
+                d3.select(this).classed("country-on", true);
+                d3.selectAll(".bar").classed("bar-on", false);
+                d3.select("#bar" + d.properties.iso_a3).classed("bar-on", true);
+                d3.selectAll('.line').style('opacity', "0.1");
+                d3.select("#line" + d.properties.iso_a3)
+                  .style('opacity', "1")
+                  .style("stroke-width", "2.5px")
+                  .style("cursor", "pointer");
+            boxZoom(path.bounds(d), path.centroid(d), 20);
+            });
+         
+          countryLabels = countriesGroup
+            .selectAll("g")
+            .data(json.features)
+            .enter()
+            .append("g")
+            .attr("class", "countryLabel")
+            .attr("id", function(d) {
+              return "countryLabel" + d.properties.iso_a3;
+            })
+            .attr("transform", function(d) {
+              return (
+                "translate(" + path.centroid(d)[0] + "," + path.centroid(d)[1] + ")"
+              );
+            })
+            
+            .on("mouseover", function(d, i) {
+                d3.select(this).style("display", "block");
+            })
+            .on("mouseout", function(d, i) {
+                 d3.select(this).style("display", "none");
+           })
+            
+            .on("click", function(d, i) {
+                d3.selectAll(".country").classed("country-on", false);
+                d3.select("#country" + d.properties.iso_a3).classed("country-on", true);
+                d3.selectAll(".bar").classed("bar-on", false);
+                d3.select("#bar" + d.properties.iso_a3).classed("bar-on", true);
+                d3.selectAll('.line').style('opacity', "0.1");
+                d3.select("#line" + d.properties.iso_a3)
+                  .style('opacity', '1')
+                  .style("stroke-width", "2.5px")
+                  .style("cursor", "pointer");
+              boxZoom(path.bounds(d), path.centroid(d), 20);
+            });
+        
+          countryLabels
+            .append("text")
+            .attr("class", "countryName")
+            .style("text-anchor", "middle")
+            .attr("dx", 0)
+            .attr("dy", 0)
+            .text(function(d) {
+              return d.properties.name;
+            })
+            .call(getTextBox);
+          
+          countryLabels
+            .insert("rect", "text")
+            .attr("class", "countryLabelBg")
+            .attr("transform", function(d) {
+              return "translate(" + (d.bbox.x - 2) + "," + d.bbox.y + ")";
+            })
+            .attr("width", function(d) {
+              return d.bbox.width + 4;
+            })
+            .attr("height", function(d) {
+              return d.bbox.height;
+            });
+          initiateZoom();
+        }
+      );
+      
+
+      //BARCHART
+      var Birthdata = []
+
+      d3.csv("./data/factbook(2).csv", function(csv){  
+            for (i in csv){
+               var newBirth = {"name":csv[i].Country, "birthrate": csv[i][" Birth rate(births/1000 population)"]};
+                Birthdata.push(newBirth)
+             }
+           }
+          )
+
+      var GDPdata = []
+      
+      d3.csv("./data/gdp.csv", function(csv){
+        for (i in csv){
+            var countryName = csv[i].Country;
+            var growth = []
+            for (n=0; n <= 57; n++){
+              var year = 1960 + n
+              var num = parseFloat(csv[i][year])
+              if (Number.isNaN(num)){
+                num = 0
+              }
+              growth.push({"year": year, "value":num})
+            }
+            var max = d3.max(growth, function(d) { return d.value})
+            GDPdata.push({"country": countryName , "gdp": growth, "max":max})
+        }
+      });
+
+      
+      d3.json(
+        "./data/map.json",
+        function(json){
+          var d = json.features 
+          var i;
+          var data = [];
+          for (i in d){
+            var birth = Birthdata.find(birth=> birth.name === d[i].properties.name);
+            var gdp = GDPdata.find(gdp=> gdp.country === d[i].properties.name);
+            if (birth != null && gdp != null){
+              
+              data.push({"name" : d[i].properties.name, "value" : d[i].properties.pop_est, "id":d[i].properties.iso_a3, "birthrate":birth.birthrate,"gdp" : gdp.gdp , "maxGDP":gdp.max, "rest":d[i]});
+            }
+          }
+          
+
+          var margin =  {top: 20, right: 10, bottom: 20, left: 40};
+          var marginOverview = {top: 30, right: 10, bottom: 20, left: 40};
+          var selectorHeight = 40;
+          var width = 800 - margin.left - margin.right;
+          var height = 480 - margin.top - margin.bottom - selectorHeight;
+          var heightOverview = 80 - marginOverview.top - marginOverview.bottom;
+          var maxLength = d3.max(data.map(function(d){ return d.name.length}))
+          var barWidth = maxLength * 6;
+          var numBars = Math.round(width/barWidth);
+          var isScrollDisplayed = barWidth * data.length > width;
+          
+          var xscale = d3.scaleBand()
+                          .domain(data.slice(0,numBars).map(function (d) { return d.name; }))
+                          .rangeRound([0, width], .2);
+          
+          var yscale = d3.scaleLinear()
+                        .domain([0, 50])
+                        .range([height, 0]);
+            
+          var xAxis  = d3.axisBottom().scale(xscale)
+          var yAxis  = d3.axisLeft().scale(yscale)
+            
+          var svg = d3.select("#barchart").append("svg")
+                      .attr("width", width + margin.left + margin.right)
+                      .attr("height", height + margin.top + margin.bottom + selectorHeight);
+            
+          var diagram = svg.append("g")
+                           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            
+          diagram.append("g")
+                 .attr("class", "x axis")
+                 .attr("transform", "translate(0, " + height + ")")
+                 .call(xAxis);
+            
+          diagram.append("g")
+                 .attr("class", "y axis")
+                 .call(yAxis);
+            
+          var bars = diagram.append("g");
+          
+
+          bars.selectAll("rect")
+                      .data(data.slice(0, numBars), function (d) {return d.name; })
+                      .enter().append("rect")
+                      .attr("class", "bar")
+                      .attr("id", function(d, i) {
+                        return "bar" + d.id;
+                      })
+                      .attr("x", function (d) { return xscale(d.name); })
+                      .attr("y", function (d) { return yscale(d.birthrate); })
+                      .attr("width", xscale.bandwidth()-10)
+                      .attr("height", function (d) { return height - yscale(d.birthrate); })
+                      .attr("fill", "#FFEFD5")
+                      .on("click", function(d, i) {
+                        d3.selectAll(".bar").classed("bar-on", false);
+                        d3.select(this).classed("bar-on", true);
+                        d3.selectAll(".country").classed("country-on", false);
+                        d3.select("#country" + d.id).classed("country-on", true);
+                        d3.selectAll('.line').style('opacity', "0.1");
+                        d3.select("#line" + d.id)
+                          .style('opacity', '1')
+                          .style("stroke-width", "2.5px")
+                          .style("cursor", "pointer");
+                        boxZoom(path.bounds(d.rest), path.centroid(d.rest), 20);
+                      })
+                      .on("mouseover", function(d, i) {
+                          d3.select("#barLabel"+ d.name).style("display", "block");
+                      })
+                      .on("mouseout", function(d, i) {
+                           d3.select("#barLabel"+ d.name).style("display", "none");
+                      });
+
+        
+          barlabels = bars
+            .selectAll("g")
+            .data(data)
+            .enter()
+            .append("g")
+            .attr("class", "barLabel")
+            .attr("id", function(d) {
+              return "barLabel" + d.name;
+            })
+            
+            .on("mouseover", function(d, i) {
+                d3.select(this).style("display", "block");
+            })
+            .on("mouseout", function(d, i) {
+                 d3.select(this).style("display", "none");
+            })
+          barlabels
+            .append("text")
+            .attr("class", "countryProp")
+            .style("text-anchor", "middle")
+            .attr("dx", function(d) { return xscale(d.name) + 40;} )
+            .attr("dy", function (d) { return yscale(d.birthrate) + 40;})//300)
+            .text(function(d) {
+              return (d.birthrate );
+            })
+            
+            
+          if (isScrollDisplayed)
+          {
+
+            var xOverview = d3.scaleBand()
+                            .domain(data.map(function (d) { return d.name; }))
+                            .rangeRound([0, width], .2);
+            yOverview = d3.scaleLinear().range([heightOverview, 0]);
+            yOverview.domain(yscale.domain());
+
+            var subBars = diagram.selectAll('.subBar')
+                .data(data)
+
+            subBars.enter().append("rect")
+                .classed('subBar', true)
+                .attr({
+                    height: function(d) {
+                        return heightOverview - yOverview(d.birthrate);
+                    },
+                    width: function(d) {
+                        return xOverview.range()
+                    },
+                    x: function(d) {
+
+                        return xOverview(d.name);
+                    },
+                    y: function(d) {
+                        return height + heightOverview + yOverview(d.birthrate)
+                    }
+                })
+
+            var displayed = d3.scaleQuantize()
+                        .domain([0, width])
+                        .range(d3.range(data.length));
+
+            
+            diagram.append("rect")
+                        .attr("transform", "translate(0, " + (height + margin.bottom) + ")")
+                        .attr("class", "mover")
+                        .attr("x", 0)
+                        .attr("y", 5)
+                        .attr("height", selectorHeight)
+                        .attr("width", Math.round(parseFloat(numBars * width)/data.length))
+                        .attr("pointer-events", "all")
+                        .attr("cursor", "ew-resize")
+                        .attr("fill", "#FFEFD5")
+                        .call(d3.drag().on("drag", display));
+          }
+
+         
+
+          function display () {
+              var x = parseInt(d3.select(this).attr("x")),
+                  nx = x + d3.event.dx,
+                  w = parseInt(d3.select(this).attr("width")),
+                  f, nf, new_data, rects;
+
+              if ( nx < 0 || nx + w > width ) return;
+
+              d3.select(this).attr("x", nx);
+
+              f = displayed(x);
+              nf = displayed(nx);
+
+              if ( f === nf ) return;
+
+              new_data = data.slice(nf, nf + numBars);
+
+              xscale.domain(new_data.map(function (d) { return d.name; }));
+              diagram.select(".x.axis").call(xAxis);
+
+              rects = bars.selectAll("rect")
+                .data(new_data, function (d) {return d.name; });
+
+              rects.attr("x", function (d) { return xscale(d.name); });
+
+         
+
+              rects.enter().append("rect")
+                .attr("class", "bar")
+                .attr("id", function(d, i) {
+                  return "bar" + d.id;
+                })
+                .attr("x", function (d) { return xscale(d.name); })
+                .attr("y", function (d) { return yscale(d.birthrate); })
+                .attr("width", xscale.bandwidth()-10)
+                .attr("height", function (d) { return height - yscale(d.birthrate); })
+                .attr("fill", "#FFEFD5")
+                .on("click", function(d, i) {
+                        d3.selectAll(".bar").classed("bar-on", false);
+                        d3.select(this).classed("bar-on", true);
+                        d3.selectAll(".country").classed("country-on", false);
+                        d3.select("#country" + d.id).classed("country-on", true);
+                        d3.selectAll('.line').style('opacity', "0.1");
+                        d3.select("#line" + d.id)
+                          .style('opacity', '1')
+                          .style("stroke-width", "2.5px")
+                          .style("cursor", "pointer");
+                        boxZoom(path.bounds(d.rest), path.centroid(d.rest), 20);
+                      })
+                      .on("mouseover", function(d, i) {
+                          d3.select("#barLabel"+ d.name).style("display", "block");
+                      })
+                      .on("mouseout", function(d, i) {
+                           d3.select("#barLabel"+ d.name).style("display", "none");
+                      });
+
+              barlabels2 = barlabels.selectAll("g")
+                .data(new_data, function (d) {return d.name; });
+
+              barlabels2.attr("x", function (d) { return xscale(d.name); });
+
+              barlabels2 
+                .enter()
+                .append("g")
+                .attr("class", "barLabel")
+                .attr("id", function(d) {
+                  return "barLabel2" + d.name;
+                })
+                //.attr("transform", function(d) {
+                //  return (
+                //    "translate(" + xscale(d.name) + "," + yscale(d.birthrate) + ")"
+                //  );
+                //})
+                .on("mouseover", function(d, i) {
+                    d3.select(this).style("display", "block");
+                })
+                .on("mouseout", function(d, i) {
+                     d3.select(this).style("display", "none");
+                })
+              barlabels2
+                .append("text")
+                .attr("class", "countryProp")
+                .style("text-anchor", "middle")
+                .attr("dx", function(d) { return xscale(d.name) + 40;} )
+                .attr("dy", function (d) { return yscale(d.birthrate) + 40;})
+                .text(function(d) {
+                  return (d.birthrate );
+                })
+
+              rects.exit().remove();
+          }
+
+          var margin = {top: 20, right: 40, bottom: 30, left: 50},
+          width2 = 1500 - margin.left - margin.right,
+          height2 = 450 - margin.top - margin.bottom;
+
+
+        //LINECHART
+          var lineOpacity = "0.5";
+          var lineOpacityHover = "1";
+          var otherLinesOpacityHover = "0.1";
+          var lineStroke = "2px";
+          var lineStrokeHover = "3px";
+
+          var circleOpacity = '0.85';
+          var circleOpacityOnLineHover = "0.25"
+          var circleRadius = 3;
+          var circleRadiusHover = 6;
+
+
+          var xSc = d3.scaleLinear()
+            .domain(d3.extent(data[0].gdp, d => d.year))
+            .rangeRound([0, width2], .2);
+
+          var ySc = d3.scalePow()
+            .domain([0, d3.max(data, d => d.maxGDP)])
+            .range([height2, 0]);
+
+          var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+
+          var svg = d3.select("#linechart").append("svg")
+            .attr("width", width2 + margin.left + margin.right)
+            .attr("height", height2 + margin.top + margin.bottom)
+            .append('g')
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+          /* Add line into SVG */
+          var line = d3.line()
+            .x(d => xSc(d.year))
+            .y(d => ySc(d.value));
+
+          let lines = svg.append('g')
+            .attr('class', 'lines');
+
+
+          lines.selectAll('.line-group')
+            .data(data).enter()
+            .append('g')
+            .attr('class', 'line-group')  
+            .on("mouseover", function(d, i) {
+                svg.append("text")
+                  .attr("class", "title-text")
+                  .style("fill", color(i))        
+                  .text(d.name)
+                  .attr("text-anchor", "middle")
+                  .attr("x", (width2)/2)
+                  .attr("y",25);
+              })
+            .on("mouseout", function(d) {
+              svg.select(".title-text").remove();
+              d3.select(this)
+                .style("cursor", "none")  
+            })
+            .append('path')
+            .attr('class', 'line') 
+            .attr("id", function(d, i) {
+              return "line" + d.id;
+            })
+            .attr('d', d => line(d.gdp))
+            .style('stroke', (d, i) => color(i))
+            .style('opacity', lineOpacity)
+            .on("mouseover", function(d) {
+              d3.selectAll('.line')
+                  .style('opacity', otherLinesOpacityHover);
+              d3.selectAll('.circle')
+                  .style('opacity', circleOpacityOnLineHover);
+              d3.select(this)
+                .style('opacity', lineOpacityHover)
+                .style("stroke-width", lineStrokeHover)
+                .style("cursor", "pointer");
+            })
+            .on("mouseout", function(d) {
+              d3.selectAll(".line")
+                  .style('opacity', lineOpacity);
+              d3.selectAll('.circle')
+                  .style('opacity', circleOpacity);
+              d3.select(this)
+                .style("stroke-width", lineStroke)
+                .style("cursor", "none")
+            })
+            .on("click", function(d, i) {              
+              d3.selectAll(".country").classed("country-on", false);
+              d3.select("#country" + d.id).classed("country-on", true);
+              d3.selectAll(".bar").classed("bar-on", false);
+              d3.select("#bar" + d.id).classed("bar-on", true);
+              boxZoom(path.bounds(d.rest), path.centroid(d.rest), 20);
+              //find(d.name)
+            });
+            
+
+          
+          var x = d3.axisBottom().scale(xSc);
+          var y = d3.axisLeft().scale(ySc);
+
+           
+            svg.append("g")
+                .attr("class","axis")
+                .attr("transform", "translate(0," + height2 + ")")
+                .call(x);
+
+            
+            svg.append("g")
+                .attr("class","axis")
+                .call(y);
+
+        }
+      );
+
+
+
+ 
+    </script>
+  </body>
+</html>
