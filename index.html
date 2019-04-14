@@ -230,7 +230,7 @@
       
      
       d3.json(
-        "https://raw.githubusercontent.com/andybarefoot/andybarefoot-www/master/maps/mapdata/custom50.json",
+        "./data/map.json",
         function(json) {
           
           countriesGroup = svg.append("g").attr("id", "map");
@@ -369,7 +369,7 @@
 
       
       d3.json(
-        "https://raw.githubusercontent.com/andybarefoot/andybarefoot-www/master/maps/mapdata/custom50.json",
+        "./data/map.json",
         function(json){
           var d = json.features 
           var i;
