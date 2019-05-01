@@ -29,6 +29,13 @@
     pointer-events: none;			
 }
 
+	
+
+	.line {
+	  fill: none;
+	  stroke: steelblue;
+	  stroke-width: 1.5px;
+	}
 
 	.legend rect {
   	fill:white;
@@ -56,7 +63,38 @@ var	parseDate = d3.timeParse("%Y-%m");
 
 
 
+var svg = d3.select("#line_chart").append("svg")
+	    .attr("width", width + margin.left + margin.right)
+	    .attr("height", height + margin.top + margin.bottom)
+     	.append("g")
+	    .attr("transform",
+	          "translate(" + margin.left + "," + margin.top + ")");
 
+var bar_svg = d3.select("#bar_chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+	    .append("g")
+	    .attr("transform", 
+	          "translate(" + margin.left + "," + margin.top + ")")
+states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
+	
+	var dropdownChange = function() {
+                    var newState = d3.select(this).property('value');
+
+                    update_view(newState);
+                };
+
+	var dropdown = d3.select("#pie_chart")
+                    .append("select", "svg")
+                    .on("change", dropdownChange);
+
+        dropdown.selectAll("option")
+            .data(states)
+          .enter().append("option")
+            .attr("value", function (d) { return d; })
+            .text(function (d) {
+                return d[0].toUpperCase() + d.slice(1,d.length); // capitalize 1st letter
+                    });
 
 
 function line_graph(display_state){
@@ -65,23 +103,35 @@ function line_graph(display_state){
 
 	// set the ranges
 	var x = d3.scaleBand()
-			  .range([2, width]);
+			  .range([0, width]);
 	var y = d3.scaleLinear().range([height, 0]);
+
+
+	var xAxis = d3.axisBottom()
+	    .scale(x)
+	    .tickFormat(d3.timeParse("%Y-%m"));
+
+	var yAxis = d3.axisLeft()
+	    .scale(y)
+	    .ticks(12);
 
 	// define the line
 	var valueline = d3.line()
-    	.x(function(d) {console.log(d.key); return x(d.key); })
-    	.y(function(d) { console.log(d.value.killed); return y(d.value.killed); });
+    	.x(function(d) {return x(d.key); })
+    	.y(function(d) { return y(d.value.killed); });
+
+    var injuredline = d3.line()
+    	.x(function(d) {return x(d.key);})
+    	.y(function(d){return y(d.value.injured);})
+
+    var totline = d3.line()
+    	.x(function(d) {return x(d.key);})
+    	.y(function(d){return y(d.value.total);})
 
 	// append the svg obgect to the body of the page
 	// appends a 'group' element to 'svg'
 	// moves the 'group' element to the top left margin
-	var svg = d3.select("#line_chart").append("svg")
-	    .attr("width", width + margin.left + margin.right)
-	    .attr("height", height + margin.top + margin.bottom)
-     	.append("g")
-	    .attr("transform",
-	          "translate(" + margin.left + "," + margin.top + ")");
+	
 
 	// Get the data
 	d3.csv("master_mass_shooting_data.csv", function(error, data) {
@@ -99,6 +149,7 @@ function line_graph(display_state){
 		return d.State === display_state;
 	})
 
+	console.log(data);
 
 	var nested = d3.nest()
 				.key(function(d){
@@ -124,23 +175,50 @@ function line_graph(display_state){
 	   console.log(nested)
 
 	  // Scale the range of the data
-	  x.domain(d3.extent(nested, function(d) { return d.key; }));
-	  y.domain([0, d3.max(nested, function(d) { return d.value.killed; })]);
+	  x.domain(nested.map(function(d) { return d.key; }));
+	  y.domain([0, d3.max(nested, function(d) { return d.value.total; })]);
 
 	  // Add the valueline path.
 	  svg.append("path")
 	      .data([nested])
 	      .attr("class", "line")
-	      .attr("d", valueline);
+	      .attr("d", valueline)
+	      .style("stroke", "red");
 
-	  // Add the X Axis
+	  svg.append("path")
+	      .data([nested])
+	      .attr("class", "line")
+	      .attr("d", injuredline)
+	      .style("stroke", "orange");
+
+	   svg.append("path")
+	      .data([nested])
+	      .attr("class", "line")
+	      .attr("d", totline);
+
+
 	  svg.append("g")
-	      .attr("transform", "translate(0," + height + ")")
-	      .call(d3.axisBottom(x));
+		      .attr("class", "x axis")
+		      .attr("transform", "translate(0," + height + ")")
+		      .call(xAxis)
+		      .selectAll("text")
+		      .style("text-anchor", "end")
+		      .attr("dx", "-.8em")
+		      .attr("dy", "-2.25em")
+		      .attr("transform", "rotate(-90)" )
+		      .text(function(d){return d});
 
 	  // Add the Y Axis
 	  svg.append("g")
 	      .call(d3.axisLeft(y));
+
+
+	  svg.append("text")             
+	      .attr("transform",
+	            "translate(" + (width/2) + " ," + 
+	                           (height + margin.top + 40) + ")")
+	      .style("text-anchor", "middle")
+	      .text(display_state);
 
 });
 
@@ -154,7 +232,7 @@ function pie_chart(){
 }
 
 
-function bar_graph(){
+function bar_graph(display_state){
 
 
 	var x = d3.scaleBand()
@@ -175,12 +253,8 @@ function bar_graph(){
 	    .attr("class", "tooltip")				
 	    .style("opacity", 0);
 
-	var bar_svg = d3.select("#bar_chart").append("svg")
-	    .attr("width", width + margin.left + margin.right)
-	    .attr("height", height + margin.top + margin.bottom)
-	    .append("g")
-	    .attr("transform", 
-	          "translate(" + margin.left + "," + margin.top + ")")
+
+	
 
 		
 		d3.csv("master_mass_shooting_data.csv", function(error, data) {
@@ -191,6 +265,10 @@ function bar_graph(){
 		        d.Injured = +d.Injured;
 
 		    });
+
+		    data = data.filter(function(d){
+				return d.State === display_state;
+			})
 
 		 	var nested = d3.nest()
 				.key(function(d){
@@ -233,7 +311,7 @@ function bar_graph(){
 	            "translate(" + (width/2) + " ," + 
 	                           (height + margin.top + 40) + ")")
 	      .style("text-anchor", "middle")
-	      .text("Date");
+	      .text(display_state);
 
 		  bar_svg.append("g")
 		      .attr("class", "y axis")
@@ -381,10 +459,16 @@ function bar_graph(){
 }
 
 function default_view(){
-	bar_graph();
+	bar_graph("Alabama");
 	line_graph("Alabama")
 
 
+}
+function update_view(state){
+	bar_svg.selectAll("*").remove();
+	svg.selectAll("*").remove();
+	bar_graph(state);
+	line_graph(state);
 }
 
 default_view();
