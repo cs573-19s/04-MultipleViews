@@ -1,0 +1,75 @@
+---
+title: "A4_DataExploration"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyverse)
+library(dplyr)
+library(jsonlite)
+```
+
+
+```{r}
+mt_data_draft <- read_csv("mt_data_draft.csv")
+```
+
+
+
+```{r}
+# SubSetting
+mt_ts4_sf2_sf3 <- mt_data_draft %>% filter(DataSet == 'Srirattana2017_TS4' | DataSet == 'Srirattana2017_SF2'| DataSet ==  'Srirattana2017_SF3')
+mt_ts6 <- mt_data_draft %>% filter(DataSet == 'Srirattana2017_TS6')
+mt_ts3 <- mt_data_draft %>% filter(DataSet == 'Srirattana2017_TS3')
+
+mt_ts5_adj <- mt_data_draft %>% filter(DataSet == 'Srirattana2017_TS5') %>% mutate(FoldChangeAdj = 1/FoldChange)
+#%>% mutate(FoldChangeAdjusted = FoldChange*DataSet['Srirattana2017_TS3'][GeneSymbol])
+```
+
+```{r}
+mt_data_draft$Location[is.na(mt_data_draft$Location)] <- "Undetermined"
+arrange(mt_data_draft,DataSet,Location,Type)
+```
+
+
+Fold change calibration cannot (should not?) be completed because would leave with not enough data points... 
+```{r}
+datasetList <- lapply(split(mt_data_draft, mt_data_draft$DataSet), function(x) split(x, x$Location))
+```
+
+```{r}
+newList <- lapply(names(datasetList), function(x){
+  subList_x <- datasetList[[x]]
+  locationList <- lapply(names(subList_x), function(y){
+    subList_y <- subList_x[[y]]
+    gene_list <- list()
+      for (i in seq_along(subList_y)){
+          gene_list[[i]] <- list(name = subList_y$GeneSymbol[i], FoldChange = subList_y$FoldChange[i], Regulation = subList_y$Regulation[i])
+      }
+    list(name = y, children = gene_list)
+  })
+  list(name = x, children = locationList)
+})
+```
+
+```{r}
+jsonData <- toJSON(newList, auto_unbox = TRUE)
+prettify(jsonData)
+write(jsonData, "FoldChangeByDataSet.json")
+
+```
+
+```{r}
+mt_data_heat <- mt_data_draft %>% mutate(FoldChange_allR = case_when(
+                                                                      Regulation == "Down" ~ -1*FoldChange,
+                                                                      Regulation == "Up" ~ FoldChange
+                                                ))
+```
+
+```{r}
+quart_list = seq(0,1,by=0.1)
+quantile(mt_data_heat$FoldChange_allR,quart_list)
+```
+
