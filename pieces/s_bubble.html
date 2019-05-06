@@ -1,0 +1,55 @@
+<!--https://d3indepth.com/layouts/-->
+<!--https://observablehq.com/@d3/zoomable-circle-packing-->
+
+<head>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+<style>
+circle {
+  fill: #333;
+  opacity: 0.3;
+  stroke: white;
+}
+</style>
+<body>
+  <div id="div_bubble">
+    <svg id="svg_bubble"/>
+  </div>
+</body>
+<script>
+  var w = 400;
+  var h = 400;
+  var margin = {top: 0, right: 50, bottom: 70, left: 50};
+  var w_wo_margins = w - margin.left - margin.right;
+  var h_wo_margins = h - margin.top - margin.bottom;
+
+// NEED: To scale data to fit...??
+  d3.json("bubble_data.json").then(function(data){
+//    console.log(data);
+    rootNode = d3.hierarchy(data);
+
+    // create and size layout for packed bubbles
+    var packLayout = d3.pack();
+    packLayout.size([w, h]);
+
+    rootNode.sum(function(d) {
+      return d.value;
+    });
+
+    packLayout(rootNode);
+
+    var svg = d3.select("svg#svg_bubble")
+      .attr("width", w)
+      .attr("height", h)
+      .append("g");
+    var circles = svg.selectAll("circle")
+        .data(rootNode.descendants())
+        .enter().append("circle")
+        .attr('cx', function(d) { return d.x; })
+        .attr('cy', function(d) { return d.y; })
+        .attr('r', function(d) { return d.r; })
+  })
+
+
+
+</script>

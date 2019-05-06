@@ -1,0 +1,73 @@
+{"name": "Cell",
+  "children":
+  [
+    {
+    "name": "Cytoplasm",
+    "children":
+    [
+      {"name": "Other", "value":349},
+      {"name": "Enzyme", "value":215},
+      {"name": "Transporter", "value":75},
+      {"name": "Kinase", "value":56},
+      {"name": "Peptidase", "value":22},
+      {"name": "Transcription Regulator", "value":20},
+      {"name": "Phosphatase", "value":20},
+      {"name": "Translation Regulator", "value":18},
+      {"name": "Growth Factor", "value":1},
+      {"name": "Ion Channel", "value":1}
+    ]
+  },
+  {
+    "name": "Nucleus",
+    "children":
+  [
+        {"name": "Other", "value":272},
+        {"name": "Enzyme", "value":122},
+        {"name": "Transporter", "value":15},
+        {"name": "Kinase", "value":23},
+        {"name": "Peptidase", "value":8},
+        {"name": "Transcription Regulator", "value":167},
+        {"name": "Phosphatase", "value":3},
+        {"name": "Ligand-Dependent Nuclear Receptor", "value":2},
+        {"name": "Ion Channel", "value":1}
+      ]
+  },
+  {
+    "name": "Other",
+    "children":
+      [
+        {"name": "Other", "value":108},
+        {"name": "Enzyme", "value":8},
+        {"name": "Transporter", "value":8},
+        {"name": "Peptidase", "value":3},
+        {"name": "Transcription Regulator", "value":1},
+        {"name": "Ion Channel", "value":1}
+      ]
+  },
+  {
+    "name": "Plasma Membrane",
+    "children":
+      [
+        {"name": "Other", "value":66},
+        {"name": "Enzyme", "value":41},
+        {"name": "Transporter", "value":38},
+        {"name": "Peptidase", "value":4},
+        {"name": "Kinase", "value":11},
+        {"name": "Ion Channel", "value":8},
+        {"name": "Transmembrane Receptor", "value":10},
+        {"name": "G-Protein Coupled Receptor", "value":1},
+        {"name": "Phosphatase", "value":1}
+      ]
+  },
+  {
+    "name": "Extracellular Space",
+    "children":
+      [
+        {"name": "Other", "value":43},
+        {"name": "Enzyme", "value":9},
+        {"name": "Transporter", "value":7},
+        {"name": "Cytokine", "value":6},
+        {"name": "Peptidase", "value":3}
+      ]
+  }
+]}
