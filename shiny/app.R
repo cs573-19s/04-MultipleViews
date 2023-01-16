@@ -3,20 +3,50 @@
 library(shiny)
 library(reactlog)
 
-library(tidyverse)
 library(readr)
+library(tidyverse)
+
 library(ggmosaic)
+library(DT)
 
 
 reactlog_enable()
 
 
+###
+# PLOT CONSTANTS
+###
 
-
-GSE87831_fpkm_full_df <- filter(read_csv("data/GSE87831_fpkm_longer.csv")) %>% filter(fpkm != 0) %>% mutate(log10_fpkm = log10(fpkm)) %>% select(Refseq, Copies, run, fpkm, log10_fpkm)
-x_data_log10_min <- min(filter(GSE87831_fpkm_longer_shiny, fpkm != 0)$log10_fpkm)
-x_data_log10_max <- max(filter(GSE87831_fpkm_longer_shiny, fpkm != 0)$log10_fpkm)
 DENSITY_Y_MAX <- 1
+
+BOX_PLOT_COLOR <- c("TRUE"="#67a9cf",
+                    "FALSE"="#ef8a62")
+BOX_PLOT_LABELS <- c("TRUE"="Selected",
+                     "FALSE"="Not Selected")
+
+DENSITY_PLOT_COLOR <- c("siCtrl_avg"= "#7b3294",
+                        "siNup93_avg"= "#c2a5cf",
+                        "siNup153_avg"= "#008837")
+
+DENSITY_PLOT_LABELS <- c("siCtrl_avg"= "Control",
+                       "siNup93_avg"= "Nup93",
+                       "siNup153_avg"="Nup153"
+                       )
+DENSITY_PLOT_LEGEND <- "Average fpkm\nafter indicated\nsiRNA treatment"
+
+MOSAIC_PLOT_FILL <- c("0"= "#7b3294",
+                     "1"= "#c2a5cf",
+                     "2"="#a6dba0",
+                     "3"= "#008837")
+
+MOSAIC_PLOT_LABELS <- c("0"= "Neither Nup",
+                        "1"= "Nup93",
+                        "2"="Nup153",
+                        "3"= "Both Nups") 
+
+###
+# Data Import and Processing (includes calculated "constants")
+###
 
 all_gene_data_df <- read_csv("data/nup_si_damid_gene_df.csv") %>%
     mutate(length = end - start) %>%
@@ -26,51 +56,61 @@ all_gene_data_df <- read_csv("data/nup_si_damid_gene_df.csv") %>%
     mutate(chr_sel_bool=replicate(length(Refseq), TRUE))
 ALL_GENES_COUNT <- nrow(all_gene_data_df)
 
+# Creation of this df depends on all_gene_data_df
+GSE87831_fpkm_full_df <- filter(read_csv("data/GSE87831_fpkm_longer.csv")) %>%
+    filter(fpkm != 0) %>%
+    mutate(log10_fpkm = log10(fpkm)) %>%
+    select(Refseq, Copies, run, fpkm, log10_fpkm) %>%
+    filter(Refseq %in% all_gene_data_df$Refseq)
+x_data_log10_min <- min(filter(GSE87831_fpkm_full_df)$log10_fpkm)
+x_data_log10_max <- max(filter(GSE87831_fpkm_full_df)$log10_fpkm)
+
+
+all_gene_data_df <- left_join(all_gene_data_df, pivot_wider(GSE87831_fpkm_full_df,
+                                                            names_from = run,
+                                                            names_glue = "{run}_{.value}",
+                                                            values_from = c(log10_fpkm)) %>%
+                                  select(Refseq, contains("log10_fpkm")),
+                      by="Refseq"
+                      )
+
+
+
 base_density_plt <- ggplot(data = GSE87831_fpkm_full_df) +
-    geom_density(aes(color = run, x = log10_fpkm)) + # need to scale to make density of subset selected fall on the same scale
-    coord_cartesian(xlim = c(x_data_log10_min, x_data_log10_max), ylim=c(0,DENSITY_Y_MAX)) +
-    theme(legend.position="none")
+    geom_density(aes(color = run, x = log10_fpkm), linewidth = 1.25) + # need to scale to make density of subset selected fall on the same scale
+    coord_cartesian(xlim = c(x_data_log10_min, x_data_log10_max), ylim=c(0, DENSITY_Y_MAX)) +
+#    theme(legend.position="none") +
+    scale_color_manual(name=DENSITY_PLOT_LEGEND, values = DENSITY_PLOT_COLOR) +
+    labs(title="RNA-Seq Expression Density (log10 Scaled)")
+
+
 
 
 # Define UI
 
 ui <- fluidPage( # Layout Guide: https://shiny.rstudio.com/articles/layout-guide.html
-    
+    # Row 1
     fluidRow(
-# Column 1
-        column(6,
-            fluidRow(
-                column(12, "Genes Classified by DamID and siRNA Assays",
-                    plotOutput("gene_assay_mosaic_ptop", click = clickOpts("gene_assay_click", clip = TRUE))
-                )
-            ),
-            fluidRow(
-                column(12, "Distribution of Gene Length by Chromosome",
-                    plotOutput("gene_length_box_ptop", click = clickOpts("chr_length_click", clip = TRUE))
-                    # Question: would there be a benefit to doing chromosome versus brushing by length?
-                    # Question: how would setting up both work?
-                )
-            )
+        column(6, # "RNA-Seq Expression Density (Scaled)",
+               plotOutput("rna_expr_density_ptop", brush = brushOpts("rna_expr_brush", direction = "x"))
         ),
-# Column 2
-        column(6, "density_plot",
-            fluidRow(
-                column(12, "RNA-Seq Expression Density (Scaled)",
-                       plotOutput("rna_expr_density_ptop", brush = brushOpts("rna_expr_brush", direction = "x"))
-                )
-            ),
-            fluidRow(
-                column(12, "Selected Genes",
-                      # want table of selected genes here
-                )
-            )
+        column(6, # "Distribution of Gene Length by Chromosome",
+            plotOutput("gene_length_box_ptop", click = clickOpts("chr_length_click", clip = TRUE))
+            # Question: would there be a benefit to doing chromosome versus brushing by length?
+            # Question: how would setting up both work?
         )
-    
+    ),
+    # Row 2
+    fluidRow(
+        column(4, # "Genes Classified by DamID and siRNA Assays",
+               plotOutput("gene_assay_mosaic_ptop", click = clickOpts("gene_assay_click", clip = TRUE))
+        ),
+        column(8, # "Selected Genes",
+               # want table of selected genes here
+               DT::dataTableOutput("gene_table")
+        )
     )
 )
-
-
-
 
 
 # Establish Server Logic
@@ -83,31 +123,7 @@ server <- function(input, output) {
 
     
     fpkm_sel_rxtv <- reactive({
-        
-        # if brushing isn't complete, stop
-        # (kind of a "mouse up" event listener doesn't exist in shiny work around)
-        
-#        if(is.null(input$rna_expr_brush)) return()
-        
-        # if brushing is complete, proceed
-        # temp_df <- all_genes_data()
-        # 
-        # temp_df[temp_df$Refseq %in% brushedPoints(GSE87831_fpkm_full_df, 
-        #                                           input$rna_expr_brush,
-        #                                           xvar="log10_fpkm")$Refseq,]$gene_sel_bool <- TRUE
-        # 
-        # temp_df[!(temp_df$Refseq %in% brushedPoints(GSE87831_fpkm_full_df, 
-        #                                             input$rna_expr_brush,
-        #                                             xvar="log10_fpkm")$Refseq),]$gene_sel_bool <- FALSE
-        # 
-        # all_genes_data(temp_df)
-        
-        # return the subset of densities of the genes represented in the selected area
-        ##### NOTE: think some of thse are not represented in the same place on the x axis (??)
-        # return(filter(GSE87831_fpkm_full_df, 
-        #               Refseq %in% filter(all_genes_data(),
-        #                                  gene_sel_bool==TRUE & chr_sel_bool==TRUE)$Refseq))
-        
+        if(is.null(input$rna_expr_brush)) return()
         filter(GSE87831_fpkm_full_df, 
                       Refseq %in% filter(all_genes_data(),
                                          gene_sel_bool==TRUE & chr_sel_bool==TRUE)$Refseq)
@@ -178,15 +194,11 @@ server <- function(input, output) {
        
        # return the subset of densities of the genes represented in the selected area
        ##### NOTE: think some of thse are not represented in the same place on the x axis (??)
+
        # return(filter(GSE87831_fpkm_full_df, 
        #               Refseq %in% filter(all_genes_data(),
        #                                  gene_sel_bool==TRUE & chr_sel_bool==TRUE)$Refseq))
-       
-       return(filter(GSE87831_fpkm_full_df, 
-                     Refseq %in% filter(all_genes_data(),
-                                        gene_sel_bool==TRUE & chr_sel_bool==TRUE)$Refseq))
-   },
-   ignoreInit = TRUE)
+   }, ignoreInit = TRUE)
    
 
     ################    
@@ -197,16 +209,26 @@ server <- function(input, output) {
         p <- ggplot(data = filter(all_genes_data(), gene_sel_bool == TRUE & chr_sel_bool == TRUE)) +
                 geom_mosaic(aes(x = product(DamID_Class, siRNA_Class), fill=DamID_Class)) +
                 geom_mosaic_text(aes(x = product(DamID_Class, siRNA_Class), label = after_stat(.wt)), as.label=TRUE) +
-                theme_mosaic()
+                scale_x_productlist(labels=as_tibble(MOSAIC_PLOT_LABELS)$value) +
+                theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) + 
+                scale_y_productlist(labels=NULL) +
+                scale_fill_manual(values = MOSAIC_PLOT_FILL, labels=MOSAIC_PLOT_LABELS) +
+                labs(title="Genes Classified by DamID and siRNA Assays", x="siRNA Treatment Class", y="DamID Assay Results") +
+#                theme_mosaic() +
+                theme(axis.text.x = element_text(angle = 90, hjust = 1),
+                      axis.ticks.x = element_blank(),
+                      axis.ticks.y = element_blank())
         gene_assay_plt(p)
         p
     })
     
     output$gene_length_box_ptop <- renderPlot({
-        p <- ggplot(data=filter(all_genes_data(),
-                                1 <= as.numeric(chr) & as.numeric(chr) <= 22)) +
+        p <- ggplot(data=filter(filter(all_genes_data(), gene_sel_bool == TRUE),
+                    1 <= as.numeric(chr) & as.numeric(chr) <= 22)) +
             geom_boxplot(aes(y = chr, x = length, color=chr_sel_bool),
-                         position = "dodge")
+                         position = "dodge") +
+            scale_color_manual( values = BOX_PLOT_COLOR, limits = names(BOX_PLOT_COLOR), labels=BOX_PLOT_LABELS ) +
+            labs(title="Distribution of Gene Length by Chromosome")
         p
     })
     
@@ -214,9 +236,16 @@ server <- function(input, output) {
         p <- base_density_plt
         
         if(!is.null(fpkm_sel_rxtv())){
-            p <- p + geom_density(data = fpkm_sel_rxtv(), mapping = aes(color = run, x = log10_fpkm, after_stat(scaled)))
+            p <- p + geom_density(data = fpkm_sel_rxtv(),
+                                  mapping = aes(color = run, x = log10_fpkm, after_stat(scaled)), linewidth = 1.25) +
+#                scale_color_manual(name=DENSITY_PLOT_LEGEND, values = DENSITY_PLOT_COLOR) +
+                labs(title="RNA-Seq Expression Density (log10 Scaled)")
         }
         p
+    })
+    
+    output$gene_table = DT::renderDataTable({
+        select(all_genes_data(), -c(chr_sel_bool, gene_sel_bool))
     })
     
 }
