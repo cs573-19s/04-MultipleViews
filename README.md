@@ -2,6 +2,7 @@ Assignment 4 - Visualizations and Multiple Views
 ===
 
 [gh-pages index file](https://jpetittowpi.github.io/04-MultipleViews/), which isn't particularly useful as the interactive app is hosted by shinyapps.io: [Omic Explorer](https://jtourtellottewpi.shinyapps.io/omic_explorer/)
+The files for the shiny app, including the data, can be found in this git in the "shiny" folder.
 
 
 This vis sequencing-based DamID and siRNA classification (discrete values) with quantitative (continuous) RNAseq data from experiments that examined the relationship between active chromatin and association with the nuclearpore complex (NPC) focused on Nups 93 and 153.
@@ -22,3 +23,8 @@ Achievements
 The technical achievements I attempted with this visualization were to learn how to use shiny to visualize genomic data in unique ways. I have been particularly interested in looking at distributions of change in different sequencing data (RNA-seq, Hi-C over multiple time points, and so on), and the interactions in this vis open the door for a new way to look at these data types. After showing my PI this visualization in its earliest forms, he thinks it can be developed into a useful tool for looking for gene targets for imaging experiments.
 
 The design achievements I accomplished included learning to work within the UI grid system that underlies shiny apps as well as seeking color palattes that are color-blind friendly.
+
+The data for this visualization comes from the Supplemental Files association with the following paper:
+Ibarra A, Benner C, Tyagi S, Cool J, Hetzer MW. Nucleoporin-mediated regulation of cell identity genes. Genes Dev. 2016 Oct 15;30(20):2253-2258. doi: 10.1101/gad.287417.116. Epub 2016 Nov 2. PMID: 27807035; PMCID: PMC5110992.
+
+as well as the [associated dataset](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE87831) on the Gene Expression Omnibus
