@@ -1,9 +1,7 @@
 Assignment 4 - Visualizations and Multiple Views  
 ===
 
-https://jpetittowpi.github.io/04-MultipleViews/ <- gh-pages index file, which isn't particularly useful as the interactive is hosted by shiny.io
-
-
+https://jpetittowpi.github.io/04-MultipleViews/ <- gh-pages index file, which isn't particularly useful as the interactive app is hosted by shinyapps.io: [https://jtourtellottewpi.shinyapps.io/omic_explorer/](Omic Explorer)
 
 3. Your writeup (readme.md in the repo) should contain the following:
 
