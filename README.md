@@ -1,59 +1,30 @@
 Assignment 4 - Visualizations and Multiple Views  
 ===
 
-One of the most powerful techniques for mitigating the shortcomings of a given visualization is to link it with other views.
-Linking a map to a bar or scatterplot, for instance, may allow you to overcome the shortcomings of a map.
-In general, linking visualizations allows you to explore different parts of the data between views, and mitigates the shortcomings of a given view by pairing it with other views.
-This technique, called coordinated multiple views, is the focus of this assignment.
+[gh-pages index file](https://jpetittowpi.github.io/04-MultipleViews/), which isn't particularly useful as the interactive app is hosted by shinyapps.io: [Omic Explorer](https://jtourtellottewpi.shinyapps.io/omic_explorer/)
+The files for the shiny app, including the data, can be found in this git in the "shiny" folder.
 
-Your task is to choose an interesting dataset and visualize it in *at least three* **linked** views, where interactions in any given view updates the other two.
-Each view should use a different visualization type, and interaction in one of the views should impact what's shown in the other views.
 
-You should choose data and visualizations that are sufficiently complex and interesting to ensure a user can discover interesting patterns and trends on their own.
+This vis sequencing-based DamID and siRNA classification (discrete values) with quantitative (continuous) RNAseq data from experiments that examined the relationship between active chromatin and association with the nuclearpore complex (NPC) focused on Nups 93 and 153.
 
-For this assignment you should write everything from scratch.
-You may *reference and adapt* code from books or the web, and if you do please provide a References section with links at the end of your Readme.
+![Initial app view, before interaction](/img/shiny_init.png "Initial App view of Density and Box Plots in the top row and Mosaic plot and table in the second row")
 
-Resources
----
+The density plot examines the distribution of RNA-seq expression measured in fpkm transformed by log10 and scaled. Brushing on this graph looks at the distribution calculated using only results within the brush area. Genes with at least one recorded fpkm value for a given experimental condition are used to update the other graphs.
+![Brushing Interaction](/img/shiny_brushing.png)
 
-Data is Plural has a list of interesting datasets, many of which require processing.
+The box plot looks at the distribution of gene lengths for each chromosome with respect to the currently selected gene set. By clicking on one of the chromosome box plots, one can elimate or add the genes on that chromosome to the selected gene set, which updates the other graphs.
+![Box Plot Clicking Interaction](/img/shiny_clicking.png)
 
-These three examples are intended to show you what multiple views visualizations might look like. 
-I wouldn't recommend using them as a your starting point, but you may find some inspiration:
+The mosaic plot looks at the classification of the genes in the selected gene set based on how it the gene reacted to siRNA treatment or chromatin association via DamID with respect to Nups 93 and 153. Clicking on the plot sets the gene set to one combination of siRNA and DamID association.
+![Mosaic Clicking Interaction](/img/shiny_clicking_assay.png)
 
-1. This [scatterplot matrix](http://bl.ocks.org/mbostock/4063663) has code that explains brushing and linking. But remember you'll be doing this with different types of views.
+Achievements
+===
+The technical achievements I attempted with this visualization were to learn how to use shiny to visualize genomic data in unique ways. I have been particularly interested in looking at distributions of change in different sequencing data (RNA-seq, Hi-C over multiple time points, and so on), and the interactions in this vis open the door for a new way to look at these data types. After showing my PI this visualization in its earliest forms, he thinks it can be developed into a useful tool for looking for gene targets for imaging experiments.
 
-2. The example visualization for [Crossfilter](http://square.github.io/crossfilter/) uses coordinated multiple views. The interaction and brushing technique is well-executed.
+The design achievements I accomplished included learning to work within the UI grid system that underlies shiny apps as well as seeking color palattes that are color-blind friendly.
 
-3. The [dispatching events](https://github.com/d3/d3-dispatch) page is a good example of using events, rather than explicit functions, for controlling behavior. Views can listen for events in other views and respond accordingly.
+The data for this visualization comes from the Supplemental Files association with the following paper:
+Ibarra A, Benner C, Tyagi S, Cool J, Hetzer MW. Nucleoporin-mediated regulation of cell identity genes. Genes Dev. 2016 Oct 15;30(20):2253-2258. doi: 10.1101/gad.287417.116. Epub 2016 Nov 2. PMID: 27807035; PMCID: PMC5110992.
 
-This GIF from a similar course shows how views can work together:
-
-![cmv gif](https://raw.githubusercontent.com/dataviscourse/2015-dataviscourse-homework/master/hw3/preview.gif)
-
-*If you aren't familiar with event-based programming you should experiment with d3.dispatch and other approaches to coordinating views well before the deadline (it's tricky.)*
-
-Don't forget to run a local webserver when you're coding and debugging.
-
-Requirements
----
-
-0. Your code should be forked from the GitHub repo and linked using GitHub pages.
-1. Your project should load a dataset you found on the web. Put this file in your repo.
-2. Your project should use d3 to build a visualization of the dataset. 
-3. Your writeup (readme.md in the repo) should contain the following:
-
-- Working link to the visualization hosted on gh-pages.
-- Concise description and screenshot of your visualization.
-- Description of the technical achievements you attempted with this visualization.
-- Description of the design achievements you attempted with this visualization.
-
-GitHub Details
----
-
-- Fork the GitHub Repository. You now have a copy associated with your username.
-- Make changes to index.html to fulfill the project requirements. 
-- Make sure your "master" branch matches your "gh-pages" branch. See the GitHub Guides referenced above if you need help.
-- Edit the README.md with a link to your gh-pages site, for example http://YourUsernameGoesHere.github.io/04-MapsAndViews/index.html
-- To submit, make a [Pull Request](https://help.github.com/articles/using-pull-requests/) on the original repository.
+as well as the [associated dataset](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE87831) on the Gene Expression Omnibus
